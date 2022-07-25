@@ -9,6 +9,10 @@ export default class Game {
     this.loop = this.loop.bind(this);
   }
 
+  async init() {
+    await this.view.init();
+  }
+
   start() {
     requestAnimationFrame(this.loop);
   }
