@@ -21,6 +21,6 @@ export default class View {
   }
 
   renderTank(tank) {
-    this.context.drawImage(this.sprite.image, 0, 0, 16, 16, 0, 0, 16, 16);
+    this.context.drawImage(this.sprite.image, 0, 0, 16, 16, tank.x, tank.y, 16, 16);
   }
 }
