@@ -1,10 +1,9 @@
-import Tank from './tank.js';
-
 export default class Game {
   constructor({ world, view, levels }) {
     this.world = world;
     this.view = view;
     this.levels = levels;
+    this.currentLevel = 0;
 
     this.loop = this.loop.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -12,6 +11,7 @@ export default class Game {
   }
 
   async init() {
+    this.world.init(this.levels[this.currentLevel]);
     await this.view.init();
 
     document.addEventListener('keydown', this.handleKeyDown);

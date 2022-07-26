@@ -1,4 +1,6 @@
 export default class Tank {
+  SPEED = 1;
+
   activeKeys = new Set();
   direction = 'top';
 
@@ -45,19 +47,19 @@ export default class Tank {
 
   update() {
     if (this.activeKeys.up) {
-      this.y -= 1;
+      this.y -= this.SPEED;
       this.direction = 'top';
       this._changeAnimationFrame();
     } else if (this.activeKeys.down) {
-      this.y += 1;
+      this.y += this.SPEED;
       this.direction = 'bottom';
       this._changeAnimationFrame();
     } else if (this.activeKeys.left) {
-      this.x -= 1;
+      this.x -= this.SPEED;
       this.direction = 'left';
       this._changeAnimationFrame();
     } else if (this.activeKeys.right) {
-      this.x += 1;
+      this.x += this.SPEED;
       this.direction = 'right';
       this._changeAnimationFrame();
     }

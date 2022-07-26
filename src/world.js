@@ -1,7 +1,11 @@
 import Tank from './tank.js';
 
 export default class World {
-  grig = [];
+  level = [];
+
+  init(level) {
+    this.level = level;
+  }
 
   player1Tank = new Tank();
   //player2Tank = new Tank();

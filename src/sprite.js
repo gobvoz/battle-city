@@ -1,6 +1,7 @@
 export default class Sprite {
-  constructor(source) {
+  constructor(source, spriteMap) {
     this.source = source;
+    this.spriteMap = spriteMap;
     this.image = new Image();
   }
 
@@ -11,5 +12,9 @@ export default class Sprite {
 
       this.image.src = this.source;
     });
+  }
+
+  getTile(tile) {
+    return this.spriteMap[tile];
   }
 }
