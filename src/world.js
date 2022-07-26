@@ -8,7 +8,7 @@ export default class World {
 
   enemyTankList = [];
 
-  update(isMoving) {
-    this.player1Tank.update(isMoving);
+  update() {
+    this.player1Tank.update();
   }
 }

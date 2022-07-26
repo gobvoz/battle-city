@@ -6,8 +6,6 @@ export default class Game {
     this.view = view;
     this.levels = levels;
 
-    this.isMoving = false;
-
     this.loop = this.loop.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -25,8 +23,8 @@ export default class Game {
   }
 
   loop() {
-    this.world.update(this.isMoving);
-    this.view.render(this.world, this.isMoving);
+    this.world.update();
+    this.view.render(this.world);
 
     requestAnimationFrame(this.loop);
   }
@@ -35,22 +33,18 @@ export default class Game {
     switch (code) {
       case 'KeyW':
       case 'ArrowUp':
-        this.isMoving = true;
         this.world.player1Tank.moveUp();
         break;
       case 'KeyS':
       case 'ArrowDown':
-        this.isMoving = true;
         this.world.player1Tank.moveDown();
         break;
       case 'KeyA':
       case 'ArrowLeft':
-        this.isMoving = true;
         this.world.player1Tank.moveLeft();
         break;
       case 'KeyD':
       case 'ArrowRight':
-        this.isMoving = true;
         this.world.player1Tank.moveRight();
         break;
       case 'Space':
@@ -66,13 +60,20 @@ export default class Game {
     switch (code) {
       case 'KeyW':
       case 'ArrowUp':
+        this.world.player1Tank.stopUp();
+        break;
       case 'KeyS':
       case 'ArrowDown':
+        this.world.player1Tank.stopDown();
+        break;
       case 'KeyA':
       case 'ArrowLeft':
+        this.world.player1Tank.stopLeft();
+        break;
       case 'KeyD':
       case 'ArrowRight':
-        this.isMoving = false;
+        this.world.player1Tank.stopRight();
+        break;
       case 'Space':
         break;
       case 'Enter':
