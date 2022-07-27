@@ -12,4 +12,6 @@ export const Tank = {
   DEFAULT_SPEED: 1,
 };
 
+export const PADDING_LEFT = 64;
+export const PADDING_TOP = 64;
 export const MOVEMENT_TRASH_HOLE = 8;
