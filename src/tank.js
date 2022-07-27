@@ -1,39 +1,56 @@
+import { Direction } from './constants.js';
+
 export default class Tank {
-  SPEED = 1;
-
   activeKeys = new Set();
-  direction = 'top';
-
-  x = 20;
-  y = 20;
 
   frameSize = 16;
   animationFrame = 1;
   frames = {
-    top: [
+    [Direction.UP]: [
       [0, 0],
       [1, 0],
     ],
-    left: [
+    [Direction.LEFT]: [
       [2, 0],
       [3, 0],
     ],
-    bottom: [
+    [Direction.DOWN]: [
       [4, 0],
       [5, 0],
     ],
-    right: [
+    [Direction.RIGHT]: [
       [6, 0],
       [7, 0],
     ],
   };
 
+  constructor(world, x, y, direction, speed) {
+    this.world = world;
+
+    this.x = x;
+    this.y = y;
+    this.direction = direction;
+    this.speed = speed;
+  }
+
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
 
-  moveUp = () => (this.activeKeys.up = true);
-  moveDown = () => (this.activeKeys.down = true);
-  moveLeft = () => (this.activeKeys.left = true);
-  moveRight = () => (this.activeKeys.right = true);
+  moveUp = () => {
+    this.activeKeys.up = true;
+    this.direction = Direction.UP;
+  };
+  moveDown = () => {
+    this.activeKeys.down = true;
+    this.direction = Direction.DOWN;
+  };
+  moveLeft = () => {
+    this.activeKeys.left = true;
+    this.direction = Direction.LEFT;
+  };
+  moveRight = () => {
+    this.activeKeys.right = true;
+    this.direction = Direction.RIGHT;
+  };
   stopUp = () => (this.activeKeys.up = false);
   stopDown = () => (this.activeKeys.down = false);
   stopLeft = () => (this.activeKeys.left = false);
@@ -46,21 +63,19 @@ export default class Tank {
   ];
 
   update() {
+    const speed = this.world.canIMove(this) ? this.speed : 0;
+
     if (this.activeKeys.up) {
-      this.y -= this.SPEED;
-      this.direction = 'top';
+      this.y -= speed;
       this._changeAnimationFrame();
     } else if (this.activeKeys.down) {
-      this.y += this.SPEED;
-      this.direction = 'bottom';
+      this.y += speed;
       this._changeAnimationFrame();
     } else if (this.activeKeys.left) {
-      this.x -= this.SPEED;
-      this.direction = 'left';
+      this.x -= speed;
       this._changeAnimationFrame();
     } else if (this.activeKeys.right) {
-      this.x += this.SPEED;
-      this.direction = 'right';
+      this.x += speed;
       this._changeAnimationFrame();
     }
   }
