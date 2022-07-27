@@ -53,37 +53,37 @@ export default class World {
         nextMinY -= speed;
         nextMaxY -= speed;
         if (nextMinY < this.minWorldY) return false;
-        tileMinX = Math.floor(nextMinX / 8);
-        tileMaxX = Math.floor(nextMaxX / 8);
-        tileMinY = Math.floor(nextMinY / 8);
-        tileMaxY = Math.floor(nextMinY / 8);
+        tileMinX = nextMinX >> 3;
+        tileMaxX = nextMaxX >> 3;
+        tileMinY = nextMinY >> 3;
+        tileMaxY = nextMinY >> 3;
         break;
       case Direction.LEFT:
         nextMinX -= speed;
         nextMaxX -= speed;
         if (nextMinX < this.minWorldX) return false;
-        tileMinX = Math.floor(nextMinX / 8);
-        tileMaxX = Math.floor(nextMinX / 8);
-        tileMinY = Math.floor(nextMinY / 8);
-        tileMaxY = Math.floor(nextMaxY / 8);
+        tileMinX = nextMinX >> 3;
+        tileMaxX = nextMinX >> 3;
+        tileMinY = nextMinY >> 3;
+        tileMaxY = nextMaxY >> 3;
         break;
       case Direction.DOWN:
         nextMinY += speed;
         nextMaxY += speed;
         if (nextMaxY >= this.maxWorldY) return false;
-        tileMinX = Math.floor(nextMinX / 8);
-        tileMaxX = Math.floor(nextMaxX / 8);
-        tileMinY = Math.floor(nextMaxY / 8);
-        tileMaxY = Math.floor(nextMaxY / 8);
+        tileMinX = nextMinX >> 3;
+        tileMaxX = nextMaxX >> 3;
+        tileMinY = nextMaxY >> 3;
+        tileMaxY = nextMaxY >> 3;
         break;
       case Direction.RIGHT:
         nextMinX += speed;
         nextMaxX += speed;
         if (nextMaxX >= this.maxWorldX) return false;
-        tileMinX = Math.floor(nextMaxX / 8);
-        tileMaxX = Math.floor(nextMaxX / 8);
-        tileMinY = Math.floor(nextMinY / 8);
-        tileMaxY = Math.floor(nextMaxY / 8);
+        tileMinX = nextMaxX >> 3;
+        tileMaxX = nextMaxX >> 3;
+        tileMinY = nextMinY >> 3;
+        tileMaxY = nextMaxY >> 3;
         break;
     }
 

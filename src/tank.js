@@ -39,8 +39,8 @@ export default class Tank {
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
 
   _helpTurnTank() {
-    const deltaX = this.x % 8;
-    const deltaY = this.y % 8;
+    const deltaX = this.x % this.movementTrashHole;
+    const deltaY = this.y % this.movementTrashHole;
 
     if (this.direction === Direction.LEFT) {
       this.x += deltaX <= this.movementTrashStep ? -deltaX : this.movementTrashHole - deltaX;
@@ -103,16 +103,16 @@ export default class Tank {
   update() {
     const speed = this.world.canIMove(this) ? this.speed : 0;
 
-    if (this.activeKeys.up) {
+    if (this.direction === Direction.UP && this.activeKeys.up) {
       this.y -= speed;
       this._changeAnimationFrame();
-    } else if (this.activeKeys.down) {
+    } else if (this.direction === Direction.DOWN && this.activeKeys.down) {
       this.y += speed;
       this._changeAnimationFrame();
-    } else if (this.activeKeys.left) {
+    } else if (this.direction === Direction.LEFT && this.activeKeys.left) {
       this.x -= speed;
       this._changeAnimationFrame();
-    } else if (this.activeKeys.right) {
+    } else if (this.direction === Direction.RIGHT && this.activeKeys.right) {
       this.x += speed;
       this._changeAnimationFrame();
     }
