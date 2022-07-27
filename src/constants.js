@@ -11,3 +11,5 @@ export const Tank = {
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
 };
+
+export const MOVEMENT_TRASH_HOLE = 8;

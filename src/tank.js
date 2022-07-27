@@ -1,4 +1,4 @@
-import { Direction } from './constants.js';
+import { Direction, MOVEMENT_TRASH_HOLE } from './constants.js';
 
 export default class Tank {
   activeKeys = new Set();
@@ -31,26 +31,64 @@ export default class Tank {
     this.y = y;
     this.direction = direction;
     this.speed = speed;
+
+    this.movementTrashStep = MOVEMENT_TRASH_HOLE / 2;
+    this.movementTrashHole = MOVEMENT_TRASH_HOLE;
   }
 
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
 
+  _helpTurnTank() {
+    const deltaX = this.x % 8;
+    const deltaY = this.y % 8;
+
+    if (this.direction === Direction.LEFT) {
+      this.x += deltaX <= this.movementTrashStep ? -deltaX : this.movementTrashHole - deltaX;
+    }
+    if (this.direction === Direction.RIGHT) {
+      this.x += deltaX <= this.movementTrashStep ? -deltaX : this.movementTrashHole - deltaX;
+    }
+    if (this.direction === Direction.UP) {
+      this.y += deltaY <= this.movementTrashStep ? -deltaY : this.movementTrashHole - deltaY;
+    }
+    if (this.direction === Direction.DOWN) {
+      this.y += deltaY <= this.movementTrashStep ? -deltaY : this.movementTrashHole - deltaY;
+    }
+  }
+
   moveUp = () => {
+    if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
+      this._helpTurnTank();
+    }
+
     this.activeKeys.up = true;
     this.direction = Direction.UP;
   };
   moveDown = () => {
+    if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
+      this._helpTurnTank();
+    }
+
     this.activeKeys.down = true;
     this.direction = Direction.DOWN;
   };
   moveLeft = () => {
+    if (this.direction === Direction.UP || this.direction === Direction.DOWN) {
+      this._helpTurnTank();
+    }
+
     this.activeKeys.left = true;
     this.direction = Direction.LEFT;
   };
   moveRight = () => {
+    if (this.direction === Direction.UP || this.direction === Direction.DOWN) {
+      this._helpTurnTank();
+    }
+
     this.activeKeys.right = true;
     this.direction = Direction.RIGHT;
   };
+
   stopUp = () => (this.activeKeys.up = false);
   stopDown = () => (this.activeKeys.down = false);
   stopLeft = () => (this.activeKeys.left = false);

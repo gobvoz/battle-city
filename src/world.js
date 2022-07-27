@@ -10,8 +10,8 @@ export default class World {
   maxWorldY = 0;
 
   // more for collision detection, delete after all tests are done
-  collisionTileX = 0;
-  collisionTileY = 0;
+  collisionTileX = null;
+  collisionTileY = null;
 
   init(level) {
     this.level = level;
@@ -87,6 +87,12 @@ export default class World {
         break;
     }
 
+    // condition to stay in array
+    tileMinX = tileMinX < 0 ? 0 : tileMinX;
+    tileMaxX = tileMaxX >= this.level.length ? this.level.length - 1 : tileMaxX;
+    tileMinY = tileMinY < 0 ? 0 : tileMinY;
+    tileMaxY = tileMaxY >= this.level[0].length ? this.level[0].length - 1 : tileMaxY;
+
     if (this.level[tileMinY][tileMinX] !== 0) {
       this.collisionTileX = tileMinX;
       this.collisionTileY = tileMinY;
@@ -98,6 +104,8 @@ export default class World {
       return false;
     }
 
+    this.collisionTileX = null;
+    this.collisionTileY = null;
     return true;
   }
 }

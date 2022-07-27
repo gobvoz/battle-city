@@ -53,6 +53,8 @@ export default class View {
   }
 
   _renderCollisionTile() {
+    if (this.world.collisionTileX === null) return;
+
     this.context.fillStyle = this.blinkedFrame ? 'rgba(0, 255, 0, 0.5)' : 'transparent';
     this.context.beginPath();
     this.context.rect(
