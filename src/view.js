@@ -1,7 +1,6 @@
-import { PADDING_LEFT, PADDING_TOP } from './constants.js';
+import { RenderOption, DEBUG } from './constants.js';
 
 export default class View {
-  scale = 8;
   blinkedFrame = true;
 
   constructor(canvas, sprite, world) {
@@ -11,7 +10,6 @@ export default class View {
     this.sprite = sprite;
 
     this.world = world;
-
     this._changeAnimationFrame = this._changeAnimationFrame.bind(this);
     setInterval(this._changeAnimationFrame, 500);
   }
@@ -20,21 +18,26 @@ export default class View {
     await this.sprite.load();
   }
 
-  render() {
+  render(fps, busyTime) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = '#000';
     this.context.fillRect(
-      PADDING_LEFT,
-      PADDING_TOP,
-      this.world.level.length * this.scale,
-      this.world.level[0].length * this.scale,
+      RenderOption.PADDING_LEFT,
+      RenderOption.PADDING_TOP,
+      this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      this.world.stage[0].length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
     );
 
-    this._renderGrid();
+    DEBUG && this._renderGrid();
     this._renderField();
-    this._renderTank(this.world.player1Tank);
-    this._renderCollisionTile();
-    this._renderDebugInfo();
+    //this._renderTank(this.world.player1Tank);
+
+    this.world.objects.forEach(gameObject => {
+      this._renderObject(gameObject);
+    });
+
+    DEBUG && this._renderCollisionTile();
+    DEBUG && this._renderDebugInfo(fps, busyTime);
   }
 
   _changeAnimationFrame() {
@@ -42,20 +45,31 @@ export default class View {
   }
 
   _renderGrid() {
-    for (let coord = 0; coord <= this.world.level.length; coord++) {
-      this.context.strokeStyle = '#aaa';
+    for (let mapUnit = 0; mapUnit <= this.world.stage.length; mapUnit++) {
+      this.context.strokeStyle = '#555';
+      if (mapUnit % 2 === 0) {
+        this.context.strokeStyle = '#888';
+      }
       this.context.beginPath();
-      this.context.moveTo(PADDING_LEFT + coord * this.scale, PADDING_TOP);
+      this.context.moveTo(
+        RenderOption.PADDING_LEFT + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP,
+      );
       this.context.lineTo(
-        PADDING_LEFT + coord * this.scale,
-        PADDING_TOP + this.world.level.length * this.scale,
+        RenderOption.PADDING_LEFT + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP +
+          this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       );
       this.context.stroke();
       this.context.beginPath();
-      this.context.moveTo(PADDING_LEFT, PADDING_TOP + coord * this.scale);
+      this.context.moveTo(
+        RenderOption.PADDING_LEFT,
+        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      );
       this.context.lineTo(
-        PADDING_LEFT + this.world.level.length * this.scale,
-        PADDING_TOP + coord * this.scale,
+        RenderOption.PADDING_LEFT +
+          this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       );
       this.context.stroke();
     }
@@ -67,21 +81,35 @@ export default class View {
     this.context.fillStyle = this.blinkedFrame ? 'rgba(0, 255, 0, 0.5)' : 'transparent';
     this.context.beginPath();
     this.context.rect(
-      PADDING_LEFT + this.world.collisionTileX * this.scale,
-      PADDING_TOP + this.world.collisionTileY * this.scale,
-      this.scale,
-      this.scale,
+      RenderOption.PADDING_LEFT +
+        this.world.collisionTileX * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_TOP +
+        this.world.collisionTileY * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
     );
     this.context.fill();
   }
 
-  _renderDebugInfo() {
+  _renderDebugInfo(fps, busyTime) {
     this.context.fillStyle = '#fff';
     this.context.font = '12px monospace';
+
+    // this.context.fillText(
+    //   `${this.world.player1Tank.x},${this.world.player1Tank.y}`,
+    //   RenderOption.PADDING_LEFT + this.world.player1Tank.x * RenderOption.MULTIPLEXER,
+    //   RenderOption.PADDING_TOP + this.world.player1Tank.y * RenderOption.MULTIPLEXER,
+    // );
+
     this.context.fillText(
-      `${this.world.player1Tank.x},${this.world.player1Tank.y}`,
-      PADDING_LEFT + this.world.player1Tank.x,
-      PADDING_TOP + this.world.player1Tank.y,
+      `fps:  ${fps}`,
+      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
+      RenderOption.PADDING_TOP + 10,
+    );
+    this.context.fillText(
+      `busy: ${busyTime}`,
+      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
+      RenderOption.PADDING_TOP + 20,
     );
   }
 
@@ -89,21 +117,21 @@ export default class View {
     this.context.drawImage(
       this.sprite.image,
       ...this.sprite.getTile(tile),
-      this.scale,
-      this.scale,
-      PADDING_LEFT + x * this.scale,
-      PADDING_TOP + y * this.scale,
-      this.scale,
-      this.scale,
+      RenderOption.TILE_SIZE,
+      RenderOption.TILE_SIZE,
+      RenderOption.PADDING_LEFT + x * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_TOP + y * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
     );
   }
 
   _renderField() {
-    const { level } = this.world;
+    const { stage } = this.world;
 
-    for (let y = 0; y < level.length; y++) {
-      for (let x = 0; x < level[y].length; x++) {
-        const tile = level[y][x];
+    for (let y = 0; y < stage.length; y++) {
+      for (let x = 0; x < stage[y].length; x++) {
+        const tile = stage[y][x];
 
         if (tile === 0) {
           continue;
@@ -114,16 +142,16 @@ export default class View {
     }
   }
 
-  _renderTank(tank) {
+  _renderObject(gameObject) {
     this.context.drawImage(
       this.sprite.image,
-      ...tank.getFrame(),
-      this.scale * 2,
-      this.scale * 2,
-      PADDING_LEFT + tank.x,
-      PADDING_TOP + tank.y,
-      this.scale * 2,
-      this.scale * 2,
+      ...gameObject.getSprite(),
+      gameObject.width,
+      gameObject.height,
+      RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_TOP + gameObject.y * RenderOption.MULTIPLEXER,
+      RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
     );
   }
 }

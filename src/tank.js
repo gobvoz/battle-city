@@ -1,118 +1,107 @@
-import { Direction, MOVEMENT_TRASH_HOLE } from './constants.js';
+import { Direction, WorldOption, KeyCode } from './constants.js';
 
 export default class Tank {
-  activeKeys = new Set();
-
-  frameSize = 16;
-  animationFrame = 1;
-  frames = {
-    [Direction.UP]: [
-      [0, 0],
-      [1, 0],
-    ],
-    [Direction.LEFT]: [
-      [2, 0],
-      [3, 0],
-    ],
-    [Direction.DOWN]: [
-      [4, 0],
-      [5, 0],
-    ],
-    [Direction.RIGHT]: [
-      [6, 0],
-      [7, 0],
-    ],
-  };
-
-  constructor(world, x, y, direction, speed) {
+  constructor(world, x, y, direction, speed, sprites, playerIndex) {
     this.world = world;
 
     this.x = x;
     this.y = y;
     this.direction = direction;
     this.speed = speed;
+    this.sprites = sprites;
 
-    this.movementTrashStep = MOVEMENT_TRASH_HOLE / 2;
-    this.movementTrashHole = MOVEMENT_TRASH_HOLE;
+    this.width = WorldOption.UNIT_SIZE;
+    this.height = WorldOption.UNIT_SIZE;
+    this.animationFrame = 1;
+
+    this.movementStep = WorldOption.STEP_SIZE;
+    this.movementTile = WorldOption.TILE_SIZE;
+
+    this.playerIndex = playerIndex;
   }
 
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
 
-  _helpTurnTank() {
-    const deltaX = this.x % this.movementTrashHole;
-    const deltaY = this.y % this.movementTrashHole;
+  _stickToGrid() {
+    const deltaX = this.x % this.movementTile;
+    const deltaY = this.y % this.movementTile;
 
     if (this.direction === Direction.LEFT) {
-      this.x += deltaX <= this.movementTrashStep ? -deltaX : this.movementTrashHole - deltaX;
+      this.x += deltaX <= this.movementStep ? -deltaX : this.movementTile - deltaX;
     }
     if (this.direction === Direction.RIGHT) {
-      this.x += deltaX <= this.movementTrashStep ? -deltaX : this.movementTrashHole - deltaX;
+      this.x += deltaX <= this.movementStep ? -deltaX : this.movementTile - deltaX;
     }
     if (this.direction === Direction.UP) {
-      this.y += deltaY <= this.movementTrashStep ? -deltaY : this.movementTrashHole - deltaY;
+      this.y += deltaY <= this.movementStep ? -deltaY : this.movementTile - deltaY;
     }
     if (this.direction === Direction.DOWN) {
-      this.y += deltaY <= this.movementTrashStep ? -deltaY : this.movementTrashHole - deltaY;
+      this.y += deltaY <= this.movementStep ? -deltaY : this.movementTile - deltaY;
     }
   }
 
   moveUp = () => {
     if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
-      this._helpTurnTank();
+      this._stickToGrid();
     }
 
-    this.activeKeys.up = true;
     this.direction = Direction.UP;
   };
   moveDown = () => {
     if (this.direction === Direction.LEFT || this.direction === Direction.RIGHT) {
-      this._helpTurnTank();
+      this._stickToGrid();
     }
 
-    this.activeKeys.down = true;
     this.direction = Direction.DOWN;
   };
   moveLeft = () => {
     if (this.direction === Direction.UP || this.direction === Direction.DOWN) {
-      this._helpTurnTank();
+      this._stickToGrid();
     }
 
-    this.activeKeys.left = true;
     this.direction = Direction.LEFT;
   };
   moveRight = () => {
     if (this.direction === Direction.UP || this.direction === Direction.DOWN) {
-      this._helpTurnTank();
+      this._stickToGrid();
     }
 
-    this.activeKeys.right = true;
     this.direction = Direction.RIGHT;
   };
 
-  stopUp = () => (this.activeKeys.up = false);
-  stopDown = () => (this.activeKeys.down = false);
-  stopLeft = () => (this.activeKeys.left = false);
-  stopRight = () => (this.activeKeys.right = false);
+  stopUp = () => {};
+  stopDown = () => {};
+  stopLeft = () => {};
+  stopRight = () => {};
   fire = () => console.log('fire');
 
-  getFrame = () => [
-    this.frames[this.direction][this.animationFrame][0] * this.frameSize,
-    this.frames[this.direction][this.animationFrame][1] * this.frameSize,
+  getSprite = () => [
+    this.sprites[this.direction][this.animationFrame][0] * this.width,
+    this.sprites[this.direction][this.animationFrame][1] * this.height,
   ];
 
-  update() {
+  update(activeKeys) {
     const speed = this.world.canIMove(this) ? this.speed : 0;
 
-    if (this.direction === Direction.UP && this.activeKeys.up) {
+    if (this.direction === Direction.UP && activeKeys.has(KeyCode[this.playerIndex].UP)) {
       this.y -= speed;
       this._changeAnimationFrame();
-    } else if (this.direction === Direction.DOWN && this.activeKeys.down) {
+    } else if (
+      this.direction === Direction.DOWN &&
+      activeKeys.has(KeyCode[this.playerIndex].DOWN)
+    ) {
       this.y += speed;
       this._changeAnimationFrame();
-    } else if (this.direction === Direction.LEFT && this.activeKeys.left) {
+    } else if (
+      this.direction === Direction.LEFT &&
+      activeKeys.has(KeyCode[this.playerIndex].LEFT)
+    ) {
       this.x -= speed;
       this._changeAnimationFrame();
-    } else if (this.direction === Direction.RIGHT && this.activeKeys.right) {
+    } else if (
+      this.direction === Direction.RIGHT &&
+      activeKeys.has(KeyCode[this.playerIndex].RIGHT)
+    ) {
       this.x += speed;
       this._changeAnimationFrame();
     }

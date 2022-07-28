@@ -1,9 +1,17 @@
 export default class Game {
-  constructor({ world, view, levels }) {
+  activeKeys = new Set();
+
+  fps = 0;
+  fpsCounter = 0;
+
+  busyTime = 0;
+  busyTimeCounter = 0;
+
+  constructor({ world, view, stages }) {
     this.world = world;
     this.view = view;
-    this.levels = levels;
-    this.currentLevel = 0;
+    this.stages = stages;
+    this.currentStage = 0;
 
     this.loop = this.loop.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -11,7 +19,7 @@ export default class Game {
   }
 
   async init() {
-    this.world.init(this.levels[this.currentLevel]);
+    this.world.init(this.stages[this.currentStage]);
     await this.view.init();
 
     document.addEventListener('keydown', this.handleKeyDown);
@@ -20,63 +28,95 @@ export default class Game {
 
   start() {
     requestAnimationFrame(this.loop);
+
+    setInterval(() => {
+      this.fps = this.fpsCounter * 2;
+      this.fpsCounter = 0;
+
+      this.busyTime = String(this.busyTimeCounter / this.fps)
+        .padEnd(5, ' ')
+        .slice(0, 5);
+      this.busyTimeCounter = 0;
+    }, 500);
   }
 
   loop() {
-    this.world.update();
-    this.view.render(this.world);
+    const now = Date.now();
+    this.fpsCounter++;
+
+    this.world.update(this.activeKeys);
+    this.view.render(this.fps, this.busyTime);
 
     requestAnimationFrame(this.loop);
+
+    const delta = Date.now() - now;
+    this.busyTimeCounter += delta;
   }
 
-  handleKeyDown({ code }) {
-    switch (code) {
+  handleKeyDown(evt) {
+    this.activeKeys.add(evt.code);
+
+    switch (evt.code) {
       case 'KeyW':
       case 'ArrowUp':
         this.world.player1Tank.moveUp();
+        evt.preventDefault();
         break;
       case 'KeyS':
       case 'ArrowDown':
         this.world.player1Tank.moveDown();
+        evt.preventDefault();
         break;
       case 'KeyA':
       case 'ArrowLeft':
         this.world.player1Tank.moveLeft();
+        evt.preventDefault();
         break;
       case 'KeyD':
       case 'ArrowRight':
         this.world.player1Tank.moveRight();
+        evt.preventDefault();
         break;
       case 'Space':
         this.world.player1Tank.fire();
+        evt.preventDefault();
         break;
       case 'Enter':
+        evt.preventDefault();
         break;
       default:
         break;
     }
   }
-  handleKeyUp({ code }) {
-    switch (code) {
+  handleKeyUp(evt) {
+    this.activeKeys.delete(evt.code);
+
+    switch (evt.code) {
       case 'KeyW':
       case 'ArrowUp':
         this.world.player1Tank.stopUp();
+        evt.preventDefault();
         break;
       case 'KeyS':
       case 'ArrowDown':
         this.world.player1Tank.stopDown();
+        evt.preventDefault();
         break;
       case 'KeyA':
       case 'ArrowLeft':
         this.world.player1Tank.stopLeft();
+        evt.preventDefault();
         break;
       case 'KeyD':
       case 'ArrowRight':
         this.world.player1Tank.stopRight();
+        evt.preventDefault();
         break;
       case 'Space':
+        evt.preventDefault();
         break;
       case 'Enter':
+        evt.preventDefault();
         break;
       default:
         break;

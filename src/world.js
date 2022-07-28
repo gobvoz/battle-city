@@ -1,8 +1,10 @@
 import Tank from './tank.js';
-import { Direction, Tank as player1Tank } from './constants.js';
+import Base from './base.js';
+
+import { Direction, Player1TankOption, BaseOption } from './constants.js';
 
 export default class World {
-  level = [];
+  stage = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -13,26 +15,40 @@ export default class World {
   collisionTileX = null;
   collisionTileY = null;
 
-  init(level) {
-    this.level = level;
+  player1Index = 0;
+  player2Index = 1;
 
-    this.maxWorldX = this.level.length * 8;
-    this.maxWorldY = this.level[0].length * 8;
+  init(stage) {
+    this.stage = stage;
+
+    this.maxWorldX = this.stage.length * 8;
+    this.maxWorldY = this.stage[0].length * 8;
+
+    this.stage = stage;
+
+    this.player1Tank = new Tank(
+      this,
+      Player1TankOption.START_X,
+      Player1TankOption.START_Y,
+      Player1TankOption.START_DIRECTION,
+      Player1TankOption.DEFAULT_SPEED,
+      Player1TankOption.SPRITES,
+      this.player1Index,
+    );
+
+    this.base = new Base(this, BaseOption.START_X, BaseOption.START_Y, BaseOption.SPRITES);
+
+    this.enemyTanks = [];
   }
 
-  player1Tank = new Tank(
-    this,
-    player1Tank.START_X,
-    player1Tank.START_Y,
-    player1Tank.START_DIRECTION,
-    player1Tank.DEFAULT_SPEED,
-  );
-  //player2Tank = new Tank();
+  get objects() {
+    return [this.base, this.player1Tank, ...this.enemyTanks];
+  }
 
-  enemyTankList = [];
-
-  update() {
-    this.player1Tank.update();
+  update(activeKeys) {
+    this.objects.forEach(gameObject => {
+      gameObject.update(activeKeys);
+    });
   }
 
   canIMove(tank) {
@@ -89,16 +105,16 @@ export default class World {
 
     // condition to stay in array
     tileMinX = tileMinX < 0 ? 0 : tileMinX;
-    tileMaxX = tileMaxX >= this.level.length ? this.level.length - 1 : tileMaxX;
+    tileMaxX = tileMaxX >= this.stage.length ? this.stage.length - 1 : tileMaxX;
     tileMinY = tileMinY < 0 ? 0 : tileMinY;
-    tileMaxY = tileMaxY >= this.level[0].length ? this.level[0].length - 1 : tileMaxY;
+    tileMaxY = tileMaxY >= this.stage[0].length ? this.stage[0].length - 1 : tileMaxY;
 
-    if (this.level[tileMinY][tileMinX] !== 0) {
+    if (this.stage[tileMinY][tileMinX] !== 0) {
       this.collisionTileX = tileMinX;
       this.collisionTileY = tileMinY;
       return false;
     }
-    if (this.level[tileMaxY][tileMaxX] !== 0) {
+    if (this.stage[tileMaxY][tileMaxX] !== 0) {
       this.collisionTileX = tileMaxX;
       this.collisionTileY = tileMaxY;
       return false;
