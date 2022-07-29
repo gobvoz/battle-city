@@ -59,6 +59,8 @@ export const KeyCode = [
 export const Player1TankOption = {
   START_X: 5 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
   SPRITES: {
@@ -84,6 +86,8 @@ export const Player1TankOption = {
 export const Player2TankOption = {
   START_X: 9 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
   SPRITES: {
@@ -106,11 +110,23 @@ export const Player2TankOption = {
   },
 };
 
+export const ProjectileOption = {
+  WIDTH: WorldOption.UNIT_SIZE / 4,
+  HEIGHT: WorldOption.UNIT_SIZE / 4,
+  DEFAULT_SPEED: 2,
+  SPRITES: {
+    [Direction.UP]: [20, 6.5],
+    [Direction.LEFT]: [20.5, 6.5],
+    [Direction.DOWN]: [21, 6.5],
+    [Direction.RIGHT]: [21.5, 6.5],
+  },
+};
+
 export const BaseOption = {
   START_X: 7 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
-  WIDTH: WorldOption.UNIT_SIZE * 2,
-  HEIGHT: WorldOption.UNIT_SIZE * 2,
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
   SPRITES: {
     [BaseState.LIVE]: [19, 2],
     [BaseState.DEAD]: [20, 2],

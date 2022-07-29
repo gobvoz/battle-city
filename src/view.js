@@ -145,13 +145,13 @@ export default class View {
   _renderObject(gameObject) {
     this.context.drawImage(
       this.sprite.image,
-      ...gameObject.getSprite(),
+      ...gameObject.sprite,
       gameObject.width,
       gameObject.height,
       RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
       RenderOption.PADDING_TOP + gameObject.y * RenderOption.MULTIPLEXER,
-      RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER,
     );
   }
 }

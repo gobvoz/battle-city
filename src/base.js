@@ -1,13 +1,8 @@
-import { WorldOption } from './constants.js';
+import GameObject from './game-object.js';
 
-export default class Base {
-  constructor(world, x, y, sprites) {
-    this.world = world;
-    this.x = x;
-    this.y = y;
-    this.width = WorldOption.UNIT_SIZE;
-    this.height = WorldOption.UNIT_SIZE;
-    this.sprites = sprites;
+export default class Base extends GameObject {
+  constructor({ ...rest }) {
+    super({ ...rest });
 
     this.destroyed = false;
   }
@@ -16,8 +11,10 @@ export default class Base {
     // do nothing
   };
 
-  getSprite = () => [
-    this.sprites[Number(this.destroyed)][0] * this.width,
-    this.sprites[Number(this.destroyed)][1] * this.height,
-  ];
+  get sprite() {
+    return [
+      this.sprites[Number(this.destroyed)][0] * this.width,
+      this.sprites[Number(this.destroyed)][1] * this.height,
+    ];
+  }
 }

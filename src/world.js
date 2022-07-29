@@ -1,10 +1,11 @@
 import Tank from './tank.js';
 import Base from './base.js';
 
-import { Direction, Player1TankOption, BaseOption } from './constants.js';
+import { Direction, Player1TankOption, BaseOption, WorldOption } from './constants.js';
 
 export default class World {
   stage = [];
+  projectiles = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -26,23 +27,32 @@ export default class World {
 
     this.stage = stage;
 
-    this.player1Tank = new Tank(
-      this,
-      Player1TankOption.START_X,
-      Player1TankOption.START_Y,
-      Player1TankOption.START_DIRECTION,
-      Player1TankOption.DEFAULT_SPEED,
-      Player1TankOption.SPRITES,
-      this.player1Index,
-    );
+    this.player1Tank = new Tank({
+      world: this,
+      x: Player1TankOption.START_X,
+      y: Player1TankOption.START_Y,
+      width: Player1TankOption.WIDTH,
+      height: Player1TankOption.HEIGHT,
+      direction: Player1TankOption.START_DIRECTION,
+      speed: Player1TankOption.DEFAULT_SPEED,
+      sprites: Player1TankOption.SPRITES,
+      playerIndex: this.player1Index,
+    });
 
-    this.base = new Base(this, BaseOption.START_X, BaseOption.START_Y, BaseOption.SPRITES);
+    this.base = new Base({
+      world: this,
+      x: BaseOption.START_X,
+      y: BaseOption.START_Y,
+      width: BaseOption.WIDTH,
+      height: BaseOption.HEIGHT,
+      sprites: BaseOption.SPRITES,
+    });
 
     this.enemyTanks = [];
   }
 
   get objects() {
-    return [this.base, this.player1Tank, ...this.enemyTanks];
+    return [this.base, this.player1Tank, ...this.enemyTanks, ...this.projectiles];
   }
 
   update(activeKeys) {
@@ -52,22 +62,20 @@ export default class World {
   }
 
   hasCollision(object) {
-    const { x, y, direction, speed } = object;
-
-    let nextMinX = x;
-    let nextMaxX = x + 15;
-    let nextMinY = y;
-    let nextMaxY = y + 15;
+    let nextMinX = object.x;
+    let nextMaxX = object.x + object.width - 1;
+    let nextMinY = object.y;
+    let nextMaxY = object.y + object.height - 1;
 
     let tileMinX = 0;
     let tileMaxX = 0;
     let tileMinY = 0;
     let tileMaxY = 0;
 
-    switch (direction) {
+    switch (object.direction) {
       case Direction.UP:
-        nextMinY -= speed;
-        nextMaxY -= speed;
+        nextMinY -= object.speed;
+        nextMaxY -= object.speed;
         if (nextMinY < this.minWorldY) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
@@ -75,8 +83,8 @@ export default class World {
         tileMaxY = nextMinY >> 3;
         break;
       case Direction.LEFT:
-        nextMinX -= speed;
-        nextMaxX -= speed;
+        nextMinX -= object.speed;
+        nextMaxX -= object.speed;
         if (nextMinX < this.minWorldX) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMinX >> 3;
@@ -84,8 +92,8 @@ export default class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.DOWN:
-        nextMinY += speed;
-        nextMaxY += speed;
+        nextMinY += object.speed;
+        nextMaxY += object.speed;
         if (nextMaxY >= this.maxWorldY) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
@@ -93,8 +101,8 @@ export default class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.RIGHT:
-        nextMinX += speed;
-        nextMaxX += speed;
+        nextMinX += object.speed;
+        nextMaxX += object.speed;
         if (nextMaxX >= this.maxWorldX) return true;
         tileMinX = nextMaxX >> 3;
         tileMaxX = nextMaxX >> 3;

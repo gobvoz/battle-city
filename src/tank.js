@@ -1,23 +1,23 @@
-import { Direction, WorldOption, KeyCode } from './constants.js';
+import GameObject from './game-object.js';
+import Projectile from './projectile.js';
 
-export default class Tank {
-  constructor(world, x, y, direction, speed, sprites, playerIndex) {
-    this.world = world;
+import { Direction, WorldOption, KeyCode, ProjectileOption } from './constants.js';
 
-    this.x = x;
-    this.y = y;
+export default class Tank extends GameObject {
+  constructor({ direction, speed, playerIndex, ...rest }) {
+    super({ ...rest });
+
     this.direction = direction;
     this.speed = speed;
-    this.sprites = sprites;
 
-    this.width = WorldOption.UNIT_SIZE;
-    this.height = WorldOption.UNIT_SIZE;
     this.animationFrame = 1;
 
     this.movementStep = WorldOption.STEP_SIZE;
     this.movementTile = WorldOption.TILE_SIZE;
 
     this.playerIndex = playerIndex;
+
+    this.alreadyShot = false;
   }
 
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
@@ -73,12 +73,32 @@ export default class Tank {
   stopDown = () => {};
   stopLeft = () => {};
   stopRight = () => {};
-  fire = () => console.log('fire');
 
-  getSprite = () => [
-    this.sprites[this.direction][this.animationFrame][0] * this.width,
-    this.sprites[this.direction][this.animationFrame][1] * this.height,
-  ];
+  fire = () => {
+    console.log('fire');
+
+    const projectile = new Projectile({
+      world: this.world,
+      tank: this,
+      x: 0,
+      y: 0,
+      width: ProjectileOption.WIDTH,
+      height: ProjectileOption.HEIGHT,
+      sprites: ProjectileOption.SPRITES,
+      direction: this.direction,
+      speed: ProjectileOption.DEFAULT_SPEED,
+      playerIndex: this.playerIndex,
+    });
+
+    this.world.projectiles.push(projectile);
+  };
+
+  get sprite() {
+    return [
+      this.sprites[this.direction][this.animationFrame][0] * WorldOption.UNIT_SIZE,
+      this.sprites[this.direction][this.animationFrame][1] * WorldOption.UNIT_SIZE,
+    ];
+  }
 
   update(activeKeys) {
     const speed = this.world.hasCollision(this) ? 0 : this.speed;
