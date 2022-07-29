@@ -1,7 +1,6 @@
 import GameObject from './game-object.js';
-import Projectile from './projectile.js';
 
-import { Direction, WorldOption, KeyCode, ProjectileOption } from './constants.js';
+import { Direction, WorldOption, KeyCode } from './constants.js';
 
 export default class Tank extends GameObject {
   constructor({ direction, speed, playerIndex, ...rest }) {
@@ -75,22 +74,7 @@ export default class Tank extends GameObject {
   stopRight = () => {};
 
   fire = () => {
-    console.log('fire');
-
-    const projectile = new Projectile({
-      world: this.world,
-      tank: this,
-      x: 0,
-      y: 0,
-      width: ProjectileOption.WIDTH,
-      height: ProjectileOption.HEIGHT,
-      sprites: ProjectileOption.SPRITES,
-      direction: this.direction,
-      speed: ProjectileOption.DEFAULT_SPEED,
-      playerIndex: this.playerIndex,
-    });
-
-    this.world.projectiles.push(projectile);
+    this.world.addProjectile(this);
   };
 
   get sprite() {

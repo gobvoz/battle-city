@@ -41,7 +41,7 @@ export default class Game {
   }
 
   loop() {
-    const now = Date.now();
+    const now = window.performance.now();
     this.fpsCounter++;
 
     this.world.update(this.activeKeys);
@@ -49,7 +49,8 @@ export default class Game {
 
     requestAnimationFrame(this.loop);
 
-    const delta = Date.now() - now;
+    const delta = window.performance.now() - now;
+
     this.busyTimeCounter += delta;
   }
 

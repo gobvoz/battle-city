@@ -1,11 +1,20 @@
 import Tank from './tank.js';
 import Base from './base.js';
+import Projectile from './projectile.js';
+import Explosive from './explosive.js';
 
-import { Direction, Player1TankOption, BaseOption, WorldOption } from './constants.js';
+import {
+  Direction,
+  Player1TankOption,
+  BaseOption,
+  ProjectileOption,
+  ExplosiveOption,
+} from './constants.js';
 
 export default class World {
   stage = [];
   projectiles = [];
+  explosives = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -52,7 +61,13 @@ export default class World {
   }
 
   get objects() {
-    return [this.base, this.player1Tank, ...this.enemyTanks, ...this.projectiles];
+    return [
+      this.base,
+      this.player1Tank,
+      ...this.enemyTanks,
+      ...this.projectiles,
+      ...this.explosives,
+    ];
   }
 
   update(activeKeys) {
@@ -61,8 +76,41 @@ export default class World {
     });
   }
 
+  addProjectile(tank) {
+    const projectile = new Projectile({
+      world: this,
+      tank: tank,
+      x: 0,
+      y: 0,
+      width: ProjectileOption.WIDTH,
+      height: ProjectileOption.HEIGHT,
+      sprites: ProjectileOption.SPRITES,
+      direction: tank.direction,
+      speed: ProjectileOption.DEFAULT_SPEED,
+      playerIndex: tank.playerIndex,
+    });
+
+    this.projectiles.push(projectile);
+  }
+
   removeProjectile(projectile) {
     this.projectiles = this.projectiles.filter(p => p !== projectile);
+
+    const explosive = new Explosive({
+      world: this,
+      projectile: projectile,
+      x: 0,
+      y: 0,
+      width: ExplosiveOption.WIDTH,
+      height: ExplosiveOption.HEIGHT,
+      sprites: ExplosiveOption.SPRITES,
+    });
+
+    this.explosives.push(explosive);
+  }
+
+  removeExplosive(explosive) {
+    this.explosives = this.explosives.filter(e => e !== explosive);
   }
 
   hasCollision(object) {

@@ -1,6 +1,6 @@
 import GameObject from './game-object.js';
 
-import { Direction, KeyCode, WorldOption } from './constants.js';
+import { Direction, WorldOption } from './constants.js';
 
 export default class Projectile extends GameObject {
   constructor({ tank, direction, speed, playerIndex, ...rest }) {

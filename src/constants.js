@@ -122,6 +122,16 @@ export const ProjectileOption = {
   },
 };
 
+export const ExplosiveOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  SPRITES: [
+    [16, 8],
+    [17, 8],
+    [18, 8],
+  ],
+};
+
 export const BaseOption = {
   START_X: 7 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
