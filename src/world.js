@@ -51,8 +51,8 @@ export default class World {
     });
   }
 
-  canIMove(tank) {
-    const { x, y, direction, speed } = tank;
+  hasCollision(object) {
+    const { x, y, direction, speed } = object;
 
     let nextMinX = x;
     let nextMaxX = x + 15;
@@ -68,7 +68,7 @@ export default class World {
       case Direction.UP:
         nextMinY -= speed;
         nextMaxY -= speed;
-        if (nextMinY < this.minWorldY) return false;
+        if (nextMinY < this.minWorldY) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMinY >> 3;
@@ -77,7 +77,7 @@ export default class World {
       case Direction.LEFT:
         nextMinX -= speed;
         nextMaxX -= speed;
-        if (nextMinX < this.minWorldX) return false;
+        if (nextMinX < this.minWorldX) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMinX >> 3;
         tileMinY = nextMinY >> 3;
@@ -86,7 +86,7 @@ export default class World {
       case Direction.DOWN:
         nextMinY += speed;
         nextMaxY += speed;
-        if (nextMaxY >= this.maxWorldY) return false;
+        if (nextMaxY >= this.maxWorldY) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMaxY >> 3;
@@ -95,7 +95,7 @@ export default class World {
       case Direction.RIGHT:
         nextMinX += speed;
         nextMaxX += speed;
-        if (nextMaxX >= this.maxWorldX) return false;
+        if (nextMaxX >= this.maxWorldX) return true;
         tileMinX = nextMaxX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMinY >> 3;
@@ -112,16 +112,16 @@ export default class World {
     if (this.stage[tileMinY][tileMinX] !== 0) {
       this.collisionTileX = tileMinX;
       this.collisionTileY = tileMinY;
-      return false;
+      return true;
     }
     if (this.stage[tileMaxY][tileMaxX] !== 0) {
       this.collisionTileX = tileMaxX;
       this.collisionTileY = tileMaxY;
-      return false;
+      return true;
     }
 
     this.collisionTileX = null;
     this.collisionTileY = null;
-    return true;
+    return false;
   }
 }

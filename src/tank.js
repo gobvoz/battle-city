@@ -81,7 +81,7 @@ export default class Tank {
   ];
 
   update(activeKeys) {
-    const speed = this.world.canIMove(this) ? this.speed : 0;
+    const speed = this.world.hasCollision(this) ? 0 : this.speed;
 
     if (this.direction === Direction.UP && activeKeys.has(KeyCode[this.playerIndex].UP)) {
       this.y -= speed;
