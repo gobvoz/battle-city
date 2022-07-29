@@ -61,6 +61,10 @@ export default class World {
     });
   }
 
+  removeProjectile(projectile) {
+    this.projectiles = this.projectiles.filter(p => p !== projectile);
+  }
+
   hasCollision(object) {
     let nextMinX = object.x;
     let nextMaxX = object.x + object.width - 1;
