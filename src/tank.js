@@ -74,7 +74,7 @@ export default class Tank extends GameObject {
   stopRight = () => {};
 
   fire = () => {
-    this.world.addProjectile(this);
+    this.emit('fire', this);
   };
 
   get sprite() {

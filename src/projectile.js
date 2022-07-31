@@ -50,7 +50,7 @@ export default class Projectile extends GameObject {
     const hasCollision = this.world.hasCollision(this);
 
     if (hasCollision) {
-      this.world.removeProjectile(this);
+      this.emit('destroy', this);
     }
 
     const speed = hasCollision ? 0 : this.speed;

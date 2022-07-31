@@ -1,5 +1,9 @@
-export default class GameObject {
+import EventEmitter from './event-emitter.js';
+
+export default class GameObject extends EventEmitter {
   constructor({ world, x, y, width, height, sprites }) {
+    super();
+
     this.world = world;
 
     this.x = x;

@@ -15,6 +15,7 @@ export default class World {
   stage = [];
   projectiles = [];
   explosives = [];
+  enemyTanks = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -35,6 +36,9 @@ export default class World {
     this.maxWorldY = this.stage[0].length * 8;
 
     this.stage = stage;
+
+    this._addProjectile = this._addProjectile.bind(this);
+    this._removeProjectile = this._removeProjectile.bind(this);
 
     this.player1Tank = new Tank({
       world: this,
@@ -57,7 +61,7 @@ export default class World {
       sprites: BaseOption.SPRITES,
     });
 
-    this.enemyTanks = [];
+    this.player1Tank.on('fire', this._addProjectile);
   }
 
   get objects() {
@@ -76,7 +80,7 @@ export default class World {
     });
   }
 
-  addProjectile(tank) {
+  _addProjectile(tank) {
     const projectile = new Projectile({
       world: this,
       tank: tank,
@@ -90,10 +94,11 @@ export default class World {
       playerIndex: tank.playerIndex,
     });
 
+    projectile.on('destroy', this._removeProjectile);
     this.projectiles.push(projectile);
   }
 
-  removeProjectile(projectile) {
+  _removeProjectile(projectile) {
     this.projectiles = this.projectiles.filter(p => p !== projectile);
 
     const explosive = new Explosive({
