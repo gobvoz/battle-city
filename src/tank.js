@@ -1,13 +1,21 @@
 import GameObject from './game-object.js';
 
-import { Direction, WorldOption, KeyCode } from './constants.js';
+import { Direction, WorldOption, Player1TankOption, KeyCode } from './constants.js';
 
 export default class Tank extends GameObject {
-  constructor({ direction, speed, playerIndex, ...rest }) {
-    super({ ...rest });
+  constructor({ playerIndex, ...rest }) {
+    const options = {
+      x: Player1TankOption.START_X,
+      y: Player1TankOption.START_Y,
+      width: Player1TankOption.WIDTH,
+      height: Player1TankOption.HEIGHT,
+      sprites: Player1TankOption.SPRITES,
+    };
 
-    this.direction = direction;
-    this.speed = speed;
+    super({ ...rest, ...options });
+
+    this.direction = Player1TankOption.START_DIRECTION;
+    this.speed = Player1TankOption.DEFAULT_SPEED;
 
     this.animationFrame = 1;
 

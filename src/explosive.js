@@ -1,12 +1,21 @@
 import GameObject from './game-object.js';
 
-import { Direction } from './constants.js';
+import { Direction, ExplosiveOption } from './constants.js';
 
 export default class Explosive extends GameObject {
   constructor({ projectile, ...rest }) {
-    super({ ...rest });
+    const options = {
+      x: 0,
+      y: 0,
+      width: ExplosiveOption.WIDTH,
+      height: ExplosiveOption.HEIGHT,
+      sprites: ExplosiveOption.SPRITES,
+    };
+
+    super({ ...rest, ...options });
 
     this.projectile = projectile;
+
     this.x = this._getStartX(projectile);
     this.y = this._getStartY(projectile);
 

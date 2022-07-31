@@ -1,8 +1,18 @@
 import GameObject from './game-object.js';
 
+import { BaseOption } from './constants.js';
+
 export default class Base extends GameObject {
   constructor({ ...rest }) {
-    super({ ...rest });
+    const options = {
+      x: BaseOption.START_X,
+      y: BaseOption.START_Y,
+      width: BaseOption.WIDTH,
+      height: BaseOption.HEIGHT,
+      sprites: BaseOption.SPRITES,
+    };
+
+    super({ ...rest, ...options });
 
     this.destroyed = false;
   }

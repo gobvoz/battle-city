@@ -3,13 +3,7 @@ import Base from './base.js';
 import Projectile from './projectile.js';
 import Explosive from './explosive.js';
 
-import {
-  Direction,
-  Player1TankOption,
-  BaseOption,
-  ProjectileOption,
-  ExplosiveOption,
-} from './constants.js';
+import { Direction } from './constants.js';
 
 export default class World {
   stage = [];
@@ -40,23 +34,11 @@ export default class World {
 
     this.player1Tank = new Tank({
       world: this,
-      x: Player1TankOption.START_X,
-      y: Player1TankOption.START_Y,
-      width: Player1TankOption.WIDTH,
-      height: Player1TankOption.HEIGHT,
-      direction: Player1TankOption.START_DIRECTION,
-      speed: Player1TankOption.DEFAULT_SPEED,
-      sprites: Player1TankOption.SPRITES,
       playerIndex: this.player1Index,
     });
 
     this.base = new Base({
       world: this,
-      x: BaseOption.START_X,
-      y: BaseOption.START_Y,
-      width: BaseOption.WIDTH,
-      height: BaseOption.HEIGHT,
-      sprites: BaseOption.SPRITES,
     });
 
     this.player1Tank.on('fire', this._addProjectile);
@@ -82,13 +64,7 @@ export default class World {
     const projectile = new Projectile({
       world: this,
       tank: tank,
-      x: 0,
-      y: 0,
-      width: ProjectileOption.WIDTH,
-      height: ProjectileOption.HEIGHT,
-      sprites: ProjectileOption.SPRITES,
       direction: tank.direction,
-      speed: ProjectileOption.DEFAULT_SPEED,
       playerIndex: tank.playerIndex,
     });
 
@@ -102,11 +78,6 @@ export default class World {
     const explosive = new Explosive({
       world: this,
       projectile: projectile,
-      x: 0,
-      y: 0,
-      width: ExplosiveOption.WIDTH,
-      height: ExplosiveOption.HEIGHT,
-      sprites: ExplosiveOption.SPRITES,
     });
 
     this.explosives.push(explosive);
