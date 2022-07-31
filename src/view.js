@@ -76,19 +76,19 @@ export default class View {
   }
 
   _renderCollisionTile() {
-    if (this.world.collisionTileX === null) return;
+    if (this.world.collisionTiles.length === 0) return;
 
     this.context.fillStyle = this.blinkedFrame ? 'rgba(0, 255, 0, 0.5)' : 'transparent';
-    this.context.beginPath();
-    this.context.rect(
-      RenderOption.PADDING_LEFT +
-        this.world.collisionTileX * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.PADDING_TOP +
-        this.world.collisionTileY * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-    );
-    this.context.fill();
+    this.world.collisionTiles.forEach(tile => {
+      this.context.beginPath();
+      this.context.rect(
+        RenderOption.PADDING_LEFT + tile[0] * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP + tile[1] * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      );
+      this.context.fill();
+    });
   }
 
   _renderDebugInfo(fps, busyTime) {

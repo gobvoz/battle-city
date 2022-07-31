@@ -22,9 +22,7 @@ export default class World {
   minWorldY = 0;
   maxWorldY = 0;
 
-  // more for collision detection, delete after all tests are done
-  collisionTileX = null;
-  collisionTileY = null;
+  collisionTiles = [];
 
   player1Index = 0;
   player2Index = 1;
@@ -129,6 +127,8 @@ export default class World {
     let tileMinY = 0;
     let tileMaxY = 0;
 
+    let objectHasWallCollision = false;
+
     switch (object.direction) {
       case Direction.UP:
         nextMinY -= object.speed;
@@ -175,15 +175,15 @@ export default class World {
     tileMaxY = tileMaxY >= this.stage[0].length ? this.stage[0].length - 1 : tileMaxY;
 
     if (this.stage[tileMinY][tileMinX] !== 0) {
-      this.collisionTileX = tileMinX;
-      this.collisionTileY = tileMinY;
-      return true;
+      this.collisionTiles[0] = [tileMinX, tileMinY];
+      objectHasWallCollision = true;
     }
     if (this.stage[tileMaxY][tileMaxX] !== 0) {
-      this.collisionTileX = tileMaxX;
-      this.collisionTileY = tileMaxY;
-      return true;
+      this.collisionTiles[1] = [tileMaxX, tileMaxY];
+      objectHasWallCollision = true;
     }
+
+    if (objectHasWallCollision) return true;
 
     this.collisionTileX = null;
     this.collisionTileY = null;
