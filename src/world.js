@@ -2,10 +2,9 @@ import Tank from './tank.js';
 import Base from './base.js';
 import Projectile from './projectile.js';
 import Explosive from './explosive.js';
-import Wall from './wall.js';
 
 import { generateWall } from './utilities.js';
-import { Direction, WorldOption, TerrainType } from './constants.js';
+import { Direction, WorldOption, TerrainType, ObjectType } from './constants.js';
 
 export default class World {
   stage = [];
@@ -167,10 +166,10 @@ export default class World {
         break;
     }
 
-    const deltaMinX = this.base.x + this.base.width - nextMinX;
-    const deltaMaxX = this.base.x + this.base.width - nextMaxX;
-    const deltaMinY = this.base.y + this.base.height - nextMinY;
-    const deltaMaxY = this.base.y + this.base.height - nextMaxY;
+    const deltaMinX = nextMinX - this.base.x;
+    const deltaMaxX = nextMaxX - this.base.x;
+    const deltaMinY = nextMinY - this.base.y;
+    const deltaMaxY = nextMaxY - this.base.y;
 
     if (
       (deltaMinX >= 0 &&
@@ -182,7 +181,10 @@ export default class World {
         deltaMaxY >= 0 &&
         deltaMaxY <= this.base.height)
     ) {
-      this.base.hit();
+      if (object.type === ObjectType.PROJECTILE) {
+        this.base.hit();
+      }
+
       return true;
     }
 

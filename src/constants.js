@@ -47,8 +47,8 @@ export const TerrainType = {
 export const ObjectType = {
   PLAYER_TANK: 0,
   ENEMY_TANK: 1,
-  BULLET: 2,
-  ENEMY_BULLET: 3,
+  PROJECTILE: 2,
+  ENEMY_PROJECTILE: 3,
   BASE: 4,
 };
 
