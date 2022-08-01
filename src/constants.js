@@ -22,11 +22,12 @@ export const RenderOption = {
   MULTIPLEXER,
 };
 
+// numbers only for sprite.png position
 export const Direction = {
-  UP: 0,
-  DOWN: 1,
-  LEFT: 2,
-  RIGHT: 3,
+  UP: 4,
+  DOWN: 2,
+  LEFT: 3,
+  RIGHT: 1,
 };
 
 export const BaseState = {
@@ -38,13 +39,13 @@ export const TerrainType = {
   EMPTY: 0,
   BRICK_WALL: 1,
   STEEL_WALL: 2,
-  BUSH: 3,
+  TREE: 3,
   WATER: 4,
   ICE: 5,
 };
 
 export const ObjectType = {
-  TANK: 0,
+  PLAYER_TANK: 0,
   ENEMY_TANK: 1,
   BULLET: 2,
   ENEMY_BULLET: 3,
@@ -63,6 +64,7 @@ export const Player1TankOption = {
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
+  DEFAULT_POWER: 1,
   SPRITES: {
     [Direction.UP]: [
       [0, 0],
@@ -90,6 +92,7 @@ export const Player2TankOption = {
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
+  DEFAULT_POWER: 1,
   SPRITES: {
     [Direction.UP]: [
       [0, 9],

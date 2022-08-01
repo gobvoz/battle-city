@@ -16,6 +16,7 @@ export default class Tank extends GameObject {
 
     this.direction = Player1TankOption.START_DIRECTION;
     this.speed = Player1TankOption.DEFAULT_SPEED;
+    this.power = Player1TankOption.DEFAULT_POWER;
 
     this.animationFrame = 1;
 

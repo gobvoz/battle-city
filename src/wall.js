@@ -1,11 +1,15 @@
-export default class Wall {
-  constructor(type, x, y, width, height, sprite) {
-    this.type = type;
+import EventManager from './event-emitter.js';
+
+export default class Wall extends EventManager {
+  constructor({ terrainType, x, y, width, height, sprites }) {
+    super();
+
+    this.terrainType = terrainType;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.sprite = sprite;
+    this.sprites = sprites;
   }
 
   get top() {

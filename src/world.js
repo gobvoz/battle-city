@@ -2,8 +2,10 @@ import Tank from './tank.js';
 import Base from './base.js';
 import Projectile from './projectile.js';
 import Explosive from './explosive.js';
+import Wall from './wall.js';
 
-import { Direction } from './constants.js';
+import { generateWall } from './utilities.js';
+import { Direction, WorldOption, TerrainType } from './constants.js';
 
 export default class World {
   stage = [];
@@ -22,15 +24,30 @@ export default class World {
   player2Index = 1;
 
   init(stage) {
-    this.stage = stage;
-
-    this.maxWorldX = this.stage.length * 8;
-    this.maxWorldY = this.stage[0].length * 8;
-
-    this.stage = stage;
-
     this._addProjectile = this._addProjectile.bind(this);
     this._removeProjectile = this._removeProjectile.bind(this);
+    this._removeExplosive = this._removeExplosive.bind(this);
+    this._removeWall = this._removeWall.bind(this);
+    console.log(0);
+    this.stage = stage.map((row, rowIndex) =>
+      row.map((terrainType, columnIndex) => {
+        console.log(1);
+        let wall = generateWall({
+          x: columnIndex,
+          y: rowIndex,
+          terrainType,
+        });
+
+        if (wall !== null) {
+          wall.on('destroy', this._removeWall);
+        }
+
+        return wall;
+      }),
+    );
+
+    this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
+    this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
 
     this.player1Tank = new Tank({
       world: this,
@@ -80,11 +97,23 @@ export default class World {
       projectile: projectile,
     });
 
+    explosive.on('destroy', this._removeExplosive);
     this.explosives.push(explosive);
   }
 
-  removeExplosive(explosive) {
+  _removeExplosive(explosive) {
     this.explosives = this.explosives.filter(e => e !== explosive);
+  }
+
+  _removeWall(wall) {
+    this.stage = this.stage.map(row =>
+      row.map(tile => {
+        if (tile === wall) {
+          return null;
+        }
+        return tile;
+      }),
+    );
   }
 
   hasCollision(object) {
@@ -145,12 +174,20 @@ export default class World {
     tileMinY = tileMinY < 0 ? 0 : tileMinY;
     tileMaxY = tileMaxY >= this.stage[0].length ? this.stage[0].length - 1 : tileMaxY;
 
-    if (this.stage[tileMinY][tileMinX] !== 0) {
+    const tile1 = this.stage[tileMinY][tileMinX];
+    if (tile1 && tile1.terrainType !== TerrainType.EMPTY) {
       this.collisionTiles[0] = [tileMinX, tileMinY];
+      if (this.projectiles.includes(object)) {
+        tile1.hit(object);
+      }
       objectHasWallCollision = true;
     }
-    if (this.stage[tileMaxY][tileMaxX] !== 0) {
+    const tile2 = this.stage[tileMaxY][tileMaxX];
+    if (tile2 && tile2.terrainType !== TerrainType.EMPTY) {
       this.collisionTiles[1] = [tileMaxX, tileMaxY];
+      if (this.projectiles.includes(object)) {
+        tile2.hit(object);
+      }
       objectHasWallCollision = true;
     }
 

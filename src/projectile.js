@@ -15,6 +15,7 @@ export default class Projectile extends GameObject {
     super({ ...rest, ...options });
 
     this.tank = tank;
+    this.power = tank.power;
 
     this.x = this._getStartX(tank);
     this.y = this._getStartY(tank);

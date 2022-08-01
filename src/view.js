@@ -6,6 +6,7 @@ export default class View {
   constructor(canvas, sprite, world) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
+    this.context.imageSmoothingEnabled = false;
 
     this.sprite = sprite;
 
@@ -113,14 +114,17 @@ export default class View {
     );
   }
 
-  _renderTile(x, y, tile) {
+  // _renderTile(x, y, tile) {
+  _renderTile(tile) {
     this.context.drawImage(
       this.sprite.image,
-      ...this.sprite.getTile(tile),
+      //...this.sprite.getTile(tile.terrainType),
+      tile.sprite[0] * RenderOption.UNIT_SIZE,
+      tile.sprite[1] * RenderOption.UNIT_SIZE,
       RenderOption.TILE_SIZE,
       RenderOption.TILE_SIZE,
-      RenderOption.PADDING_LEFT + x * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.PADDING_TOP + y * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_LEFT + tile.x * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_TOP + tile.y * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
     );
@@ -133,11 +137,12 @@ export default class View {
       for (let x = 0; x < stage[y].length; x++) {
         const tile = stage[y][x];
 
-        if (tile === 0) {
+        if (tile === null) {
           continue;
         }
 
-        this._renderTile(x, y, tile);
+        // this._renderTile(x, y, tile);
+        this._renderTile(tile);
       }
     }
   }

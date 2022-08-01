@@ -59,7 +59,7 @@ export default class Explosive extends GameObject {
 
   _removeExplosive() {
     clearInterval(this.interval);
-    this.world.removeExplosive(this);
+    this.emit('destroy', this);
   }
 
   update() {}
