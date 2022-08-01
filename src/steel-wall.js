@@ -1,6 +1,6 @@
 import Wall from './wall.js';
 
-import { WorldOption, SteelWallOption } from './constants.js';
+import { WorldOption, SteelWallOption, ObjectType } from './constants.js';
 
 export default class SteelWal extends Wall {
   constructor({ x, y, ...rest }) {
@@ -17,11 +17,16 @@ export default class SteelWal extends Wall {
     this.currentSprite = 0;
   }
 
-  hit(projectile) {
-    if (projectile.power > 1) {
+  hit(object) {
+    if (object.type !== ObjectType.PROJECTILE) return false;
+
+    if (object.power > 1) {
       this.emit('destroy', this);
-      return;
     }
+    return true;
+  }
+  moveThrough() {
+    return true;
   }
 
   get sprite() {

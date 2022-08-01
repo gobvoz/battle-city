@@ -28,7 +28,9 @@ export default class Base extends GameObject {
     ];
   }
 
-  hit() {
+  hit(object) {
+    if (object.type !== ObjectType.PROJECTILE) return false;
+
     this.destroyed = true;
   }
 }

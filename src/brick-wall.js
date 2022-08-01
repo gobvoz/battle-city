@@ -1,6 +1,6 @@
 import Wall from './wall.js';
 
-import { WorldOption, BrickWallOption } from './constants.js';
+import { WorldOption, BrickWallOption, ObjectType } from './constants.js';
 
 export default class BrickWall extends Wall {
   constructor({ x, y, ...rest }) {
@@ -17,13 +17,19 @@ export default class BrickWall extends Wall {
     this.currentSprite = 0;
   }
 
-  hit(projectile) {
-    if (this.currentSprite !== 0 || projectile.power > 1) {
+  hit(object) {
+    if (object.type !== ObjectType.PROJECTILE) return false;
+
+    if (this.currentSprite !== 0 || object.power > 1) {
       this.emit('destroy', this);
-      return;
+      return true;
     }
 
-    this.currentSprite = projectile.direction;
+    this.currentSprite = object.direction;
+    return true;
+  }
+  moveThrough() {
+    return true;
   }
 
   get sprite() {

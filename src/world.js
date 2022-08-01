@@ -195,20 +195,36 @@ export default class World {
     tileMaxY = tileMaxY >= this.stage[0].length ? this.stage[0].length - 1 : tileMaxY;
 
     const tile1 = this.stage[tileMinY][tileMinX];
-    if (tile1 && tile1.terrainType !== TerrainType.EMPTY) {
-      this.collisionTiles[0] = [tileMinX, tileMinY];
-      if (this.projectiles.includes(object)) {
-        tile1.hit(object);
+    if (tile1) {
+      const isItHit = tile1.hit(object);
+      objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+      const isMoveThrough = tile1.moveThrough(object);
+      objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
+      if (isItHit || isMoveThrough);
+      {
+        this.collisionTiles[0] = [tileMinX, tileMinY];
       }
-      objectHasWallCollision = true;
+      //this.collisionTiles[0] = [tileMinX, tileMinY];
+      //if (object.type === ObjectType.PROJECTILE) {
+      //  tile1.hit(object);
+      //}
+      //objectHasWallCollision = true;
     }
     const tile2 = this.stage[tileMaxY][tileMaxX];
-    if (tile2 && tile2.terrainType !== TerrainType.EMPTY) {
-      this.collisionTiles[1] = [tileMaxX, tileMaxY];
-      if (this.projectiles.includes(object)) {
-        tile2.hit(object);
+    if (tile2) {
+      const isItHit = tile2.hit(object);
+      objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+      const isMoveThrough = tile2.moveThrough(object);
+      objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
+      if (isItHit || isMoveThrough);
+      {
+        this.collisionTiles[1] = [tileMaxX, tileMaxY];
       }
-      objectHasWallCollision = true;
+      //this.collisionTiles[1] = [tileMaxX, tileMaxY];
+      //if (object.type === ObjectType.PROJECTILE) {
+      //  tile2.hit(object);
+      //}
+      //objectHasWallCollision = true;
     }
 
     if (objectHasWallCollision) return true;

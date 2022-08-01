@@ -4,11 +4,10 @@ import Game from './src/game.js';
 import Sprite from './src/sprite.js';
 
 import stages from './src/stages.js';
-import spriteMap from './src/sprite-map.js';
 
 const canvas = document.querySelector('canvas');
 
-const sprite = new Sprite('./src/sprite/sprite.png', spriteMap);
+const sprite = new Sprite('./src/sprite/sprite.png');
 const world = new World();
 
 const game = new Game({

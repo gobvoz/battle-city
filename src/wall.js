@@ -24,4 +24,10 @@ export default class Wall extends EventManager {
   get left() {
     return this.x;
   }
+  hit() {
+    return true;
+  }
+  moveThrough() {
+    return false;
+  }
 }
