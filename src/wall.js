@@ -5,10 +5,13 @@ export default class Wall extends EventManager {
     super();
 
     this.terrainType = terrainType;
+
     this.x = x;
     this.y = y;
+
     this.width = width;
     this.height = height;
+
     this.sprites = sprites;
   }
 
@@ -28,6 +31,6 @@ export default class Wall extends EventManager {
     return true;
   }
   moveThrough() {
-    return false;
+    return true;
   }
 }

@@ -158,8 +158,9 @@ export const BrickWallOption = {
 export const SteelWallOption = {
   SPRITES: [[16, 4.5]],
 };
-export const BushOption = {
+export const TreeOption = {
   SPRITES: [[16.5, 4.5]],
+  Z_INDEX: 1,
 };
 export const WaterOption = {
   SPRITES: [

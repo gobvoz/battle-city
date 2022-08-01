@@ -1,6 +1,6 @@
 import GameObject from './game-object.js';
 
-import { BaseOption } from './constants.js';
+import { BaseOption, ObjectType } from './constants.js';
 
 export default class Base extends GameObject {
   constructor({ ...rest }) {
@@ -32,5 +32,8 @@ export default class Base extends GameObject {
     if (object.type !== ObjectType.PROJECTILE) return false;
 
     this.destroyed = true;
+  }
+  moveThrough() {
+    return true;
   }
 }

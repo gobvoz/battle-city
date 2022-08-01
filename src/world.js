@@ -181,9 +181,7 @@ export default class World {
         deltaMaxY >= 0 &&
         deltaMaxY <= this.base.height)
     ) {
-      if (object.type === ObjectType.PROJECTILE) {
-        this.base.hit();
-      }
+      this.base.hit(object);
 
       return true;
     }

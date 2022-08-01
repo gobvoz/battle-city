@@ -1,35 +1,26 @@
 import BrickWall from './brick-wall.js';
 import SteelWall from './steel-wall.js';
+import Water from './water.js';
+import Tree from './tree.js';
+import Ice from './ice.js';
 
 import { TerrainType } from './constants.js';
 
-export function generateWall({ x, y, terrainType }) {
-  let wall = null;
+const TerrainList = [];
+TerrainList[TerrainType.BRICK_WALL] = BrickWall;
+TerrainList[TerrainType.STEEL_WALL] = SteelWall;
+TerrainList[TerrainType.WATER] = Water;
+TerrainList[TerrainType.TREE] = Tree;
+TerrainList[TerrainType.ICE] = Ice;
 
-  switch (terrainType) {
-    case TerrainType.EMPTY:
-      return wall;
-    case TerrainType.BRICK_WALL:
-      wall = new BrickWall({
-        x,
-        y,
-        terrainType,
-      });
-      return wall;
-    case TerrainType.STEEL_WALL:
-      wall = new SteelWall({
-        x,
-        y,
-        terrainType,
-      });
-      return wall;
-    case TerrainType.TREE:
-      return wall;
-    case TerrainType.WATER:
-      return wall;
-    case TerrainType.ICE:
-      return wall;
-    default:
-      throw new Error(`Unknown terrain type: ${terrainType}`);
+export function generateWall({ x, y, terrainType }) {
+  if (terrainType === TerrainType.EMPTY) return null;
+
+  try {
+    const Terrain = TerrainList[terrainType];
+    return new Terrain({ x, y, terrainType });
+  } catch (e) {
+    console.log(`Unknown terrain type: ${terrainType}`);
+    return null;
   }
 }

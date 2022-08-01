@@ -30,11 +30,15 @@ export default class View {
     );
 
     DEBUG && this._renderGrid();
-    this._renderField();
+    const postRender = this._renderField();
     //this._renderTank(this.world.player1Tank);
 
     this.world.objects.forEach(gameObject => {
       this._renderObject(gameObject);
+    });
+
+    postRender.forEach(tile => {
+      this._renderTile(tile);
     });
 
     DEBUG && this._renderCollisionTile();
@@ -130,6 +134,7 @@ export default class View {
 
   _renderField() {
     const { stage } = this.world;
+    const postRender = [];
 
     for (let y = 0; y < stage.length; y++) {
       for (let x = 0; x < stage[y].length; x++) {
@@ -139,9 +144,16 @@ export default class View {
           continue;
         }
 
+        if (tile.zIndex) {
+          postRender.push(tile);
+          continue;
+        }
+
         this._renderTile(tile);
       }
     }
+
+    return postRender;
   }
 
   _renderObject(gameObject) {
