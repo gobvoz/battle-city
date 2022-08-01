@@ -114,11 +114,9 @@ export default class View {
     );
   }
 
-  // _renderTile(x, y, tile) {
   _renderTile(tile) {
     this.context.drawImage(
       this.sprite.image,
-      //...this.sprite.getTile(tile.terrainType),
       tile.sprite[0] * RenderOption.UNIT_SIZE,
       tile.sprite[1] * RenderOption.UNIT_SIZE,
       RenderOption.TILE_SIZE,
@@ -141,7 +139,6 @@ export default class View {
           continue;
         }
 
-        // this._renderTile(x, y, tile);
         this._renderTile(tile);
       }
     }

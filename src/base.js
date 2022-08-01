@@ -17,14 +17,18 @@ export default class Base extends GameObject {
     this.destroyed = false;
   }
 
-  update = () => {
+  update() {
     // do nothing
-  };
+  }
 
   get sprite() {
     return [
       this.sprites[Number(this.destroyed)][0] * this.width,
       this.sprites[Number(this.destroyed)][1] * this.height,
     ];
+  }
+
+  hit() {
+    this.destroyed = true;
   }
 }

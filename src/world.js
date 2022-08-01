@@ -28,10 +28,9 @@ export default class World {
     this._removeProjectile = this._removeProjectile.bind(this);
     this._removeExplosive = this._removeExplosive.bind(this);
     this._removeWall = this._removeWall.bind(this);
-    console.log(0);
+
     this.stage = stage.map((row, rowIndex) =>
       row.map((terrainType, columnIndex) => {
-        console.log(1);
         let wall = generateWall({
           x: columnIndex,
           y: rowIndex,
@@ -166,6 +165,25 @@ export default class World {
         tileMinY = nextMinY >> 3;
         tileMaxY = nextMaxY >> 3;
         break;
+    }
+
+    const deltaMinX = this.base.x + this.base.width - nextMinX;
+    const deltaMaxX = this.base.x + this.base.width - nextMaxX;
+    const deltaMinY = this.base.y + this.base.height - nextMinY;
+    const deltaMaxY = this.base.y + this.base.height - nextMaxY;
+
+    if (
+      (deltaMinX >= 0 &&
+        deltaMinX <= this.base.width &&
+        deltaMinY >= 0 &&
+        deltaMinY <= this.base.height) ||
+      (deltaMaxX >= 0 &&
+        deltaMaxX <= this.base.width &&
+        deltaMaxY >= 0 &&
+        deltaMaxY <= this.base.height)
+    ) {
+      this.base.hit();
+      return true;
     }
 
     // condition to stay in array
