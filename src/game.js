@@ -13,13 +13,16 @@ export default class Game {
     this.stages = stages;
     this.currentStage = 0;
 
+    this.player1Tank = null;
+    this.player2Tank = null;
+
     this.loop = this.loop.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
   }
 
   async init() {
-    this.world.init(this.stages[this.currentStage]);
+    this.world.init(this.stages[this.currentStage], this);
     await this.view.init();
 
     document.addEventListener('keydown', this.handleKeyDown);
@@ -60,26 +63,26 @@ export default class Game {
     switch (evt.code) {
       case 'KeyW':
       case 'ArrowUp':
-        this.world.player1Tank.moveUp();
+        this.player1Tank && this.player1Tank.moveUp();
         evt.preventDefault();
         break;
       case 'KeyS':
       case 'ArrowDown':
-        this.world.player1Tank.moveDown();
+        this.player1Tank && this.player1Tank.moveDown();
         evt.preventDefault();
         break;
       case 'KeyA':
       case 'ArrowLeft':
-        this.world.player1Tank.moveLeft();
+        this.player1Tank && this.player1Tank.moveLeft();
         evt.preventDefault();
         break;
       case 'KeyD':
       case 'ArrowRight':
-        this.world.player1Tank.moveRight();
+        this.player1Tank && this.player1Tank.moveRight();
         evt.preventDefault();
         break;
       case 'Space':
-        this.world.player1Tank.fire();
+        this.player1Tank && this.player1Tank.fire();
         evt.preventDefault();
         break;
       case 'Enter':
@@ -95,22 +98,22 @@ export default class Game {
     switch (evt.code) {
       case 'KeyW':
       case 'ArrowUp':
-        this.world.player1Tank.stopUp();
+        this.player1Tank && this.player1Tank.stopUp();
         evt.preventDefault();
         break;
       case 'KeyS':
       case 'ArrowDown':
-        this.world.player1Tank.stopDown();
+        this.player1Tank && this.player1Tank.stopDown();
         evt.preventDefault();
         break;
       case 'KeyA':
       case 'ArrowLeft':
-        this.world.player1Tank.stopLeft();
+        this.player1Tank && this.player1Tank.stopLeft();
         evt.preventDefault();
         break;
       case 'KeyD':
       case 'ArrowRight':
-        this.world.player1Tank.stopRight();
+        this.player1Tank && this.player1Tank.stopRight();
         evt.preventDefault();
         break;
       case 'Space':

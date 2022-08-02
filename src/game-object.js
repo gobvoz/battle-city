@@ -26,6 +26,7 @@ export default class GameObject extends EventEmitter {
   get right() {
     return this.x + this.width;
   }
+  update() {}
   hit() {
     return true;
   }

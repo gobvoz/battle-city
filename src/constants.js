@@ -53,9 +53,29 @@ export const ObjectType = {
 };
 
 export const KeyCode = [
+  {},
   { UP: 'KeyW', LEFT: 'KeyA', DOWN: 'KeyS', RIGHT: 'KeyD', FIRE: 'Space' },
   { UP: 'ArrowUp', LEFT: 'ArrowLeft', DOWN: 'ArrowDown', RIGHT: 'ArrowRight', FIRE: 'Enter' },
 ];
+
+export const TankType = {
+  ENEMY: 0,
+  PLAYER_1: 1,
+  PLAYER_2: 2,
+};
+
+export const ResurrectionOption = {
+  ANIMATION_TIME: 3000,
+  ANIMATION_INTERVAL: 250,
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  SPRITES: [
+    [16, 6],
+    [17, 6],
+    [18, 6],
+    [19, 6],
+  ],
+};
 
 export const Player1TankOption = {
   START_X: 5 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
@@ -65,6 +85,7 @@ export const Player1TankOption = {
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
   DEFAULT_POWER: 1,
+  DEFAULT_LIFE: 1,
   SPRITES: {
     [Direction.UP]: [
       [0, 0],
@@ -93,22 +114,135 @@ export const Player2TankOption = {
   START_DIRECTION: Direction.UP,
   DEFAULT_SPEED: 1,
   DEFAULT_POWER: 1,
+  DEFAULT_LIFE: 1,
   SPRITES: {
     [Direction.UP]: [
-      [0, 9],
-      [1, 9],
+      [0, 8],
+      [1, 8],
     ],
     [Direction.LEFT]: [
-      [2, 9],
-      [3, 9],
+      [2, 8],
+      [3, 8],
     ],
     [Direction.DOWN]: [
-      [4, 9],
-      [5, 9],
+      [4, 8],
+      [5, 8],
     ],
     [Direction.RIGHT]: [
-      [6, 9],
-      [7, 9],
+      [6, 8],
+      [7, 8],
+    ],
+  },
+};
+
+// common tank
+export const Enemy1TankOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  START_DIRECTION: Direction.DOWN,
+  DEFAULT_SPEED: 1,
+  DEFAULT_POWER: 1,
+  DEFAULT_LIFE: 1,
+  SPRITES: {
+    [Direction.UP]: [
+      [8, 4],
+      [9, 4],
+    ],
+    [Direction.LEFT]: [
+      [10, 4],
+      [11, 4],
+    ],
+    [Direction.DOWN]: [
+      [12, 4],
+      [13, 4],
+    ],
+    [Direction.RIGHT]: [
+      [14, 4],
+      [15, 4],
+    ],
+  },
+};
+
+// fast tank
+export const Enemy2TankOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  START_DIRECTION: Direction.DOWN,
+  DEFAULT_SPEED: 2,
+  DEFAULT_POWER: 1,
+  DEFAULT_LIFE: 1,
+  SPRITES: {
+    [Direction.UP]: [
+      [8, 5],
+      [9, 5],
+    ],
+    [Direction.LEFT]: [
+      [10, 5],
+      [11, 5],
+    ],
+    [Direction.DOWN]: [
+      [12, 5],
+      [13, 5],
+    ],
+    [Direction.RIGHT]: [
+      [14, 4],
+      [15, 4],
+    ],
+  },
+};
+
+// 2 life tank
+export const Enemy3TankOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  START_DIRECTION: Direction.DOWN,
+  DEFAULT_SPEED: 1,
+  DEFAULT_POWER: 2,
+  DEFAULT_LIFE: 2,
+  SPRITES: {
+    [Direction.UP]: [
+      [8, 6],
+      [9, 6],
+    ],
+    [Direction.LEFT]: [
+      [10, 6],
+      [11, 6],
+    ],
+    [Direction.DOWN]: [
+      [12, 6],
+      [13, 6],
+    ],
+    [Direction.RIGHT]: [
+      [14, 6],
+      [15, 6],
+    ],
+  },
+};
+
+// power tank
+export const Enemy4TankOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  START_DIRECTION: Direction.DOWN,
+  DEFAULT_SPEED: 1,
+  DEFAULT_POWER: 4,
+  DEFAULT_LIFE: 4,
+  SPRITES: {
+    [Direction.UP]: [
+      [8, 7],
+      [9, 7],
+    ],
+    [Direction.LEFT]: [
+      [10, 7],
+      [11, 7],
+    ],
+    [Direction.DOWN]: [
+      [12, 7],
+      [13, 7],
+    ],
+    [Direction.RIGHT]: [
+      [14, 7],
+      [15, 7],
     ],
   },
 };

@@ -1,16 +1,24 @@
+import Resurrection from './resurrection.js';
 import Tank from './tank.js';
 import Base from './base.js';
 import Projectile from './projectile.js';
 import Explosive from './explosive.js';
 
-import { generateWall } from './utilities.js';
-import { Direction, WorldOption, TerrainType, ObjectType } from './constants.js';
+import { generateTerrain } from './utilities.js';
+import {
+  Direction,
+  WorldOption,
+  TankType,
+  Player1TankOption,
+  Player2TankOption,
+} from './constants.js';
 
 export default class World {
   stage = [];
   projectiles = [];
   explosives = [];
   enemyTanks = [];
+  resurrections = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -19,59 +27,47 @@ export default class World {
 
   collisionTiles = [];
 
-  player1Index = 0;
-  player2Index = 1;
-
-  init(stage) {
+  init(stage, game) {
     this._addProjectile = this._addProjectile.bind(this);
     this._removeProjectile = this._removeProjectile.bind(this);
     this._removeExplosive = this._removeExplosive.bind(this);
     this._removeWall = this._removeWall.bind(this);
+    this._removeResurrection = this._removeResurrection.bind(this);
 
-    this.stage = stage.map((row, rowIndex) =>
-      row.map((terrainType, columnIndex) => {
-        let wall = generateWall({
-          x: columnIndex,
-          y: rowIndex,
-          terrainType,
-        });
-
-        if (wall !== null) {
-          wall.on('destroy', this._removeWall);
-        }
-
-        return wall;
-      }),
-    );
+    this.game = game;
+    this.stage = generateTerrain(stage, this._removeWall);
 
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
 
-    this.player1Tank = new Tank({
+    const resurrection1 = new Resurrection({
       world: this,
+      tankType: TankType.PLAYER_1,
+      x: Player1TankOption.START_X,
+      y: Player1TankOption.START_Y,
       playerIndex: this.player1Index,
     });
+    resurrection1.on('destroy', this._removeResurrection);
+    this.resurrections.push(resurrection1);
 
     this.base = new Base({
       world: this,
     });
-
-    this.player1Tank.on('fire', this._addProjectile);
   }
 
   get objects() {
     return [
       this.base,
-      this.player1Tank,
       ...this.enemyTanks,
       ...this.projectiles,
       ...this.explosives,
+      ...this.resurrections,
     ];
   }
 
   update(activeKeys) {
     this.objects.forEach(gameObject => {
-      gameObject.update(activeKeys);
+      gameObject && gameObject.update(activeKeys);
     });
   }
 
@@ -80,11 +76,33 @@ export default class World {
       world: this,
       tank: tank,
       direction: tank.direction,
-      playerIndex: tank.playerIndex,
+      tankType: tank.type,
     });
 
     projectile.on('destroy', this._removeProjectile);
     this.projectiles.push(projectile);
+  }
+
+  _removeResurrection(resurrection) {
+    this.resurrections = this.resurrections.filter(r => r !== resurrection);
+
+    const tank = new Tank({
+      world: this,
+      type: resurrection.tankType,
+      x: resurrection.x,
+      y: resurrection.y,
+    });
+
+    tank.on('fire', this._addProjectile);
+
+    if (tank.type === TankType.PLAYER_1) {
+      this.game.player1Tank = tank;
+    }
+    if (tank.type === TankType.PLAYER_2) {
+      this.game.player2Tank = tank;
+    }
+
+    this.enemyTanks.push(tank);
   }
 
   _removeProjectile(projectile) {
@@ -196,33 +214,27 @@ export default class World {
     if (tile1) {
       const isItHit = tile1.hit(object);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+
       const isMoveThrough = tile1.moveThrough(object);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
+
       if (isItHit || isMoveThrough);
       {
         this.collisionTiles[0] = [tileMinX, tileMinY];
       }
-      //this.collisionTiles[0] = [tileMinX, tileMinY];
-      //if (object.type === ObjectType.PROJECTILE) {
-      //  tile1.hit(object);
-      //}
-      //objectHasWallCollision = true;
     }
     const tile2 = this.stage[tileMaxY][tileMaxX];
     if (tile2) {
       const isItHit = tile2.hit(object);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+
       const isMoveThrough = tile2.moveThrough(object);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
+
       if (isItHit || isMoveThrough);
       {
         this.collisionTiles[1] = [tileMaxX, tileMaxY];
       }
-      //this.collisionTiles[1] = [tileMaxX, tileMaxY];
-      //if (object.type === ObjectType.PROJECTILE) {
-      //  tile2.hit(object);
-      //}
-      //objectHasWallCollision = true;
     }
 
     if (objectHasWallCollision) return true;

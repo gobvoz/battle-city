@@ -34,7 +34,7 @@ export default class View {
     //this._renderTank(this.world.player1Tank);
 
     this.world.objects.forEach(gameObject => {
-      this._renderObject(gameObject);
+      gameObject && this._renderObject(gameObject);
     });
 
     postRender.forEach(tile => {

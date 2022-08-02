@@ -13,7 +13,7 @@ TerrainList[TerrainType.WATER] = Water;
 TerrainList[TerrainType.TREE] = Tree;
 TerrainList[TerrainType.ICE] = Ice;
 
-export function generateWall({ x, y, terrainType }) {
+const generateWall = ({ x, y, terrainType }) => {
   if (terrainType === TerrainType.EMPTY) return null;
 
   try {
@@ -23,4 +23,21 @@ export function generateWall({ x, y, terrainType }) {
     console.log(`Unknown terrain type: ${terrainType}`);
     return null;
   }
-}
+};
+
+export const generateTerrain = (stage, removeWallCallBack) =>
+  stage.map((row, rowIndex) =>
+    row.map((terrainType, columnIndex) => {
+      let wall = generateWall({
+        x: columnIndex,
+        y: rowIndex,
+        terrainType,
+      });
+
+      if (wall !== null) {
+        wall.on('destroy', removeWallCallBack);
+      }
+
+      return wall;
+    }),
+  );

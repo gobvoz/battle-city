@@ -1,15 +1,19 @@
 import GameObject from './game-object.js';
 
-import { Direction, WorldOption, Player1TankOption, KeyCode } from './constants.js';
+import {
+  Direction,
+  WorldOption,
+  Player1TankOption,
+  Player2TankOption,
+  KeyCode,
+} from './constants.js';
 
 export default class Tank extends GameObject {
-  constructor({ playerIndex, ...rest }) {
+  constructor({ playerIndex, type, ...rest }) {
     const options = {
-      x: Player1TankOption.START_X,
-      y: Player1TankOption.START_Y,
       width: Player1TankOption.WIDTH,
       height: Player1TankOption.HEIGHT,
-      sprites: Player1TankOption.SPRITES,
+      sprites: playerIndex ? Player2TankOption.SPRITES : Player1TankOption.SPRITES,
     };
 
     super({ ...rest, ...options });
@@ -23,7 +27,7 @@ export default class Tank extends GameObject {
     this.movementStep = WorldOption.STEP_SIZE;
     this.movementTile = WorldOption.TILE_SIZE;
 
-    this.playerIndex = playerIndex;
+    this.type = type;
 
     this.alreadyShot = false;
   }
@@ -96,25 +100,16 @@ export default class Tank extends GameObject {
   update(activeKeys) {
     const speed = this.world.hasCollision(this) ? 0 : this.speed;
 
-    if (this.direction === Direction.UP && activeKeys.has(KeyCode[this.playerIndex].UP)) {
+    if (this.direction === Direction.UP && activeKeys.has(KeyCode[this.type].UP)) {
       this.y -= speed;
       this._changeAnimationFrame();
-    } else if (
-      this.direction === Direction.DOWN &&
-      activeKeys.has(KeyCode[this.playerIndex].DOWN)
-    ) {
+    } else if (this.direction === Direction.DOWN && activeKeys.has(KeyCode[this.type].DOWN)) {
       this.y += speed;
       this._changeAnimationFrame();
-    } else if (
-      this.direction === Direction.LEFT &&
-      activeKeys.has(KeyCode[this.playerIndex].LEFT)
-    ) {
+    } else if (this.direction === Direction.LEFT && activeKeys.has(KeyCode[this.type].LEFT)) {
       this.x -= speed;
       this._changeAnimationFrame();
-    } else if (
-      this.direction === Direction.RIGHT &&
-      activeKeys.has(KeyCode[this.playerIndex].RIGHT)
-    ) {
+    } else if (this.direction === Direction.RIGHT && activeKeys.has(KeyCode[this.type].RIGHT)) {
       this.x += speed;
       this._changeAnimationFrame();
     }

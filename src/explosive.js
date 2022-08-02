@@ -62,8 +62,6 @@ export default class Explosive extends GameObject {
     this.emit('destroy', this);
   }
 
-  update() {}
-
   get sprite() {
     return [
       this.sprites[this.animationFrame][0] * this.width,
