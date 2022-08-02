@@ -1,18 +1,16 @@
-import Wall from './wall.js';
+import GameObject from './game-object.js';
 
 import { WorldOption, TreeOption } from './constants.js';
 
-export default class Tree extends Wall {
-  constructor({ x, y, ...rest }) {
+export default class Tree extends GameObject {
+  constructor(coordinates) {
     const options = {
-      x,
-      y,
       width: WorldOption.TILE_SIZE,
       height: WorldOption.TILE_SIZE,
       sprites: TreeOption.SPRITES,
     };
 
-    super({ ...rest, ...options });
+    super({ ...coordinates, ...options });
 
     this.zIndex = TreeOption.Z_INDEX;
   }

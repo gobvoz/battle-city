@@ -18,7 +18,7 @@ export function generateWall({ x, y, terrainType }) {
 
   try {
     const Terrain = TerrainList[terrainType];
-    return new Terrain({ x, y, terrainType });
+    return new Terrain({ x, y });
   } catch (e) {
     console.log(`Unknown terrain type: ${terrainType}`);
     return null;

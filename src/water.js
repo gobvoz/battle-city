@@ -1,18 +1,16 @@
-import Wall from './wall.js';
+import GameObject from './game-object.js';
 
 import { WorldOption, WaterOption, ObjectType } from './constants.js';
 
-export default class Water extends Wall {
-  constructor({ x, y, ...rest }) {
+export default class Water extends GameObject {
+  constructor(coordinates) {
     const options = {
-      x,
-      y,
       width: WorldOption.TILE_SIZE,
       height: WorldOption.TILE_SIZE,
       sprites: WaterOption.SPRITES,
     };
 
-    super({ ...rest, ...options });
+    super({ ...coordinates, ...options });
 
     this.currentSprite = 0;
 

@@ -1,18 +1,16 @@
-import Wall from './wall.js';
+import GameObject from './game-object.js';
 
-import { WorldOption, IceOption, ObjectType } from './constants.js';
+import { WorldOption, IceOption } from './constants.js';
 
-export default class Ice extends Wall {
-  constructor({ x, y, ...rest }) {
+export default class Ice extends GameObject {
+  constructor(coordinates) {
     const options = {
-      x,
-      y,
       width: WorldOption.TILE_SIZE,
       height: WorldOption.TILE_SIZE,
       sprites: IceOption.SPRITES,
     };
 
-    super({ ...rest, ...options });
+    super({ ...coordinates, ...options });
   }
 
   hit() {
