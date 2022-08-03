@@ -36,6 +36,7 @@ export default class World {
     this._removeExplosive = this._removeExplosive.bind(this);
     this._removeWall = this._removeWall.bind(this);
     this._removeResurrection = this._removeResurrection.bind(this);
+    this._removeTank = this._removeTank.bind(this);
 
     this.game = game;
     this.stage = generateTerrain(stage, this._removeWall);
@@ -131,6 +132,7 @@ export default class World {
     });
 
     tank.on('fire', this._addProjectile);
+    tank.on('destroy', this._removeTank);
 
     if (tank.type === TankType.PLAYER_1) {
       this.game.player1Tank = tank;
@@ -140,6 +142,10 @@ export default class World {
     }
 
     this.enemyTanks.push(tank);
+  }
+
+  _removeTank(tank) {
+    this.enemyTanks = this.enemyTanks.filter(t => t !== tank);
   }
 
   _removeProjectile(projectile) {
@@ -250,8 +256,8 @@ export default class World {
       const deltaMaxY = nextMaxY - tank.y;
 
       if (
-        (deltaMinX >= 0 && deltaMinX <= tank.width && deltaMinY >= 0 && deltaMinY <= tank.height) ||
-        (deltaMaxX >= 0 && deltaMaxX <= tank.width && deltaMaxY >= 0 && deltaMaxY <= tank.height)
+        (deltaMinX > 0 && deltaMinX < tank.width && deltaMinY > 0 && deltaMinY < tank.height) ||
+        (deltaMaxX > 0 && deltaMaxX < tank.width && deltaMaxY > 0 && deltaMaxY < tank.height)
       ) {
         const isItHit = tank.hit(object);
         objectHasWallCollision = isItHit ? true : objectHasWallCollision;

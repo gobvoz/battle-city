@@ -66,7 +66,7 @@ export const TankType = {
 
 export const ResurrectionOption = {
   ANIMATION_TIME: 3000,
-  ANIMATION_INTERVAL: 250,
+  ANIMATION_INTERVAL: 200,
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   SPRITES: [
@@ -74,6 +74,9 @@ export const ResurrectionOption = {
     [17, 6],
     [18, 6],
     [19, 6],
+    [18, 6],
+    [17, 6],
+    [16, 6],
   ],
 };
 
