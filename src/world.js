@@ -37,6 +37,7 @@ export default class World {
     this._removeWall = this._removeWall.bind(this);
     this._removeResurrection = this._removeResurrection.bind(this);
     this._removeTank = this._removeTank.bind(this);
+    this._destroyBase = this._destroyBase.bind(this);
 
     this.game = game;
     this.stage = generateTerrain(stage, this._removeWall);
@@ -90,6 +91,7 @@ export default class World {
     this.base = new Base({
       world: this,
     });
+    this.base.on('destroy', this._destroyBase);
   }
 
   get objects() {
@@ -146,6 +148,14 @@ export default class World {
 
   _removeTank(tank) {
     this.enemyTanks = this.enemyTanks.filter(t => t !== tank);
+
+    const explosive = new Explosive({
+      world: this,
+      tank,
+    });
+
+    explosive.on('destroy', this._removeExplosive);
+    this.explosives.push(explosive);
   }
 
   _removeProjectile(projectile) {
@@ -153,7 +163,7 @@ export default class World {
 
     const explosive = new Explosive({
       world: this,
-      projectile: projectile,
+      projectile,
     });
 
     explosive.on('destroy', this._removeExplosive);
@@ -173,6 +183,16 @@ export default class World {
         return tile;
       }),
     );
+  }
+
+  _destroyBase(base) {
+    const explosive = new Explosive({
+      world: this,
+      base,
+    });
+
+    explosive.on('destroy', this._removeExplosive);
+    this.explosives.push(explosive);
   }
 
   hasCollision(object) {
@@ -250,25 +270,57 @@ export default class World {
     for (let i = 0; i < this.enemyTanks.length; i++) {
       const tank = this.enemyTanks[i];
 
-      const deltaMinX = nextMinX - tank.x;
-      const deltaMaxX = nextMaxX - tank.x;
-      const deltaMinY = nextMinY - tank.y;
-      const deltaMaxY = nextMaxY - tank.y;
-
-      if (
-        (deltaMinX > 0 && deltaMinX < tank.width && deltaMinY > 0 && deltaMinY < tank.height) ||
-        (deltaMaxX > 0 && deltaMaxX < tank.width && deltaMaxY > 0 && deltaMaxY < tank.height)
-      ) {
-        const isItHit = tank.hit(object);
-        objectHasWallCollision = isItHit ? true : objectHasWallCollision;
-
-        const isMoveThrough = tank.moveThrough(object);
-        objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
-
-        if (isItHit || isMoveThrough) {
-          return true;
-        }
+      switch (object.direction) {
+        case Direction.UP:
+          if (
+            !(
+              tank.bottom > nextMinY &&
+              tank.top < nextMinY &&
+              ((tank.left < nextMinX && tank.right > nextMinX) ||
+                (tank.left < nextMaxX && tank.right > nextMaxX))
+            )
+          )
+            continue;
+          break;
+        case Direction.LEFT:
+          if (
+            !(
+              tank.right > nextMinX &&
+              tank.left < nextMinX &&
+              ((tank.top < nextMinY && tank.bottom > nextMinY) ||
+                (tank.top < nextMaxY && tank.bottom > nextMaxY))
+            )
+          )
+            continue;
+          break;
+        case Direction.DOWN:
+          if (
+            !(
+              tank.top < nextMaxY &&
+              tank.bottom > nextMaxY &&
+              ((tank.left < nextMinX && tank.right > nextMinX) ||
+                (tank.left < nextMaxX && tank.right > nextMaxX))
+            )
+          )
+            continue;
+          break;
+        case Direction.RIGHT:
+          if (
+            !(
+              tank.left < nextMaxX &&
+              tank.right > nextMaxX &&
+              ((tank.top < nextMinY && tank.bottom > nextMinY) ||
+                (tank.top < nextMaxY && tank.bottom > nextMaxY))
+            )
+          )
+            continue;
+          break;
       }
+
+      tank.hit(object);
+      tank.moveThrough(object);
+
+      return true;
     }
 
     // condition to stay in array

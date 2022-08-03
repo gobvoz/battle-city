@@ -1,23 +1,59 @@
 import GameObject from './game-object.js';
 
-import { Direction, ExplosiveOption } from './constants.js';
+import { Direction, ExplosiveOption, WorldOption } from './constants.js';
 
 export default class Explosive extends GameObject {
-  constructor({ projectile, ...rest }) {
-    const options = {
-      x: 0,
-      y: 0,
-      width: ExplosiveOption.WIDTH,
-      height: ExplosiveOption.HEIGHT,
-      sprites: ExplosiveOption.SPRITES,
-    };
+  constructor({ projectile, tank, base, ...rest }) {
+    let options = {};
+
+    if (projectile) {
+      options = {
+        x: 0,
+        y: 0,
+        width: ExplosiveOption.SMALL_WIDTH,
+        height: ExplosiveOption.SMALL_HEIGHT,
+        sprites: ExplosiveOption.SPRITES[0],
+      };
+    }
+
+    if (tank) {
+      options = {
+        x: 0,
+        y: 0,
+        width: ExplosiveOption.BIG_WIDTH,
+        height: ExplosiveOption.BIG_HEIGHT,
+        sprites: ExplosiveOption.SPRITES[1],
+      };
+    }
+
+    if (base) {
+      options = {
+        x: 0,
+        y: 0,
+        width: ExplosiveOption.BIG_WIDTH,
+        height: ExplosiveOption.BIG_HEIGHT,
+        sprites: ExplosiveOption.SPRITES[1],
+      };
+    }
 
     super({ ...rest, ...options });
 
     this.projectile = projectile;
+    this.tank = tank;
+    this.base = base;
 
-    this.x = this._getStartX(projectile);
-    this.y = this._getStartY(projectile);
+    if (projectile) {
+      this.x = this._getStartX(projectile);
+      this.y = this._getStartY(projectile);
+    }
+    if (tank) {
+      this.x = tank.x - (this.width >> 1) + (tank.width >> 1);
+      this.y = tank.y - (this.height >> 1) + (tank.height >> 1);
+    }
+    if (base) {
+      this.x = base.x - (this.width >> 1) + (base.width >> 1);
+      this.y = base.y - (this.height >> 1) + (base.height >> 1);
+    }
 
     this.animationFrame = 0;
 
@@ -64,8 +100,8 @@ export default class Explosive extends GameObject {
 
   get sprite() {
     return [
-      this.sprites[this.animationFrame][0] * this.width,
-      this.sprites[this.animationFrame][1] * this.height,
+      this.sprites[this.animationFrame][0] * WorldOption.UNIT_SIZE,
+      this.sprites[this.animationFrame][1] * WorldOption.UNIT_SIZE,
     ];
   }
 }

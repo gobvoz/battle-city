@@ -31,6 +31,7 @@ export default class Base extends GameObject {
   hit(object) {
     if (object.type !== ObjectType.PROJECTILE) return false;
 
+    this.emit('destroy', this);
     this.destroyed = true;
   }
   moveThrough() {

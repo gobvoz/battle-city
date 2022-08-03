@@ -263,12 +263,20 @@ export const ProjectileOption = {
 };
 
 export const ExplosiveOption = {
-  WIDTH: WorldOption.UNIT_SIZE,
-  HEIGHT: WorldOption.UNIT_SIZE,
+  SMALL_WIDTH: WorldOption.UNIT_SIZE,
+  SMALL_HEIGHT: WorldOption.UNIT_SIZE,
+  BIG_WIDTH: WorldOption.UNIT_SIZE * 2,
+  BIG_HEIGHT: WorldOption.UNIT_SIZE * 2,
   SPRITES: [
-    [16, 8],
-    [17, 8],
-    [18, 8],
+    [
+      [16, 8],
+      [17, 8],
+      [18, 8],
+    ],
+    [
+      [19, 8],
+      [21, 8],
+    ],
   ],
 };
 

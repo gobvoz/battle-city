@@ -35,6 +35,7 @@ export default class View {
 
     this.world.objects.forEach(gameObject => {
       gameObject && this._renderObject(gameObject);
+      DEBUG && this._renderObjectBorder(gameObject);
     });
 
     postRender.forEach(tile => {
@@ -167,5 +168,17 @@ export default class View {
       gameObject.width * RenderOption.MULTIPLEXER,
       gameObject.width * RenderOption.MULTIPLEXER,
     );
+  }
+
+  _renderObjectBorder(gameObject) {
+    this.context.strokeStyle = '#fff';
+    this.context.beginPath();
+    this.context.rect(
+      RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
+      RenderOption.PADDING_TOP + gameObject.y * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER,
+    );
+    this.context.stroke();
   }
 }
