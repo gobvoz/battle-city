@@ -1,26 +1,20 @@
 import GameObject from './game-object.js';
 
-import {
-  Direction,
-  WorldOption,
-  Player1TankOption,
-  Player2TankOption,
-  KeyCode,
-} from './constants.js';
+import { Direction, WorldOption, ObjectType, KeyCode } from './constants.js';
 
 export default class Tank extends GameObject {
-  constructor({ playerIndex, type, ...rest }) {
+  constructor({ playerIndex, type, tankOptions, ...rest }) {
     const options = {
-      width: Player1TankOption.WIDTH,
-      height: Player1TankOption.HEIGHT,
-      sprites: playerIndex ? Player2TankOption.SPRITES : Player1TankOption.SPRITES,
+      width: tankOptions.WIDTH,
+      height: tankOptions.HEIGHT,
+      sprites: tankOptions.SPRITES,
     };
 
     super({ ...rest, ...options });
 
-    this.direction = Player1TankOption.START_DIRECTION;
-    this.speed = Player1TankOption.DEFAULT_SPEED;
-    this.power = Player1TankOption.DEFAULT_POWER;
+    this.direction = tankOptions.START_DIRECTION;
+    this.speed = tankOptions.DEFAULT_SPEED;
+    this.power = tankOptions.DEFAULT_POWER;
 
     this.animationFrame = 1;
 
@@ -89,6 +83,20 @@ export default class Tank extends GameObject {
   fire = () => {
     this.emit('fire', this);
   };
+
+  hit(object) {
+    if (object.type !== ObjectType.PROJECTILE) return false;
+    if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
+
+    this.emit('destroy', this);
+    return true;
+  }
+  moveThrough(object) {
+    if (this === object) return false;
+    if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
+
+    return true;
+  }
 
   get sprite() {
     return [

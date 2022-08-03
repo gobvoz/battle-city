@@ -19,7 +19,6 @@ export default class Water extends GameObject {
   }
 
   _changeAnimationFrame() {
-    console.log(this.sprites.length);
     this.currentSprite =
       this.sprites.length === this.currentSprite + 1 ? 0 : this.currentSprite + 1;
   }

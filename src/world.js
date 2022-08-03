@@ -11,6 +11,9 @@ import {
   TankType,
   Player1TankOption,
   Player2TankOption,
+  Enemy2TankOption,
+  Enemy3TankOption,
+  Enemy4TankOption,
 } from './constants.js';
 
 export default class World {
@@ -43,12 +46,45 @@ export default class World {
     const resurrection1 = new Resurrection({
       world: this,
       tankType: TankType.PLAYER_1,
+      options: Player1TankOption,
       x: Player1TankOption.START_X,
       y: Player1TankOption.START_Y,
-      playerIndex: this.player1Index,
     });
     resurrection1.on('destroy', this._removeResurrection);
     this.resurrections.push(resurrection1);
+
+    // first enemy tank
+    const enemyResurrection1 = new Resurrection({
+      world: this,
+      tankType: TankType.ENEMY,
+      options: Enemy2TankOption,
+      x: 0,
+      y: 0,
+    });
+    enemyResurrection1.on('destroy', this._removeResurrection);
+    this.resurrections.push(enemyResurrection1);
+
+    // second enemy tank
+    const enemyResurrection2 = new Resurrection({
+      world: this,
+      tankType: TankType.ENEMY,
+      options: Enemy3TankOption,
+      x: 6 * WorldOption.UNIT_SIZE,
+      y: 0,
+    });
+    enemyResurrection2.on('destroy', this._removeResurrection);
+    this.resurrections.push(enemyResurrection2);
+
+    // third enemy tank
+    const enemyResurrection3 = new Resurrection({
+      world: this,
+      tankType: TankType.ENEMY,
+      options: Enemy4TankOption,
+      x: 12 * WorldOption.UNIT_SIZE,
+      y: 0,
+    });
+    enemyResurrection3.on('destroy', this._removeResurrection);
+    this.resurrections.push(enemyResurrection3);
 
     this.base = new Base({
       world: this,
@@ -89,6 +125,7 @@ export default class World {
     const tank = new Tank({
       world: this,
       type: resurrection.tankType,
+      tankOptions: resurrection.tankOptions,
       x: resurrection.x,
       y: resurrection.y,
     });
@@ -204,6 +241,30 @@ export default class World {
       return true;
     }
 
+    for (let i = 0; i < this.enemyTanks.length; i++) {
+      const tank = this.enemyTanks[i];
+
+      const deltaMinX = nextMinX - tank.x;
+      const deltaMaxX = nextMaxX - tank.x;
+      const deltaMinY = nextMinY - tank.y;
+      const deltaMaxY = nextMaxY - tank.y;
+
+      if (
+        (deltaMinX >= 0 && deltaMinX <= tank.width && deltaMinY >= 0 && deltaMinY <= tank.height) ||
+        (deltaMaxX >= 0 && deltaMaxX <= tank.width && deltaMaxY >= 0 && deltaMaxY <= tank.height)
+      ) {
+        const isItHit = tank.hit(object);
+        objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+
+        const isMoveThrough = tank.moveThrough(object);
+        objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
+
+        if (isItHit || isMoveThrough) {
+          return true;
+        }
+      }
+    }
+
     // condition to stay in array
     tileMinX = tileMinX < 0 ? 0 : tileMinX;
     tileMaxX = tileMaxX >= this.stage.length ? this.stage.length - 1 : tileMaxX;
@@ -223,6 +284,7 @@ export default class World {
         this.collisionTiles[0] = [tileMinX, tileMinY];
       }
     }
+
     const tile2 = this.stage[tileMaxY][tileMaxX];
     if (tile2) {
       const isItHit = tile2.hit(object);

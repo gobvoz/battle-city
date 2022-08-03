@@ -3,7 +3,7 @@ import GameObject from './game-object.js';
 import { WorldOption, ResurrectionOption, KeyCode } from './constants.js';
 
 export default class Resurrection extends GameObject {
-  constructor({ x, y, tankType, ...rest }) {
+  constructor({ x, y, tankType, options: tankOptions, ...rest }) {
     const options = {
       x,
       y,
@@ -15,6 +15,7 @@ export default class Resurrection extends GameObject {
     super({ ...rest, ...options });
 
     this.tankType = tankType;
+    this.tankOptions = tankOptions;
 
     this.animationFrame = 0;
 
