@@ -143,9 +143,10 @@ export const Enemy1TankOption = {
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
-  DEFAULT_SPEED: 1,
-  DEFAULT_POWER: 1,
-  DEFAULT_LIFE: 1,
+  POINTS: 100,
+  HEALTH: 1,
+  MOVEMENT_SPEED: 1,
+  PROJECTILE_SPEED: 1,
   SPRITES: {
     [Direction.UP]: [
       [8, 4],
@@ -171,9 +172,11 @@ export const Enemy2TankOption = {
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
-  DEFAULT_SPEED: 2,
-  DEFAULT_POWER: 1,
-  DEFAULT_LIFE: 1,
+  POINTS: 200,
+  HEALTH: 1,
+  MOVEMENT_SPEED: 3,
+  PROJECTILE_SPEED: 2,
+
   SPRITES: {
     [Direction.UP]: [
       [8, 5],
@@ -194,14 +197,16 @@ export const Enemy2TankOption = {
   },
 };
 
-// 2 life tank
+// power tank
 export const Enemy3TankOption = {
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
-  DEFAULT_SPEED: 1,
-  DEFAULT_POWER: 2,
-  DEFAULT_LIFE: 2,
+  POINTS: 300,
+  HEALTH: 1,
+  MOVEMENT_SPEED: 2,
+  PROJECTILE_SPEED: 3,
+
   SPRITES: {
     [Direction.UP]: [
       [8, 6],
@@ -222,14 +227,15 @@ export const Enemy3TankOption = {
   },
 };
 
-// power tank
+// armor tank
 export const Enemy4TankOption = {
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
-  DEFAULT_SPEED: 1,
-  DEFAULT_POWER: 4,
-  DEFAULT_LIFE: 4,
+  POINTS: 400,
+  HEALTH: 4,
+  MOVEMENT_SPEED: 2,
+  PROJECTILE_SPEED: 2,
   SPRITES: {
     [Direction.UP]: [
       [8, 7],

@@ -40,7 +40,7 @@ export default class World {
     this._destroyBase = this._destroyBase.bind(this);
 
     this.game = game;
-    this.stage = generateTerrain(stage, this._removeWall);
+    this.stage = generateTerrain(stage.terrain, this._removeWall);
 
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
