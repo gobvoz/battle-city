@@ -43,7 +43,7 @@ export default class View {
     });
 
     DEBUG && this._renderCollisionTile();
-    DEBUG && this._renderDebugInfo(fps, busyTime);
+    DEBUG && this._renderDebugInfo(fps, busyTime, this.world.enemyArray.length);
   }
 
   _changeAnimationFrame() {
@@ -97,7 +97,7 @@ export default class View {
     });
   }
 
-  _renderDebugInfo(fps, busyTime) {
+  _renderDebugInfo(fps, busyTime, tanksInPool) {
     this.context.fillStyle = '#fff';
     this.context.font = '12px monospace';
 
@@ -116,6 +116,11 @@ export default class View {
       `busy: ${busyTime}`,
       RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
       RenderOption.PADDING_TOP + 20,
+    );
+    this.context.fillText(
+      `tanks: ${tanksInPool}`,
+      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
+      RenderOption.PADDING_TOP + 30,
     );
   }
 

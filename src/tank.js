@@ -1,6 +1,6 @@
 import GameObject from './game-object.js';
 
-import { Direction, WorldOption, ObjectType, KeyCode } from './constants.js';
+import { Direction, WorldOption, ObjectType, TankType, KeyCode } from './constants.js';
 
 export default class Tank extends GameObject {
   constructor({ playerIndex, type, tankOptions, ...rest }) {
@@ -13,7 +13,7 @@ export default class Tank extends GameObject {
     super({ ...rest, ...options });
 
     this.direction = tankOptions.START_DIRECTION;
-    this.speed = tankOptions.DEFAULT_SPEED;
+    this.speed = tankOptions.MOVEMENT_SPEED;
     this.power = tankOptions.DEFAULT_POWER;
 
     this.animationFrame = 1;
@@ -87,6 +87,7 @@ export default class Tank extends GameObject {
   hit(object) {
     if (object.type !== ObjectType.PROJECTILE) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
+    if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
 
     this.emit('destroy', this);
     return true;
@@ -94,6 +95,7 @@ export default class Tank extends GameObject {
   moveThrough(object) {
     if (this === object) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
+    if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
 
     return true;
   }

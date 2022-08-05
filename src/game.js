@@ -11,7 +11,7 @@ export default class Game {
     this.world = world;
     this.view = view;
     this.stages = stages;
-    this.currentStage = 0;
+    this.currentStage = 3;
 
     this.player1Tank = null;
     this.player2Tank = null;

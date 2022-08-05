@@ -1,5 +1,6 @@
 import Resurrection from './resurrection.js';
 import Tank from './tank.js';
+import EnemyTank from './enemy-tank.js';
 import Base from './base.js';
 import Projectile from './projectile.js';
 import Explosive from './explosive.js';
@@ -11,9 +12,7 @@ import {
   TankType,
   Player1TankOption,
   Player2TankOption,
-  Enemy2TankOption,
-  Enemy3TankOption,
-  Enemy4TankOption,
+  EnemyTankToOption,
 } from './constants.js';
 
 export default class World {
@@ -42,51 +41,23 @@ export default class World {
     this.game = game;
     this.stage = generateTerrain(stage.terrain, this._removeWall);
 
+    this.enemyArray = stage.enemies;
+    this.enemyTanksOnMap = 0;
+
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
 
-    const resurrection1 = new Resurrection({
+    this.enemyFriendlyFire = WorldOption.ENEMY_FRIENDLY_FIRE;
+
+    const resurrectionFor1Player = new Resurrection({
       world: this,
       tankType: TankType.PLAYER_1,
       options: Player1TankOption,
       x: Player1TankOption.START_X,
       y: Player1TankOption.START_Y,
     });
-    resurrection1.on('destroy', this._removeResurrection);
-    this.resurrections.push(resurrection1);
-
-    // first enemy tank
-    const enemyResurrection1 = new Resurrection({
-      world: this,
-      tankType: TankType.ENEMY,
-      options: Enemy2TankOption,
-      x: 0,
-      y: 0,
-    });
-    enemyResurrection1.on('destroy', this._removeResurrection);
-    this.resurrections.push(enemyResurrection1);
-
-    // second enemy tank
-    const enemyResurrection2 = new Resurrection({
-      world: this,
-      tankType: TankType.ENEMY,
-      options: Enemy3TankOption,
-      x: 6 * WorldOption.UNIT_SIZE,
-      y: 0,
-    });
-    enemyResurrection2.on('destroy', this._removeResurrection);
-    this.resurrections.push(enemyResurrection2);
-
-    // third enemy tank
-    const enemyResurrection3 = new Resurrection({
-      world: this,
-      tankType: TankType.ENEMY,
-      options: Enemy4TankOption,
-      x: 12 * WorldOption.UNIT_SIZE,
-      y: 0,
-    });
-    enemyResurrection3.on('destroy', this._removeResurrection);
-    this.resurrections.push(enemyResurrection3);
+    resurrectionFor1Player.on('destroy', this._removeResurrection);
+    this.resurrections.push(resurrectionFor1Player);
 
     this.base = new Base({
       world: this,
@@ -105,6 +76,19 @@ export default class World {
   }
 
   update(activeKeys) {
+    if (this.enemyTanksOnMap < 6 && this.enemyArray.length) {
+      const enemyResurrection = new Resurrection({
+        world: this,
+        tankType: TankType.ENEMY,
+        options: EnemyTankToOption[this.enemyArray.shift()],
+        x: Math.floor(Math.random() * 3) * 6 * WorldOption.UNIT_SIZE,
+        y: 0,
+      });
+      enemyResurrection.on('destroy', this._removeResurrection);
+      this.resurrections.push(enemyResurrection);
+      this.enemyTanksOnMap++;
+    }
+
     this.objects.forEach(gameObject => {
       gameObject && gameObject.update(activeKeys);
     });
@@ -125,13 +109,25 @@ export default class World {
   _removeResurrection(resurrection) {
     this.resurrections = this.resurrections.filter(r => r !== resurrection);
 
-    const tank = new Tank({
-      world: this,
-      type: resurrection.tankType,
-      tankOptions: resurrection.tankOptions,
-      x: resurrection.x,
-      y: resurrection.y,
-    });
+    let tank = null;
+
+    if (resurrection.tankType === TankType.PLAYER_1) {
+      tank = new Tank({
+        world: this,
+        type: resurrection.tankType,
+        tankOptions: resurrection.tankOptions,
+        x: resurrection.x,
+        y: resurrection.y,
+      });
+    } else {
+      tank = EnemyTank.createRandom({
+        world: this,
+        type: resurrection.tankType,
+        tankOptions: resurrection.tankOptions,
+        x: resurrection.x,
+        y: resurrection.y,
+      });
+    }
 
     tank.on('fire', this._addProjectile);
     tank.on('destroy', this._removeTank);
@@ -156,6 +152,8 @@ export default class World {
 
     explosive.on('destroy', this._removeExplosive);
     this.explosives.push(explosive);
+
+    this.enemyTanksOnMap--;
   }
 
   _removeProjectile(projectile) {
@@ -317,10 +315,12 @@ export default class World {
           break;
       }
 
-      tank.hit(object);
-      tank.moveThrough(object);
+      objectHasWallCollision = tank.hit(object) ? true : objectHasWallCollision;
+      objectHasWallCollision = tank.moveThrough(object) ? true : objectHasWallCollision;
 
-      return true;
+      if (objectHasWallCollision) {
+        return true;
+      }
     }
 
     // condition to stay in array
