@@ -14,8 +14,11 @@ export default class Tank extends GameObject {
 
     this.direction = tankOptions.START_DIRECTION;
     this.speed = tankOptions.MOVEMENT_SPEED;
+    this.projectileSpeed = tankOptions.PROJECTILE_SPEED;
     this.power = tankOptions.DEFAULT_POWER;
 
+    this.oldX = this.x;
+    this.oldY = this.y;
     this.animationFrame = 1;
 
     this.movementStep = WorldOption.STEP_SIZE;
@@ -44,6 +47,8 @@ export default class Tank extends GameObject {
     if (this.direction === Direction.DOWN) {
       this.y += deltaY <= this.movementStep ? -deltaY : this.movementTile - deltaY;
     }
+    this.realX = this.x;
+    this.realY = this.y;
   }
 
   moveUp = () => {
@@ -109,19 +114,30 @@ export default class Tank extends GameObject {
 
   update(activeKeys) {
     const speed = this.world.hasCollision(this) ? 0 : this.speed;
+    let tankTryToMove = false;
 
     if (this.direction === Direction.UP && activeKeys.has(KeyCode[this.type].UP)) {
-      this.y -= speed;
-      this._changeAnimationFrame();
+      this.realY -= speed;
+      tankTryToMove = true;
     } else if (this.direction === Direction.DOWN && activeKeys.has(KeyCode[this.type].DOWN)) {
-      this.y += speed;
-      this._changeAnimationFrame();
+      this.realY += speed;
+      tankTryToMove = true;
     } else if (this.direction === Direction.LEFT && activeKeys.has(KeyCode[this.type].LEFT)) {
-      this.x -= speed;
-      this._changeAnimationFrame();
+      this.realX -= speed;
+      tankTryToMove = true;
     } else if (this.direction === Direction.RIGHT && activeKeys.has(KeyCode[this.type].RIGHT)) {
-      this.x += speed;
+      this.realX += speed;
+      tankTryToMove = true;
+    }
+
+    if (this.oldX !== this.x || this.oldY !== this.y || tankTryToMove) {
+      this.oldX = this.x;
+      this.oldY = this.y;
+
       this._changeAnimationFrame();
     }
+
+    this.x = this.realX >> 0;
+    this.y = this.realY >> 0;
   }
 }

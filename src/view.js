@@ -19,7 +19,7 @@ export default class View {
     await this.sprite.load();
   }
 
-  render(fps, busyTime) {
+  render(game) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.fillStyle = '#000';
     this.context.fillRect(
@@ -43,7 +43,7 @@ export default class View {
     });
 
     DEBUG && this._renderCollisionTile();
-    DEBUG && this._renderDebugInfo(fps, busyTime, this.world.enemyArray.length);
+    DEBUG && this._renderDebugInfo(game, this.world);
   }
 
   _changeAnimationFrame() {
@@ -97,7 +97,7 @@ export default class View {
     });
   }
 
-  _renderDebugInfo(fps, busyTime, tanksInPool) {
+  _renderDebugInfo(game, world) {
     this.context.fillStyle = '#fff';
     this.context.font = '12px monospace';
 
@@ -108,20 +108,30 @@ export default class View {
     // );
 
     this.context.fillText(
-      `fps:  ${fps}`,
+      `fps:  ${game.fps}`,
       RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
       RenderOption.PADDING_TOP + 10,
     );
     this.context.fillText(
-      `busy: ${busyTime}`,
+      `busy: ${game.busyTime}`,
       RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
       RenderOption.PADDING_TOP + 20,
     );
     this.context.fillText(
-      `tanks: ${tanksInPool}`,
+      `tanks: ${world.enemyArray.length}`,
       RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
       RenderOption.PADDING_TOP + 30,
     );
+
+    world.enemyTanks.forEach((tank, index) => {
+      this.context.fillText(
+        `tank ${index}: ${String(tank.x).padStart(3, ' ').slice(0, 3)} ${String(tank.y)
+          .padStart(3, ' ')
+          .slice(0, 3)}`,
+        RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
+        RenderOption.PADDING_TOP + 40 + index * 10,
+      );
+    });
   }
 
   _renderTile(tile) {

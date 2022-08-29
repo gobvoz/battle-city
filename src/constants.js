@@ -87,7 +87,7 @@ export const Player1TankOption = {
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   HEALTH: 1,
-  MOVEMENT_SPEED: 1,
+  MOVEMENT_SPEED: 3 / 4,
   PROJECTILE_SPEED: 1,
   DEFAULT_POWER: 1,
   SPRITES: {
@@ -117,7 +117,7 @@ export const Player2TankOption = {
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.UP,
   HEALTH: 1,
-  MOVEMENT_SPEED: 1,
+  MOVEMENT_SPEED: 3 / 4,
   PROJECTILE_SPEED: 1,
   DEFAULT_POWER: 1,
   SPRITES: {
@@ -147,7 +147,7 @@ export const Enemy1TankOption = {
   START_DIRECTION: Direction.DOWN,
   POINTS: 100,
   HEALTH: 1,
-  MOVEMENT_SPEED: 1,
+  MOVEMENT_SPEED: 2 / 4,
   PROJECTILE_SPEED: 1,
   SPRITES: {
     [Direction.UP]: [
@@ -176,8 +176,8 @@ export const Enemy2TankOption = {
   START_DIRECTION: Direction.DOWN,
   POINTS: 200,
   HEALTH: 1,
-  MOVEMENT_SPEED: 1, // 3,
-  PROJECTILE_SPEED: 2,
+  MOVEMENT_SPEED: 4 / 4,
+  PROJECTILE_SPEED: 1,
 
   SPRITES: {
     [Direction.UP]: [
@@ -206,8 +206,8 @@ export const Enemy3TankOption = {
   START_DIRECTION: Direction.DOWN,
   POINTS: 300,
   HEALTH: 1,
-  MOVEMENT_SPEED: 1, // 2,
-  PROJECTILE_SPEED: 3,
+  MOVEMENT_SPEED: 2 / 4,
+  PROJECTILE_SPEED: 1.5,
 
   SPRITES: {
     [Direction.UP]: [
@@ -236,8 +236,8 @@ export const Enemy4TankOption = {
   START_DIRECTION: Direction.DOWN,
   POINTS: 400,
   HEALTH: 4,
-  MOVEMENT_SPEED: 1, //2,
-  PROJECTILE_SPEED: 2,
+  MOVEMENT_SPEED: 2 / 4,
+  PROJECTILE_SPEED: 1,
   SPRITES: {
     [Direction.UP]: [
       [8, 7],

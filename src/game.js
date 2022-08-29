@@ -48,7 +48,7 @@ export default class Game {
     this.fpsCounter++;
 
     this.world.update(this.activeKeys);
-    this.view.render(this.fps, this.busyTime);
+    this.view.render(this);
 
     requestAnimationFrame(this.loop);
 

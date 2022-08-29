@@ -17,11 +17,13 @@ export default class Projectile extends GameObject {
     this.tank = tank;
     this.power = tank.power;
 
+    this.realX = this._getStartX(tank);
+    this.realY = this._getStartY(tank);
     this.x = this._getStartX(tank);
     this.y = this._getStartY(tank);
 
     this.direction = direction;
-    this.speed = ProjectileOption.DEFAULT_SPEED;
+    this.speed = tank.projectileSpeed;
     this.type = ObjectType.PROJECTILE;
   }
 
@@ -67,13 +69,15 @@ export default class Projectile extends GameObject {
     const speed = hasCollision ? 0 : this.speed;
 
     if (this.direction === Direction.UP) {
-      this.y -= speed;
+      this.realY -= speed;
     } else if (this.direction === Direction.DOWN) {
-      this.y += speed;
+      this.realY += speed;
     } else if (this.direction === Direction.LEFT) {
-      this.x -= speed;
+      this.realX -= speed;
     } else if (this.direction === Direction.RIGHT) {
-      this.x += speed;
+      this.realX += speed;
     }
+    this.x = this.realX >> 0;
+    this.y = this.realY >> 0;
   }
 }

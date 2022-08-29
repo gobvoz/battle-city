@@ -6,6 +6,8 @@ export default class GameObject extends EventEmitter {
 
     this.world = world;
 
+    this.realX = x;
+    this.realY = y;
     this.x = x;
     this.y = y;
     this.width = width;

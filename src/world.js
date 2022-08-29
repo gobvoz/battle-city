@@ -15,12 +15,15 @@ import {
   EnemyTankToOption,
 } from './constants.js';
 
+const TANKS_ON_MAP = 4;
+
 export default class World {
   stage = [];
   projectiles = [];
   explosives = [];
   enemyTanks = [];
   resurrections = [];
+  enemyArray = [];
 
   minWorldX = 0;
   maxWorldX = 0;
@@ -76,7 +79,7 @@ export default class World {
   }
 
   update(activeKeys) {
-    if (this.enemyTanksOnMap < 6 && this.enemyArray.length) {
+    if (this.enemyTanksOnMap < TANKS_ON_MAP && this.enemyArray.length) {
       const enemyResurrection = new Resurrection({
         world: this,
         tankType: TankType.ENEMY,
@@ -153,7 +156,9 @@ export default class World {
     explosive.on('destroy', this._removeExplosive);
     this.explosives.push(explosive);
 
-    this.enemyTanksOnMap--;
+    if (tank.type === TankType.ENEMY) {
+      this.enemyTanksOnMap--;
+    }
   }
 
   _removeProjectile(projectile) {
@@ -226,8 +231,8 @@ export default class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.DOWN:
-        nextMinY += object.speed;
-        nextMaxY += object.speed;
+        nextMinY += object.speed + 1; // speed might be less than 1. So we add 1 to make sure we don't get a collision
+        nextMaxY += object.speed + 1;
         if (nextMaxY >= this.maxWorldY) return true;
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
@@ -235,8 +240,8 @@ export default class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.RIGHT:
-        nextMinX += object.speed;
-        nextMaxX += object.speed;
+        nextMinX += object.speed + 1; // speed might be less than 1. So we add 1 to make sure we don't get a collision
+        nextMaxX += object.speed + 1;
         if (nextMaxX >= this.maxWorldX) return true;
         tileMinX = nextMaxX >> 3;
         tileMaxX = nextMaxX >> 3;
@@ -314,6 +319,9 @@ export default class World {
             continue;
           break;
       }
+
+      // When tank respawn it's possible that it collides with another tank. In this case ignore collision
+      if (object.x === tank.x && object.y === tank.y) continue;
 
       objectHasWallCollision = tank.hit(object) ? true : objectHasWallCollision;
       objectHasWallCollision = tank.moveThrough(object) ? true : objectHasWallCollision;
