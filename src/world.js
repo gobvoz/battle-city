@@ -98,6 +98,9 @@ export default class World {
   }
 
   _addProjectile(tank) {
+    if (tank.hasProjectile) return;
+    tank.hasProjectile = true;
+
     const projectile = new Projectile({
       world: this,
       tank: tank,
@@ -162,6 +165,7 @@ export default class World {
   }
 
   _removeProjectile(projectile) {
+    projectile.tank.hasProjectile = false;
     this.projectiles = this.projectiles.filter(p => p !== projectile);
 
     const explosive = new Explosive({
