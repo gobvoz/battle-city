@@ -9,8 +9,15 @@ export default class EnemyTank extends Tank {
   constructor(props) {
     super(props);
 
-    this.actionDelay = 30;
-    this.shootDelay = 120;
+    const { tankOptions } = props;
+    this.tankOptions = tankOptions;
+
+    this.actionDelay =
+      this.tankOptions.BASE_CHANGE_DIRECTION_DELAY +
+      ((Math.random() * this.tankOptions.CHANGE_DIRECTION_DELAY_MULTIPLEXER * 8) >> 0);
+    this.shootDelay =
+      this.tankOptions.BASE_FIRE_DELAY +
+      ((Math.random() * this.tankOptions.FIRE_DELAY_MULTIPLEXER * 8) >> 0);
   }
 
   update() {
@@ -18,17 +25,19 @@ export default class EnemyTank extends Tank {
     this.shootDelay--;
 
     if (this.actionDelay <= 0) {
-      this.actionDelay = 60;
+      this.actionDelay =
+        this.tankOptions.BASE_CHANGE_DIRECTION_DELAY +
+        ((Math.random() * this.tankOptions.CHANGE_DIRECTION_DELAY_MULTIPLEXER * 8) >> 0);
 
       const changeDirection = Math.floor(Math.random() * 2) - 1;
 
-      this.direction = this.direction + changeDirection;
-      if (this.direction > 4) this.direction = 1;
-      if (this.direction < 1) this.direction = 4;
+      let newDirection = this.direction + changeDirection;
+      if (newDirection > 4) newDirection = 1;
+      if (newDirection < 1) newDirection = 4;
 
-      this._stickToGrid();
+      // this._stickToGrid();
 
-      switch (this.direction) {
+      switch (newDirection) {
         case Direction.UP:
           this.moveUp();
           break;
@@ -45,12 +54,16 @@ export default class EnemyTank extends Tank {
     }
 
     if (this.shootDelay <= 0) {
-      this.shootDelay = 120;
+      this.shootDelay =
+        this.tankOptions.BASE_FIRE_DELAY +
+        ((Math.random() * this.tankOptions.FIRE_DELAY_MULTIPLEXER * 8) >> 0);
 
       this.emit('fire', this);
     }
 
     const speed = this.world.hasCollision(this) ? 0 : this.speed;
+    if (!speed) this.actionDelay = this.actionDelay >> 1;
+    if (!speed) this.shootDelay = this.shootDelay >> 1;
 
     if (this.direction === Direction.UP) {
       this.realY -= speed;

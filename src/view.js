@@ -21,6 +21,10 @@ export default class View {
 
   render(game) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.context.fillStyle = '#888';
+    this.context.fillRect(0, 0, 256 * RenderOption.MULTIPLEXER, 224 * RenderOption.MULTIPLEXER);
+
     this.context.fillStyle = '#000';
     this.context.fillRect(
       RenderOption.PADDING_LEFT,
@@ -107,29 +111,17 @@ export default class View {
     //   RenderOption.PADDING_TOP + this.world.player1Tank.y * RenderOption.MULTIPLEXER,
     // );
 
-    this.context.fillText(
-      `fps:  ${game.fps}`,
-      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
-      RenderOption.PADDING_TOP + 10,
-    );
-    this.context.fillText(
-      `busy: ${game.busyTime}`,
-      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
-      RenderOption.PADDING_TOP + 20,
-    );
-    this.context.fillText(
-      `tanks: ${world.enemyArray.length}`,
-      RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
-      RenderOption.PADDING_TOP + 30,
-    );
+    this.context.fillText(`fps:  ${game.fps}`, 10, 224 + 10);
+    this.context.fillText(`busy: ${game.busyTime}`, 10, 224 + 20);
+    this.context.fillText(`tanks: ${world.enemyArray.length}`, 10, 224 + 30);
 
     world.enemyTanks.forEach((tank, index) => {
       this.context.fillText(
         `tank ${index}: ${String(tank.x).padStart(3, ' ').slice(0, 3)} ${String(tank.y)
           .padStart(3, ' ')
           .slice(0, 3)}`,
-        RenderOption.PADDING_LEFT + this.world.maxWorldX * RenderOption.MULTIPLEXER + 10,
-        RenderOption.PADDING_TOP + 40 + index * 10,
+        10,
+        224 + 40 + index * 10,
       );
     });
   }

@@ -35,6 +35,7 @@ export default class Tank extends GameObject {
     const deltaX = this.x % this.movementTile;
     const deltaY = this.y % this.movementTile;
 
+    console.log(this.x, this.y, deltaX, deltaY, this.direction);
     if (this.direction === Direction.LEFT) {
       this.x += deltaX <= this.movementStep ? -deltaX : this.movementTile - deltaX;
     }
@@ -49,6 +50,7 @@ export default class Tank extends GameObject {
     }
     this.realX = this.x;
     this.realY = this.y;
+    console.log('' + this.x + (this.x % 8 ? '!' : ''), '' + this.y + (this.y % 8 ? '!' : ''));
   }
 
   moveUp = () => {

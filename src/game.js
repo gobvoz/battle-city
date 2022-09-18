@@ -1,4 +1,8 @@
+const DEFAULT_DELAY = 0;
+
 export default class Game {
+  debugDelay = DEFAULT_DELAY;
+
   activeKeys = new Set();
 
   fps = 0;
@@ -44,6 +48,15 @@ export default class Game {
   }
 
   loop() {
+    if (this.debugDelay > 0) {
+      this.debugDelay--;
+      requestAnimationFrame(this.loop);
+
+      return;
+    }
+
+    this.debugDelay = DEFAULT_DELAY;
+
     const now = window.performance.now();
     this.fpsCounter++;
 

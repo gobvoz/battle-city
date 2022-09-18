@@ -6,6 +6,7 @@ import Sprite from './src/sprite.js';
 import stages from './src/stages.js';
 
 const canvas = document.querySelector('canvas');
+const log = document.querySelector('log');
 
 const sprite = new Sprite('./src/sprite/sprite.png');
 const world = new World();
