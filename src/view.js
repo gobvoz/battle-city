@@ -111,9 +111,13 @@ export default class View {
     //   RenderOption.PADDING_TOP + this.world.player1Tank.y * RenderOption.MULTIPLEXER,
     // );
 
-    this.context.fillText(`fps:  ${game.fps}`, 10, 224 + 10);
-    this.context.fillText(`busy: ${game.busyTime}`, 10, 224 + 20);
-    this.context.fillText(`tanks: ${world.enemyArray.length}`, 10, 224 + 30);
+    this.context.fillText(`fps:  ${game.fps}`, 10, 224 * RenderOption.MULTIPLEXER + 10);
+    this.context.fillText(`busy: ${game.busyTime}`, 10, 224 * RenderOption.MULTIPLEXER + 20);
+    this.context.fillText(
+      `tanks: ${world.enemyArray.length}`,
+      10,
+      224 * RenderOption.MULTIPLEXER + 30,
+    );
 
     world.enemyTanks.forEach((tank, index) => {
       this.context.fillText(
@@ -121,7 +125,7 @@ export default class View {
           .padStart(3, ' ')
           .slice(0, 3)}`,
         10,
-        224 + 40 + index * 10,
+        224 * RenderOption.MULTIPLEXER + 40 + index * 10,
       );
     });
   }
