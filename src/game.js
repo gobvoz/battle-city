@@ -20,6 +20,9 @@ export default class Game {
     this.player1Tank = null;
     this.player2Tank = null;
 
+    this.player1Lives = 2;
+    this.player2Lives = 2;
+
     this.loop = this.loop.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);

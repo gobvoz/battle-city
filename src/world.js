@@ -46,21 +46,15 @@ export default class World {
 
     this.enemyArray = stage.enemies;
     this.enemyTanksOnMap = 0;
+    this.tanksTotal = stage.enemies.length;
 
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
 
     this.enemyFriendlyFire = WorldOption.ENEMY_FRIENDLY_FIRE;
 
-    const resurrectionFor1Player = new Resurrection({
-      world: this,
-      tankType: TankType.PLAYER_1,
-      options: Player1TankOption,
-      x: Player1TankOption.START_X,
-      y: Player1TankOption.START_Y,
-    });
-    resurrectionFor1Player.on('destroy', this._removeResurrection);
-    this.resurrections.push(resurrectionFor1Player);
+    this._resurrectPlayer1();
+    // this._resurrectPlayer2();
 
     this.base = new Base({
       world: this,
@@ -95,6 +89,30 @@ export default class World {
     this.objects.forEach(gameObject => {
       gameObject && gameObject.update(activeKeys);
     });
+  }
+
+  _resurrectPlayer1() {
+    const resurrection = new Resurrection({
+      world: this,
+      tankType: TankType.PLAYER_1,
+      options: Player1TankOption,
+      x: Player1TankOption.START_X,
+      y: Player1TankOption.START_Y,
+    });
+    resurrection.on('destroy', this._removeResurrection);
+    this.resurrections.push(resurrection);
+  }
+
+  _resurrectPlayer2() {
+    const resurrection = new Resurrection({
+      world: this,
+      tankType: TankType.PLAYER_1,
+      options: Player1TankOption,
+      x: Player1TankOption.START_X,
+      y: Player1TankOption.START_Y,
+    });
+    resurrection.on('destroy', this._removeResurrection);
+    this.resurrections.push(resurrection);
   }
 
   _addProjectile(tank) {
@@ -161,6 +179,7 @@ export default class World {
 
     if (tank.type === TankType.ENEMY) {
       this.enemyTanksOnMap--;
+      this.tanksTotal--;
     }
   }
 
@@ -179,6 +198,15 @@ export default class World {
 
   _removeExplosive(explosive) {
     this.explosives = this.explosives.filter(e => e !== explosive);
+
+    if (explosive.tank?.type === TankType.PLAYER_1 && this.game.player1Lives) {
+      this.game.player1Lives -= 1;
+      this._resurrectPlayer1();
+    }
+    if (explosive.tank?.type === TankType.PLAYER_2 && this.game.player2Lives) {
+      this.game.player2Lives -= 1;
+      this.game._resurrectPlayer2();
+    }
   }
 
   _removeWall(wall) {

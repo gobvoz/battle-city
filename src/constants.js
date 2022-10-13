@@ -349,3 +349,96 @@ export const WaterOption = {
 export const IceOption = {
   SPRITES: [[17, 4.5]],
 };
+
+export const SidePanelOption = {
+  TANK: {
+    OFFSET_X: 228 * MULTIPLEXER,
+    OFFSET_Y: 20 * MULTIPLEXER,
+    WIDTH: WorldOption.UNIT_SIZE / 2,
+    HEIGHT: WorldOption.UNIT_SIZE / 2,
+    SPRITES: [20 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+  },
+  PLAYER_1: {
+    OFFSET_X: 228 * MULTIPLEXER,
+    OFFSET_Y: 120 * MULTIPLEXER,
+    WIDTH: WorldOption.UNIT_SIZE,
+    HEIGHT: WorldOption.UNIT_SIZE,
+    SPRITES: [23.5 * WorldOption.UNIT_SIZE, 8.5 * WorldOption.UNIT_SIZE],
+  },
+  PLAYER_2: {
+    OFFSET_X: 228 * MULTIPLEXER,
+    OFFSET_Y: 145 * MULTIPLEXER,
+    WIDTH: WorldOption.UNIT_SIZE,
+    HEIGHT: WorldOption.UNIT_SIZE,
+    SPRITES: [23.5 * WorldOption.UNIT_SIZE, 10 * WorldOption.UNIT_SIZE],
+  },
+  STAGE: {
+    OFFSET_X: 228 * MULTIPLEXER,
+    OFFSET_Y: 170 * MULTIPLEXER,
+    WIDTH: WorldOption.UNIT_SIZE,
+    HEIGHT: WorldOption.UNIT_SIZE,
+    SPRITES: [23.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+  },
+  NUMBER: [
+    {
+      // 0
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [20.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 1
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [21 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 2
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [21.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 3
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [22 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 4
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [22.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 5
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [20.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 6
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [21 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 7
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [21.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 8
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [22 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+    },
+    {
+      // 9
+      WIDTH: WorldOption.UNIT_SIZE / 2,
+      HEIGHT: WorldOption.UNIT_SIZE / 2,
+      SPRITES: [22.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
+    },
+  ],
+};
