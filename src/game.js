@@ -11,10 +11,14 @@ export default class Game {
   busyTime = 0;
   busyTimeCounter = 0;
 
-  constructor({ world, view, stages }) {
+  currentMoveState = 'standby'; // "standby", "move"
+
+  constructor({ world, view, stages, audio }) {
     this.world = world;
     this.view = view;
     this.stages = stages;
+    this.audio = audio;
+
     this.currentStage = 3;
 
     this.player1Tank = null;
@@ -38,6 +42,9 @@ export default class Game {
 
   start() {
     requestAnimationFrame(this.loop);
+
+    this.audio.play('player-standby', { loop: true });
+    this.audio.play('game-start', { loop: false });
 
     setInterval(() => {
       this.fps = this.fpsCounter * 2;
@@ -76,70 +83,85 @@ export default class Game {
   handleKeyDown(evt) {
     this.activeKeys.add(evt.code);
 
-    switch (evt.code) {
-      case 'KeyW':
-      case 'ArrowUp':
-        this.player1Tank && this.player1Tank.moveUp();
-        evt.preventDefault();
-        break;
-      case 'KeyS':
-      case 'ArrowDown':
-        this.player1Tank && this.player1Tank.moveDown();
-        evt.preventDefault();
-        break;
-      case 'KeyA':
-      case 'ArrowLeft':
-        this.player1Tank && this.player1Tank.moveLeft();
-        evt.preventDefault();
-        break;
-      case 'KeyD':
-      case 'ArrowRight':
-        this.player1Tank && this.player1Tank.moveRight();
-        evt.preventDefault();
-        break;
-      case 'Space':
-        this.player1Tank && this.player1Tank.fire();
-        evt.preventDefault();
-        break;
-      case 'Enter':
-        evt.preventDefault();
-        break;
-      default:
-        break;
+    let moving = false;
+
+    if (this.player1Tank) {
+      switch (evt.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          this.player1Tank.moveUp();
+          moving = true;
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          this.player1Tank.moveDown();
+          moving = true;
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          this.player1Tank.moveLeft();
+          moving = true;
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          this.player1Tank.moveRight();
+          moving = true;
+          break;
+        case 'Space':
+          this.player1Tank.fire();
+          break;
+      }
     }
+
+    // Если реально начали двигаться и состояние изменилось — включаем звук
+    if (moving && this.currentMoveState !== 'move') {
+      this.currentMoveState = 'move';
+      this.audio.play('player-move', { loop: true });
+    }
+
+    evt.preventDefault();
   }
+
   handleKeyUp(evt) {
     this.activeKeys.delete(evt.code);
 
-    switch (evt.code) {
-      case 'KeyW':
-      case 'ArrowUp':
-        this.player1Tank && this.player1Tank.stopUp();
-        evt.preventDefault();
-        break;
-      case 'KeyS':
-      case 'ArrowDown':
-        this.player1Tank && this.player1Tank.stopDown();
-        evt.preventDefault();
-        break;
-      case 'KeyA':
-      case 'ArrowLeft':
-        this.player1Tank && this.player1Tank.stopLeft();
-        evt.preventDefault();
-        break;
-      case 'KeyD':
-      case 'ArrowRight':
-        this.player1Tank && this.player1Tank.stopRight();
-        evt.preventDefault();
-        break;
-      case 'Space':
-        evt.preventDefault();
-        break;
-      case 'Enter':
-        evt.preventDefault();
-        break;
-      default:
-        break;
+    if (this.player1Tank) {
+      switch (evt.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          this.player1Tank.stopUp();
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          this.player1Tank.stopDown();
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          this.player1Tank.stopLeft();
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          this.player1Tank.stopRight();
+          break;
+      }
     }
+
+    // Проверяем, остались ли нажатые клавиши движения
+    const stillMoving =
+      this.activeKeys.has('KeyW') ||
+      this.activeKeys.has('ArrowUp') ||
+      this.activeKeys.has('KeyS') ||
+      this.activeKeys.has('ArrowDown') ||
+      this.activeKeys.has('KeyA') ||
+      this.activeKeys.has('ArrowLeft') ||
+      this.activeKeys.has('KeyD') ||
+      this.activeKeys.has('ArrowRight');
+
+    if (!stillMoving && this.currentMoveState !== 'standby') {
+      this.currentMoveState = 'standby';
+      this.audio.play('player-standby', { loop: true });
+    }
+
+    evt.preventDefault();
   }
 }
