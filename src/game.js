@@ -113,8 +113,7 @@ export default class Game {
       }
     }
 
-    // Если реально начали двигаться и состояние изменилось — включаем звук
-    if (moving && this.currentMoveState !== 'move') {
+    if (moving && this.currentMoveState !== 'move' && this.player1Tank.state === 'active') {
       this.currentMoveState = 'move';
       this.audio.play('player-move', { loop: true });
     }
@@ -146,7 +145,6 @@ export default class Game {
       }
     }
 
-    // Проверяем, остались ли нажатые клавиши движения
     const stillMoving =
       this.activeKeys.has('KeyW') ||
       this.activeKeys.has('ArrowUp') ||
@@ -157,7 +155,11 @@ export default class Game {
       this.activeKeys.has('KeyD') ||
       this.activeKeys.has('ArrowRight');
 
-    if (!stillMoving && this.currentMoveState !== 'standby') {
+    if (
+      !stillMoving &&
+      this.currentMoveState !== 'standby' &&
+      this.player1Tank.state === 'active'
+    ) {
       this.currentMoveState = 'standby';
       this.audio.play('player-standby', { loop: true });
     }

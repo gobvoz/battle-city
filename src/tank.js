@@ -3,6 +3,8 @@ import GameObject from './game-object.js';
 import { Direction, WorldOption, ObjectType, TankType, KeyCode } from './constants.js';
 
 export default class Tank extends GameObject {
+  state = 'dead';
+
   constructor({ playerIndex, type, tankOptions, ...rest }) {
     const options = {
       width: tankOptions.WIDTH,
@@ -95,8 +97,10 @@ export default class Tank extends GameObject {
     if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
 
     this.emit('destroy', this);
+    this.state = 'dead';
     return true;
   }
+
   moveThrough(object) {
     if (this === object) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
@@ -139,5 +143,7 @@ export default class Tank extends GameObject {
 
     this.x = this.realX >> 0;
     this.y = this.realY >> 0;
+
+    this.state = 'active';
   }
 }

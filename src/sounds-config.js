@@ -11,17 +11,22 @@ export default [
   },
   {
     name: 'player-move',
-    src: './src/sounds/track-03.wav',
+    src: './src/sounds/track-03.mp3',
     isEffect: false,
   },
   {
     name: 'player-standby',
-    src: './src/sounds/track-04.wav',
+    src: './src/sounds/track-04.mp3',
     isEffect: false,
   },
   {
     name: 'game-over',
     src: './src/sounds/sfx-01.mp3',
+    isEffect: true,
+  },
+  {
+    name: 'player-shoot',
+    src: './src/sounds/sfx-13.mp3',
     isEffect: true,
   },
 ];

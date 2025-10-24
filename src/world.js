@@ -126,6 +126,10 @@ export default class World {
       tankType: tank.type,
     });
 
+    if (tank.type === TankType.PLAYER_1 && tank.state !== 'dead') {
+      this.game.audio.play('player-shoot', { loop: false, isEffect: true });
+    }
+
     projectile.on('destroy', this._removeProjectile);
     this.projectiles.push(projectile);
   }
@@ -143,6 +147,8 @@ export default class World {
         x: resurrection.x,
         y: resurrection.y,
       });
+
+      this.game.audio.play('player-standby', { loop: false });
     } else {
       tank = EnemyTank.createRandom({
         world: this,
@@ -180,6 +186,9 @@ export default class World {
     if (tank.type === TankType.ENEMY) {
       this.enemyTanksOnMap--;
       this.tanksTotal--;
+    } else if (tank.type === TankType.PLAYER_1) {
+      this.game.audio.stop('player-move');
+      this.game.audio.stop('player-standby');
     }
   }
 
