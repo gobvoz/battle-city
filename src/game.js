@@ -1,169 +1,129 @@
-const DEFAULT_DELAY = 0;
+import { Input } from './core/input-handler.js';
+import { AudioManager } from './core/audio-manager.js';
 
-export default class Game {
-  debugDelay = DEFAULT_DELAY;
+import { EventEmitter } from './core/event-emitter.js';
+import { MenuState } from './states/menu.state.js';
+import { PlayState } from './states/play.state.js';
+import { GameOverState } from './states/game-over.state.js';
 
-  activeKeys = new Set();
+export class Game {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.DEBUG = false;
 
-  fps = 0;
-  fpsCounter = 0;
+    const game = this;
 
-  busyTime = 0;
-  busyTimeCounter = 0;
+    // this.context = {
+    //   get DEBUG() {
+    //     return game.DEBUG;
+    //   },
+    //   get events() {
+    //     return game.events;
+    //   },
+    //   get input() {
+    //     return game.input;
+    //   },
+    // };
+    // this.context = {
+    //   DEBUG: () => game.DEBUG,
+    //   events: () => game.events,
+    //   input: () => game.input,
+    // };
+    this.context = {};
+    Object.defineProperties(this.context, {
+      DEBUG: { get: () => game.DEBUG },
+      events: { get: () => game.events },
+      input: { get: () => game.input },
+    });
 
-  currentMoveState = 'standby'; // "standby", "move"
+    this.events = new EventEmitter();
+    this.audio = new AudioManager();
 
-  constructor({ world, view, stages, audio }) {
-    this.world = world;
-    this.view = view;
-    this.stages = stages;
-    this.audio = audio;
+    this.input = new Input(this.context);
+    this.state = new MenuState(this.context);
 
-    this.currentStage = 3;
+    this.lastTime = 0;
+    this.entities = [];
 
-    this.player1Tank = null;
-    this.player2Tank = null;
-
-    this.player1Lives = 2;
-    this.player2Lives = 2;
+    this.running = false;
 
     this.loop = this.loop.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleKeyUp = this.handleKeyUp.bind(this);
-  }
-
-  async init() {
-    this.world.init(this.stages[this.currentStage], this);
-    await this.view.init();
-
-    document.addEventListener('keydown', this.handleKeyDown);
-    document.addEventListener('keyup', this.handleKeyUp);
+    this.changeState = this.changeState.bind(this);
+    this.toggleDebug = this.toggleDebug.bind(this);
   }
 
   start() {
+    this.events.on('state:change', this.changeState);
+    this.events.on('key:KeyD', this.toggleDebug);
+    // this.level.load().then(() => {
+    //   this.lastTime = performance.now();
+    //   requestAnimationFrame(this.gameLoop.bind(this));
+    // });
+    this.lastTime = performance.now();
+    this.running = true;
+
+    this.state.start();
     requestAnimationFrame(this.loop);
-
-    this.audio.play('player-standby', { loop: true });
-    this.audio.play('game-start', { loop: false });
-
-    setInterval(() => {
-      this.fps = this.fpsCounter * 2;
-      this.fpsCounter = 0;
-
-      this.busyTime = String(this.busyTimeCounter / this.fps)
-        .padEnd(5, ' ')
-        .slice(0, 5);
-      this.busyTimeCounter = 0;
-    }, 500);
   }
 
-  loop() {
-    if (this.debugDelay > 0) {
-      this.debugDelay--;
-      requestAnimationFrame(this.loop);
+  loop(currentTime) {
+    const deltaTime = (currentTime - this.lastTime) / 1000;
+    this.lastTime = currentTime;
 
-      return;
-    }
+    this.update(deltaTime);
+    this.render();
 
-    this.debugDelay = DEFAULT_DELAY;
-
-    const now = window.performance.now();
-    this.fpsCounter++;
-
-    this.world.update(this.activeKeys);
-    this.view.render(this);
-
-    requestAnimationFrame(this.loop);
-
-    const delta = window.performance.now() - now;
-
-    this.busyTimeCounter += delta;
+    if (this.running) requestAnimationFrame(this.loop);
   }
 
-  handleKeyDown(evt) {
-    this.activeKeys.add(evt.code);
+  update(deltaTime) {
+    this.state.update(deltaTime, this.input);
 
-    let moving = false;
-
-    if (this.player1Tank) {
-      switch (evt.code) {
-        case 'KeyW':
-        case 'ArrowUp':
-          this.player1Tank.moveUp();
-          moving = true;
-          break;
-        case 'KeyS':
-        case 'ArrowDown':
-          this.player1Tank.moveDown();
-          moving = true;
-          break;
-        case 'KeyA':
-        case 'ArrowLeft':
-          this.player1Tank.moveLeft();
-          moving = true;
-          break;
-        case 'KeyD':
-        case 'ArrowRight':
-          this.player1Tank.moveRight();
-          moving = true;
-          break;
-        case 'Space':
-          this.player1Tank.fire();
-          break;
-      }
+    for (const entity of this.entities) {
+      entity.update(deltaTime, this.input, this.level);
     }
-
-    if (moving && this.currentMoveState !== 'move' && this.player1Tank.state === 'active') {
-      this.currentMoveState = 'move';
-      this.audio.play('player-move', { loop: true });
-    }
-
-    evt.preventDefault();
   }
 
-  handleKeyUp(evt) {
-    this.activeKeys.delete(evt.code);
+  render() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-    if (this.player1Tank) {
-      switch (evt.code) {
-        case 'KeyW':
-        case 'ArrowUp':
-          this.player1Tank.stopUp();
-          break;
-        case 'KeyS':
-        case 'ArrowDown':
-          this.player1Tank.stopDown();
-          break;
-        case 'KeyA':
-        case 'ArrowLeft':
-          this.player1Tank.stopLeft();
-          break;
-        case 'KeyD':
-        case 'ArrowRight':
-          this.player1Tank.stopRight();
-          break;
-      }
+    this.state.render(this.ctx);
+    for (const entity of this.entities) {
+      entity.render(this.ctx);
+    }
+  }
+
+  changeState(stateName) {
+    this.events.off('state:change', this.changeState);
+
+    switch (stateName) {
+      case 'menu':
+        this.state = new MenuState(this.context);
+        break;
+      case 'play':
+        this.state = new PlayState(this.context);
+        break;
+      case 'pause':
+        break;
+      case 'gameover':
+        this.state = new GameOverState(this.context);
+        break;
+      case 'victory':
+        this.state = new VictoryState(this.context);
+        break;
+      default:
+        console.warn(`Unknown state: ${stateName}`);
     }
 
-    const stillMoving =
-      this.activeKeys.has('KeyW') ||
-      this.activeKeys.has('ArrowUp') ||
-      this.activeKeys.has('KeyS') ||
-      this.activeKeys.has('ArrowDown') ||
-      this.activeKeys.has('KeyA') ||
-      this.activeKeys.has('ArrowLeft') ||
-      this.activeKeys.has('KeyD') ||
-      this.activeKeys.has('ArrowRight');
+    this.state.start();
+    this.events.on('state:change', this.changeState);
+  }
 
-    if (
-      !stillMoving &&
-      this.currentMoveState !== 'standby' &&
-      this.player1Tank.state === 'active'
-    ) {
-      this.currentMoveState = 'standby';
-      this.audio.play('player-standby', { loop: true });
-    }
+  toggleDebug(key) {
+    if (key !== 'pressed') return;
+    if (!this.input.isKeyPressed('ControlLeft') && !this.input.isKeyPressed('ControlRight')) return;
 
-    evt.preventDefault();
+    this.DEBUG = !this.DEBUG;
+    console.log(`Debug mode: ${this.DEBUG}`);
   }
 }
