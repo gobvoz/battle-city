@@ -1,10 +1,10 @@
-export class VictoryState {
+export class ResultsState {
   constructor(game) {
     this.game = game;
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Victory State');
+    if (this.game.DEBUG) console.log('Entering Results State');
     // Initialize game entities, level, etc.
   }
 
@@ -17,7 +17,7 @@ export class VictoryState {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Victory State');
+    if (this.game.DEBUG) console.log('Exiting Results State');
     // Clean up resources if necessary
   }
 }

@@ -5,6 +5,7 @@ import { EventEmitter } from './core/event-emitter.js';
 import { MenuState } from './states/menu.state.js';
 import { PlayState } from './states/play.state.js';
 import { GameOverState } from './states/game-over.state.js';
+import { ResultsState } from './states/results.state.js';
 
 export class Game {
   constructor(ctx) {
@@ -43,7 +44,7 @@ export class Game {
     this.state = new MenuState(this.context);
 
     this.lastTime = 0;
-    this.entities = [];
+    //this.entities = [];
 
     this.running = false;
 
@@ -77,26 +78,26 @@ export class Game {
   }
 
   update(deltaTime) {
-    this.state.update(deltaTime, this.input);
+    this.state.update();
 
-    for (const entity of this.entities) {
-      entity.update(deltaTime, this.input, this.level);
-    }
+    // for (const entity of this.entities) {
+    //   entity.update(deltaTime, this.input, this.level);
+    // }
   }
 
   render() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
     this.state.render(this.ctx);
-    for (const entity of this.entities) {
-      entity.render(this.ctx);
-    }
+    // for (const entity of this.entities) {
+    //   entity.render(this.ctx);
+    // }
   }
 
-  changeState(stateName) {
+  changeState(newStateName) {
     this.events.off('state:change', this.changeState);
 
-    switch (stateName) {
+    switch (newStateName) {
       case 'menu':
         this.state = new MenuState(this.context);
         break;
@@ -108,8 +109,8 @@ export class Game {
       case 'gameover':
         this.state = new GameOverState(this.context);
         break;
-      case 'victory':
-        this.state = new VictoryState(this.context);
+      case 'results':
+        this.state = new ResultsState(this.context);
         break;
       default:
         console.warn(`Unknown state: ${stateName}`);

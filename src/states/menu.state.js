@@ -11,10 +11,10 @@ export class MenuState {
     this.game.events.on('key:Enter', this.exit);
   }
 
-  update(deltaTime, input) {
+  update() {
     //console.log(input);
-    if (input.isKeyPressed('ArrowUp')) this.selection = 0;
-    if (input.isKeyPressed('ArrowDown')) this.selection = 1;
+    if (this.game.input.isKeyPressed('ArrowUp')) this.selection = 0;
+    if (this.game.input.isKeyPressed('ArrowDown')) this.selection = 1;
 
     //if (input.isKeyPressed('Enter')) {
     //  this.exit();
