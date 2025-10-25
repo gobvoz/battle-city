@@ -78,7 +78,7 @@ export class Game {
   }
 
   update(deltaTime) {
-    this.state.update();
+    this.state.update(deltaTime);
 
     // for (const entity of this.entities) {
     //   entity.update(deltaTime, this.input, this.level);
