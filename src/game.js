@@ -37,7 +37,7 @@ export class Game {
       input: { get: () => game.input },
     });
 
-    this.events = new EventEmitter();
+    this.events = new EventEmitter(this.context);
     this.audio = new AudioManager();
 
     this.input = new Input(this.context);
