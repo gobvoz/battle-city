@@ -1,5 +1,7 @@
 import { IntroState } from './intro.state.js';
 import { PauseState } from './pause.state.js';
+import { World } from '../world/world.js';
+import { Renderer } from '../world/renderer.js';
 
 import { event } from '../config/events.js';
 
@@ -10,6 +12,8 @@ export class PlayState {
 
     this.subState = new IntroState(this.game);
     this.pause = new PauseState(this.game);
+    this.world = new World(this.game);
+    this.renderer = new Renderer(this.game, this.world);
 
     this.completeIntro = this.completeIntro.bind(this);
     this.exit = this.exit.bind(this);
@@ -22,6 +26,8 @@ export class PlayState {
     this.levelNumber = levelNumber || 1;
 
     this.subState.start(this.levelNumber);
+    this.world.start(this.levelNumber);
+    this.renderer.start('1');
 
     this.game.events.on(event.COMPLETE_INTRO, this.completeIntro);
     this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
@@ -34,9 +40,14 @@ export class PlayState {
       this.pause.update(deltaTime);
       return;
     }
+
+    this.world.update(deltaTime);
+    this.renderer.update(deltaTime);
   }
 
   render(ctx) {
+    this.renderer.render(ctx);
+
     if (this.subState) this.subState.render(ctx, this.levelNumber);
     this.pause.render(ctx);
   }
@@ -49,6 +60,7 @@ export class PlayState {
 
     if (this.subState) this.subState.exit();
     if (this.pause) this.pause.exit();
+    this.world.exit();
 
     this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
   }
