@@ -1,0 +1,15 @@
+export const keyCode = {
+  W: 'KeyW',
+  A: 'KeyA',
+  S: 'KeyS',
+  D: 'KeyD',
+  SPACE: 'Space',
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  CONTROL_LEFT: 'ControlLeft',
+  CONTROL_RIGHT: 'ControlRight',
+  UP: 'ArrowUp',
+  DOWN: 'ArrowDown',
+  LEFT: 'ArrowLeft',
+  RIGHT: 'ArrowRight',
+};

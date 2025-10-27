@@ -1,3 +1,5 @@
+import { event } from '../config/events.js';
+
 export class IntroState {
   constructor(game) {
     this.game = game;
@@ -19,7 +21,7 @@ export class IntroState {
 
     if (this.timer >= this.duration) {
       this.exit();
-      this.game.events.emit('intro:complete');
+      this.game.events.emit(event.COMPLETE_INTRO);
     }
   }
 

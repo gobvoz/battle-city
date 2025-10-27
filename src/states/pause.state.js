@@ -1,3 +1,5 @@
+import { event } from '../config/events.js';
+
 export class PauseState {
   constructor(game) {
     this.game = game;
@@ -14,7 +16,7 @@ export class PauseState {
     this.timer = 0;
     this.textVisible = true;
 
-    this.game.events.on('key:Escape', this.toggle);
+    this.game.events.on(event.key.ESCAPE, this.toggle);
   }
 
   update(deltaTime) {
@@ -46,20 +48,20 @@ export class PauseState {
   }
 
   toggle(key) {
-    if (key !== 'pressed') return;
+    if (key !== event.inputAction.PRESSED) return;
     this.active = !this.active;
     this.timer = 0;
 
     if (this.game.DEBUG) console.log(this.active ? 'Game paused' : 'Game resumed');
 
     this.active
-      ? this.game.events.emit('pause:toggle', 'on')
-      : this.game.events.emit('pause:toggle', 'off');
+      ? this.game.events.emit(event.TOGGLE_PAUSE, event.pauseAction.ON)
+      : this.game.events.emit(event.TOGGLE_PAUSE, event.pauseAction.OFF);
   }
 
   exit() {
     if (this.game.DEBUG) console.log('Exiting Pause State');
 
-    this.game.events.off('key:Escape', this.exit);
+    this.game.events.off(event.key.ESCAPE, this.exit);
   }
 }

@@ -1,3 +1,6 @@
+import { event } from '../config/events.js';
+import { keyCode } from '../config/key-codes.js';
+
 export class MenuState {
   constructor(game) {
     this.game = game;
@@ -8,17 +11,12 @@ export class MenuState {
 
   start() {
     if (this.game.DEBUG) console.log('Entering Menu State');
-    this.game.events.on('key:Enter', this.exit);
+    this.game.events.on(event.key.ENTER, this.exit);
   }
 
   update() {
-    //console.log(input);
-    if (this.game.input.isKeyPressed('ArrowUp')) this.selection = 0;
-    if (this.game.input.isKeyPressed('ArrowDown')) this.selection = 1;
-
-    //if (input.isKeyPressed('Enter')) {
-    //  this.exit();
-    //}
+    if (this.game.input.isKeyPressed(keyCode.UP)) this.selection = 0;
+    if (this.game.input.isKeyPressed(keyCode.DOWN)) this.selection = 1;
   }
 
   render(ctx) {
@@ -48,8 +46,8 @@ export class MenuState {
 
   exit() {
     if (this.game.DEBUG) console.log('Exiting Menu State');
-    this.game.events.off('key:Enter', this.exit);
+    this.game.events.off(event.key.ENTER, this.exit);
 
-    this.game.events.emit('state:change', 'play');
+    this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
   }
 }

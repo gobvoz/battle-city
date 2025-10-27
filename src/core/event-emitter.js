@@ -23,10 +23,6 @@ export class EventEmitter {
   emit(event, ...args) {
     if (this.game.DEBUG) console.log('>> event emitted: ' + event);
 
-    if (event === 'emitter:log') {
-      console.log(this.listeners);
-    }
-
     if (!this.listeners[event]) return;
 
     for (const listener of this.listeners[event]) {

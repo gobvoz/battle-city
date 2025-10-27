@@ -1,3 +1,5 @@
+import { event } from '../config/events.js';
+
 export class GameOverState {
   constructor(game) {
     this.game = game;
@@ -7,7 +9,7 @@ export class GameOverState {
 
   start() {
     if (this.game.DEBUG) console.log('Entering Game Over State');
-    this.game.events.on('key:Space', this.exit);
+    this.game.events.on(event.key.KEY_SPACE, this.exit);
   }
 
   update(deltaTime, input) {}
@@ -28,9 +30,9 @@ export class GameOverState {
   }
 
   exit() {
-    this.game.events.off('key:Space', this.exit);
+    this.game.events.off(event.key.KEY_SPACE, this.exit);
     if (this.game.DEBUG) console.log('Exiting Game Over State');
 
-    this.game.events.emit('state:change', 'menu');
+    this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }
 }

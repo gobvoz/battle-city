@@ -1,5 +1,7 @@
 import { Input } from './core/input-handler.js';
 import { AudioManager } from './core/audio-manager.js';
+import { keyCode } from './config/key-codes.js';
+import { event } from './config/events.js';
 
 import { EventEmitter } from './core/event-emitter.js';
 import { MenuState } from './states/menu.state.js';
@@ -14,22 +16,6 @@ export class Game {
 
     const game = this;
 
-    // this.context = {
-    //   get DEBUG() {
-    //     return game.DEBUG;
-    //   },
-    //   get events() {
-    //     return game.events;
-    //   },
-    //   get input() {
-    //     return game.input;
-    //   },
-    // };
-    // this.context = {
-    //   DEBUG: () => game.DEBUG,
-    //   events: () => game.events,
-    //   input: () => game.input,
-    // };
     this.context = {};
     Object.defineProperties(this.context, {
       DEBUG: { get: () => game.DEBUG },
@@ -44,7 +30,6 @@ export class Game {
     this.state = new MenuState(this.context);
 
     this.lastTime = 0;
-    //this.entities = [];
 
     this.running = false;
 
@@ -54,12 +39,9 @@ export class Game {
   }
 
   start() {
-    this.events.on('state:change', this.changeState);
-    this.events.on('key:KeyD', this.toggleDebug);
-    // this.level.load().then(() => {
-    //   this.lastTime = performance.now();
-    //   requestAnimationFrame(this.gameLoop.bind(this));
-    // });
+    this.events.on(event.CHANGE_STATE, this.changeState);
+    this.events.on(event.key.D, this.toggleDebug);
+
     this.lastTime = performance.now();
     this.running = true;
 
@@ -79,37 +61,28 @@ export class Game {
 
   update(deltaTime) {
     this.state.update(deltaTime);
-
-    // for (const entity of this.entities) {
-    //   entity.update(deltaTime, this.input, this.level);
-    // }
   }
 
   render() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
     this.state.render(this.ctx);
-    // for (const entity of this.entities) {
-    //   entity.render(this.ctx);
-    // }
   }
 
   changeState(newStateName) {
-    this.events.off('state:change', this.changeState);
+    this.events.off(event.CHANGE_STATE, this.changeState);
 
     switch (newStateName) {
-      case 'menu':
+      case event.state.MENU:
         this.state = new MenuState(this.context);
         break;
-      case 'play':
+      case event.state.PLAY:
         this.state = new PlayState(this.context);
         break;
-      case 'pause':
-        break;
-      case 'gameover':
+      case event.state.GAME_OVER:
         this.state = new GameOverState(this.context);
         break;
-      case 'results':
+      case event.state.RESULTS:
         this.state = new ResultsState(this.context);
         break;
       default:
@@ -117,12 +90,16 @@ export class Game {
     }
 
     this.state.start();
-    this.events.on('state:change', this.changeState);
+    this.events.on(event.CHANGE_STATE, this.changeState);
   }
 
   toggleDebug(key) {
     if (key !== 'pressed') return;
-    if (!this.input.isKeyPressed('ControlLeft') && !this.input.isKeyPressed('ControlRight')) return;
+    if (
+      !this.input.isKeyPressed(keyCode.CONTROL_LEFT) &&
+      !this.input.isKeyPressed(keyCode.CONTROL_RIGHT)
+    )
+      return;
 
     this.DEBUG = !this.DEBUG;
     console.log(`Debug mode: ${this.DEBUG}`);

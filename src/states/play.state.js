@@ -1,6 +1,8 @@
 import { IntroState } from './intro.state.js';
 import { PauseState } from './pause.state.js';
 
+import { event } from '../config/events.js';
+
 export class PlayState {
   constructor(game) {
     this.game = game;
@@ -21,8 +23,8 @@ export class PlayState {
 
     this.subState.start(this.levelNumber);
 
-    this.game.events.on('intro:complete', this.completeIntro);
-    this.game.events.on('pause:toggle', this.togglePause);
+    this.game.events.on(event.COMPLETE_INTRO, this.completeIntro);
+    this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
   }
 
   update(deltaTime) {
@@ -42,19 +44,19 @@ export class PlayState {
   exit() {
     if (this.game.DEBUG) console.log('Exiting Play State');
 
-    this.game.events.off('intro:complete', this.completeIntro);
-    this.game.events.off('pause:toggle', this.togglePause);
+    this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
+    this.game.events.off(event.TOGGLE_PAUSE, this.togglePause);
 
     if (this.subState) this.subState.exit();
     if (this.pause) this.pause.exit();
 
-    this.game.events.emit('state:change', 'gameover');
+    this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
   }
 
   completeIntro() {
     if (this.game.DEBUG) console.log('Intro complete, starting gameplay');
 
-    this.game.events.off('intro:complete', this.completeIntro);
+    this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
     this.subState = null;
 
     this.pause.start();
