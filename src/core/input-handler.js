@@ -40,4 +40,8 @@ export class Input {
   isKeyReleased(code) {
     return !this.keys.has(code);
   }
+
+  activeKeys() {
+    return new Set(this.keys);
+  }
 }

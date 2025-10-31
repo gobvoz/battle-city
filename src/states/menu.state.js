@@ -6,12 +6,12 @@ export class MenuState {
     this.game = game;
     this.selection = 0; // 0: 1 PLAYER, 1: 2 PLAYERS
 
-    this.exit = this.exit.bind(this);
+    this.changeState = this.changeState.bind(this);
   }
 
   start() {
     if (this.game.DEBUG) console.log('Entering Menu State');
-    this.game.events.on(event.key.ENTER, this.exit);
+    this.game.events.on(event.key.ENTER, this.changeState);
   }
 
   update() {
@@ -44,10 +44,13 @@ export class MenuState {
     ctx.fillText('PRESS ENTER TO START', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
   }
 
+  changeState(key) {
+    if (key !== event.inputAction.PRESSED) return;
+    this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
+  }
+
   exit() {
     if (this.game.DEBUG) console.log('Exiting Menu State');
-    this.game.events.off(event.key.ENTER, this.exit);
-
-    this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
+    this.game.events.off(event.key.ENTER, this.changeState);
   }
 }

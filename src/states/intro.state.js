@@ -5,14 +5,13 @@ export class IntroState {
     this.game = game;
 
     this.timer = 0;
-    this.duration = 5;
+    this.duration = 1;
     this.transitionTime = 0.5;
   }
 
-  start(levelNumber) {
+  start() {
     if (this.game.DEBUG) console.log('Entering Intro State');
 
-    this.levelNumber = levelNumber;
     this.timer = 0;
   }
 
@@ -57,7 +56,7 @@ export class IntroState {
       ctx.font = 'bold 20px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`LEVEL ${this.levelNumber}`, width / 2, height / 2);
+      ctx.fillText(`LEVEL ${this.game.currentLevel}`, width / 2, height / 2);
     }
   }
 

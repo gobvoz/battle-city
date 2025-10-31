@@ -20,14 +20,12 @@ export class PlayState {
     this.togglePause = this.togglePause.bind(this);
   }
 
-  start(levelNumber) {
+  start() {
     if (this.game.DEBUG) console.log('Entering Play State');
 
-    this.levelNumber = levelNumber || 1;
-
-    this.subState.start(this.levelNumber);
-    this.world.start(this.levelNumber);
-    this.renderer.start('1');
+    this.subState.start();
+    this.world.start();
+    this.renderer.start();
 
     this.game.events.on(event.COMPLETE_INTRO, this.completeIntro);
     this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
@@ -48,7 +46,7 @@ export class PlayState {
   render(ctx) {
     this.renderer.render(ctx);
 
-    if (this.subState) this.subState.render(ctx, this.levelNumber);
+    if (this.subState) this.subState.render(ctx);
     this.pause.render(ctx);
   }
 

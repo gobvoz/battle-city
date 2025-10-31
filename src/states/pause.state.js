@@ -34,7 +34,7 @@ export class PauseState {
     if (!this.active) return;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     if (this.textVisible) {

@@ -4,12 +4,12 @@ export class GameOverState {
   constructor(game) {
     this.game = game;
 
-    this.exit = this.exit.bind(this);
+    this.changeState = this.changeState.bind(this);
   }
 
   start() {
     if (this.game.DEBUG) console.log('Entering Game Over State');
-    this.game.events.on(event.key.KEY_SPACE, this.exit);
+    this.game.events.on(event.key.ENTER, this.changeState);
   }
 
   update(deltaTime, input) {}
@@ -26,13 +26,16 @@ export class GameOverState {
     ctx.fillText('GAME OVER', ctx.canvas.width / 2, ctx.canvas.height / 2 - 10);
 
     ctx.font = '16px monospace';
-    ctx.fillText('PRESS SPACE TO RESTART', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
+    ctx.fillText('PRESS ENTER TO RESTART', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
+  }
+
+  changeState(key) {
+    if (key !== event.inputAction.PRESSED) return;
+    this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }
 
   exit() {
-    this.game.events.off(event.key.KEY_SPACE, this.exit);
+    this.game.events.off(event.key.ENTER, this.changeState);
     if (this.game.DEBUG) console.log('Exiting Game Over State');
-
-    this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }
 }

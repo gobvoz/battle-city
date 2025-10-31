@@ -5,7 +5,7 @@ export class EventEmitter {
   }
 
   on(event, listener) {
-    if (this.game.DEBUG) console.log('-> event added: ' + event);
+    if (this.game?.DEBUG) console.log('-> event added: ' + event);
 
     if (!this.listeners[event]) {
       this.listeners[event] = [];
@@ -21,11 +21,12 @@ export class EventEmitter {
   }
 
   emit(event, ...args) {
-    if (this.game.DEBUG) console.log('>> event emitted: ' + event);
+    if (this.game?.DEBUG) console.log('>> event emitted: ' + event);
 
     if (!this.listeners[event]) return;
 
-    for (const listener of this.listeners[event]) {
+    const listeners = [...this.listeners[event]];
+    for (const listener of listeners) {
       listener(...args);
     }
   }

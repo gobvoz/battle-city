@@ -1,8 +1,9 @@
+import { SidePanelOption } from '../config/constants.js';
 import { RenderOption } from '../config/render.js';
 
 export class Renderer {
-  constructor(context, world) {
-    this.context = context;
+  constructor(game, world) {
+    this.game = game;
     this.world = world;
 
     this.blinkedFrame = false;
@@ -18,28 +19,26 @@ export class Renderer {
     }
   }
 
-  start(sprite) {
-    this.sprite = sprite;
-  }
+  start() {}
 
   render(ctx) {
     this._drawField(ctx);
-    if (this.context.DEBUG) this._renderGrid(ctx);
+    if (this.game.DEBUG) this._renderGrid(ctx);
     const postRender = this._renderField(ctx);
 
-    for (const gameObject of this.world.objects) {
-      this._renderObject(gameObject);
-      if (this.context.DEBUG) this._renderObjectBorder(gameObject);
-    }
-
-    this._renderSidePanel(ctx);
+    this.world.objects.forEach(gameObject => {
+      this._renderObject(ctx, gameObject);
+      if (this.game.DEBUG) this._renderObjectBorder(ctx, gameObject);
+    });
 
     postRender.forEach(tile => {
       this._renderTile(ctx, tile);
     });
 
-    if (this.context.DEBUG) this._renderCollisionTile(ctx);
-    if (this.context.DEBUG) this._renderDebugInfo(ctx, this.world);
+    this._renderSidePanel(ctx);
+
+    if (this.game.DEBUG) this._renderCollisionTile(ctx);
+    if (this.game.DEBUG) this._renderDebugInfo(ctx, this.world);
   }
 
   _drawField(ctx) {
@@ -129,7 +128,7 @@ export class Renderer {
 
   _renderTile(ctx, tile) {
     ctx.drawImage(
-      this.sprite.image,
+      this.game.sprite.image,
       tile.sprite[0] * RenderOption.UNIT_SIZE,
       tile.sprite[1] * RenderOption.UNIT_SIZE,
       RenderOption.TILE_SIZE,
@@ -166,8 +165,9 @@ export class Renderer {
   }
 
   _renderObject(ctx, gameObject) {
+    // 272 96 16 16 505 20 40 40
     ctx.drawImage(
-      this.sprite.image,
+      this.game.sprite.image,
       ...gameObject.sprite,
       gameObject.width,
       gameObject.height,
@@ -196,7 +196,7 @@ export class Renderer {
 
     for (let i = 0; i < this.world.enemyArray.length; i++) {
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...SidePanelOption.TANK.SPRITES,
         SidePanelOption.TANK.WIDTH,
         SidePanelOption.TANK.HEIGHT,
@@ -212,10 +212,10 @@ export class Renderer {
     }
 
     // player 1
-    if (game.player1Tank) {
+    if (this.world.player1Tank) {
       const player1logo = SidePanelOption.PLAYER_1;
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...player1logo.SPRITES,
         player1logo.WIDTH,
         player1logo.HEIGHT,
@@ -224,9 +224,9 @@ export class Renderer {
         player1logo.WIDTH * RenderOption.MULTIPLEXER,
         player1logo.HEIGHT * RenderOption.MULTIPLEXER,
       );
-      const player1Lives = SidePanelOption.NUMBER[game.player1Lives];
+      const player1Lives = SidePanelOption.NUMBER[this.game.player1Lives];
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...player1Lives.SPRITES,
         player1Lives.WIDTH,
         player1Lives.HEIGHT,
@@ -238,7 +238,7 @@ export class Renderer {
     }
 
     //player 2
-    if (game.player2Tank) {
+    if (this.world.player2Tank) {
       const player2logo = SidePanelOption.PLAYER_2;
       ctx.drawImage(
         this.sprite.image,
@@ -250,9 +250,9 @@ export class Renderer {
         player2logo.WIDTH * RenderOption.MULTIPLEXER,
         player2logo.HEIGHT * RenderOption.MULTIPLEXER,
       );
-      const player2Lives = SidePanelOption.NUMBER[game.player2Lives];
+      const player2Lives = SidePanelOption.NUMBER[this.world.player2Lives];
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...player2Lives.SPRITES,
         player2Lives.WIDTH,
         player2Lives.HEIGHT,
@@ -266,7 +266,7 @@ export class Renderer {
     //stage
     const stage = SidePanelOption.STAGE;
     ctx.drawImage(
-      this.sprite.image,
+      this.game.sprite.image,
       ...stage.SPRITES,
       stage.WIDTH,
       stage.HEIGHT,
@@ -275,12 +275,12 @@ export class Renderer {
       stage.WIDTH * RenderOption.MULTIPLEXER,
       stage.HEIGHT * RenderOption.MULTIPLEXER,
     );
-    const stageLevelRight = game.currentStage % 10;
-    const stageLevelLeft = (game.currentStage - stageLevelRight) / 10;
+    const stageLevelRight = this.game.currentLevel % 10;
+    const stageLevelLeft = (this.game.currentLevel - stageLevelRight) / 10;
     if (stageLevelLeft) {
       const number = SidePanelOption.NUMBER[stageLevelLeft];
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...number.SPRITES,
         number.WIDTH,
         number.HEIGHT,
@@ -292,7 +292,7 @@ export class Renderer {
     }
     const number = SidePanelOption.NUMBER[stageLevelRight];
     ctx.drawImage(
-      this.sprite.image,
+      this.game.sprite.image,
       ...number.SPRITES,
       number.WIDTH,
       number.HEIGHT,

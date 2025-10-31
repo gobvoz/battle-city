@@ -1,3 +1,5 @@
+import { keyCode } from './key-codes.js';
+
 export const event = {
   CHANGE_STATE: 'state:change',
   state: {
@@ -7,17 +9,17 @@ export const event = {
     RESULTS: 'results',
   },
   key: {
-    ESCAPE: 'key:Escape',
-    SPACE: 'key:Space',
-    ENTER: 'key:Enter',
-    A: 'key:KeyA',
-    S: 'key:KeyS',
-    D: 'key:KeyD',
-    W: 'key:KeyW',
-    UP: 'key:ArrowUp',
-    DOWN: 'key:ArrowDown',
-    LEFT: 'key:ArrowLeft',
-    RIGHT: 'key:ArrowRight',
+    ESCAPE: 'key:' + keyCode.ESCAPE,
+    SPACE: 'key:' + keyCode.SPACE,
+    ENTER: 'key:' + keyCode.ENTER,
+    A: 'key:' + keyCode.A,
+    S: 'key:' + keyCode.S,
+    D: 'key:' + keyCode.D,
+    W: 'key:' + keyCode.W,
+    UP: 'key:' + keyCode.ArrowUp,
+    DOWN: 'key:' + keyCode.ArrowDown,
+    LEFT: 'key:' + keyCode.ArrowLeft,
+    RIGHT: 'key:' + keyCode.ArrowRight,
   },
   inputAction: {
     PRESSED: 'pressed',
@@ -28,5 +30,9 @@ export const event = {
   pauseAction: {
     ON: 'on',
     OFF: 'off',
+  },
+  object: {
+    DESTROYED: 'destroyed',
+    FIRE: 'fire',
   },
 };
