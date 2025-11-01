@@ -59,7 +59,7 @@ export class World {
 
     this.stage = generateTerrain(stages[this.game.currentLevel - 1].terrain, this._removeWall);
 
-    this.enemyArray = stages[this.game.currentLevel - 1].enemies;
+    this.enemyArray = [...stages[this.game.currentLevel - 1].enemies];
     this.enemyTanksOnMap = 0;
     this.tanksTotal = stages[this.game.currentLevel - 1].enemies.length;
 
@@ -94,7 +94,6 @@ export class World {
       this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
     }
 
-    //need to find better way to check player death (state is not good way)
     if (this.player1Tank === null && this.game.player1Lives === 0) {
       if (this.game.DEBUG) console.log('level complete - player 1 dead - game over');
       this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
@@ -319,13 +318,21 @@ export class World {
   _removeExplosive(explosive) {
     this.explosives = this.explosives.filter(e => e !== explosive);
 
-    if (explosive.tank?.type === TankType.PLAYER_1 && this.game.player1Lives) {
-      this.game.player1Lives -= 1;
-      this._resurrectPlayer1();
+    if (explosive.tank?.type === TankType.PLAYER_1) {
+      if (this.game.player1Lives) {
+        this.game.player1Lives -= 1;
+        this._resurrectPlayer1();
+      } else {
+        this.player1Tank = null;
+      }
     }
-    if (explosive.tank?.type === TankType.PLAYER_2 && this.game.player2Lives) {
-      this.game.player2Lives -= 1;
-      this.game._resurrectPlayer2();
+    if (explosive.tank?.type === TankType.PLAYER_2) {
+      if (this.game.player2Lives) {
+        this.game.player2Lives -= 1;
+        this.game._resurrectPlayer2();
+      } else {
+        this.player2Tank = null;
+      }
     }
   }
 
@@ -525,7 +532,7 @@ export class World {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log(`Exiting world for level ${levelNumber}`);
+    if (this.game.DEBUG) console.log(`Exiting world for level ${this.game.currentLevel}`);
     this.entities = [];
 
     document.removeEventListener('keydown', this.handleKeyDown);

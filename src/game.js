@@ -1,14 +1,17 @@
+import { EventEmitter } from './core/event-emitter.js';
 import { Input } from './core/input-handler.js';
 import { AudioManager } from './core/audio-manager.js';
 import { Sprite } from './core/sprite.js';
+
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
 
-import { EventEmitter } from './core/event-emitter.js';
 import { MenuState } from './states/menu.state.js';
 import { PlayState } from './states/play.state.js';
 import { GameOverState } from './states/game-over.state.js';
 import { ResultsState } from './states/results.state.js';
+import { NextLevelState } from './states/next-level.state.js';
+import { RestartGameState } from './states/restart-game.state.js';
 
 const DEFAULT_DELAY = 0;
 
@@ -33,7 +36,7 @@ export class Game {
     this.context = {};
     Object.defineProperties(this.context, {
       DEBUG: { get: () => game.DEBUG }, // need to remove (switch to vite)
-      events: { get: () => game.events }, // need to remove (switch to extend)
+      events: { get: () => game.events },
       input: { get: () => game.input },
       sprite: { get: () => game.sprite },
       currentLevel: {
@@ -48,6 +51,8 @@ export class Game {
         get: () => game.player2Lives,
         set: lives => (game.player2Lives = lives),
       },
+      fps: { get: () => game.fps },
+      busyTime: { get: () => game.busyTime },
     });
 
     this.events = new EventEmitter(this.context);
@@ -92,9 +97,6 @@ export class Game {
     const deltaTime = (currentTime - this.lastTime) / 1000;
     this.lastTime = currentTime;
 
-    this.update(deltaTime);
-    this.render();
-
     if (this.debugDelay > 0) {
       this.debugDelay--;
       requestAnimationFrame(this.loop);
@@ -103,6 +105,9 @@ export class Game {
     }
 
     this.debugDelay = DEFAULT_DELAY;
+
+    this.update(deltaTime);
+    this.render();
 
     const now = window.performance.now();
     this.fpsCounter++;
@@ -126,10 +131,6 @@ export class Game {
 
     switch (newStateName) {
       case event.state.MENU:
-        this.currentLevel = 1;
-
-        this.player1Lives = 2;
-        this.player2Lives = 2;
         this.state = new MenuState(this.context);
         break;
       case event.state.PLAY:
@@ -141,12 +142,18 @@ export class Game {
       case event.state.RESULTS:
         this.state = new ResultsState(this.context);
         break;
+      case event.state.NEXT_LEVEL:
+        this.state = new NextLevelState(this.context);
+        break;
+      case event.state.RESTART:
+        this.state = new RestartGameState(this.context);
+        break;
       default:
         console.warn(`Unknown state: ${newStateName}`);
     }
 
-    this.state.start();
     this.events.on(event.CHANGE_STATE, this.changeState);
+    this.state.start();
   }
 
   toggleDebug(key) {

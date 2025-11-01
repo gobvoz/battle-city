@@ -13,7 +13,7 @@ export class Renderer {
   update(deltaTime) {
     this.blinkCounter += deltaTime;
 
-    if (this.blinkCounter >= 500) {
+    if (this.blinkCounter >= 0.5) {
       this.blinkedFrame = !this.blinkedFrame;
       this.blinkCounter = 0;
     }
@@ -104,6 +104,7 @@ export class Renderer {
   _renderDebugInfo(ctx) {
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
+    ctx.textAlign = 'left';
 
     // ctx.fillText(
     //   `${this.world.player1Tank.x},${this.world.player1Tank.y}`,

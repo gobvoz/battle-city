@@ -7,6 +7,8 @@ export const event = {
     PLAY: 'play',
     GAME_OVER: 'gameover',
     RESULTS: 'results',
+    NEXT_LEVEL: 'nextlevel',
+    RESTART: 'restart',
   },
   key: {
     ESCAPE: 'key:' + keyCode.ESCAPE,

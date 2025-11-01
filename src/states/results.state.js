@@ -31,7 +31,7 @@ export class ResultsState {
 
   changeState(key) {
     if (key !== event.inputAction.PRESSED) return;
-    this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
+    this.game.events.emit(event.CHANGE_STATE, event.state.NEXT_LEVEL);
   }
 
   exit() {
