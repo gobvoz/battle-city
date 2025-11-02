@@ -1,6 +1,9 @@
 import { event } from '../config/events.js';
 import stages from '../config/stages/index.js';
 
+import EffectsManager from '../core/effects-manager.js';
+import ShieldEffect from '../effects/shield-effect.js';
+
 import Resurrection from '../entities/resurrection.js';
 import Tank from '../entities/tank.js';
 import EnemyTank from '../entities/enemy-tank.js';
@@ -41,6 +44,8 @@ export class World {
     this.maxWorldY = 0;
 
     this.collisionTiles = [];
+
+    this.effects = new EffectsManager(this);
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -114,7 +119,7 @@ export class World {
 
     const activeKeys = this.game.input.activeKeys();
     this.objects.forEach(gameObject => {
-      gameObject && gameObject.update(activeKeys);
+      gameObject && gameObject.update(deltaTime, activeKeys);
     });
   }
 
@@ -198,6 +203,7 @@ export class World {
       ...this.projectiles,
       ...this.explosives,
       ...this.resurrections,
+      ...this.effects.activeEffects,
     ];
   }
 
@@ -257,6 +263,10 @@ export class World {
         x: resurrection.x,
         y: resurrection.y,
       });
+
+      const shield = new ShieldEffect(tank, 3000);
+      shield.start();
+      this.effects.addEffect(shield);
 
       // this.game.audio.play('player-standby', { loop: false });
     } else {

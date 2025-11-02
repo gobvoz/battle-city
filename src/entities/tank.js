@@ -30,6 +30,7 @@ export default class Tank extends GameObject {
     this.type = type;
 
     this.hasProjectile = false;
+    this.invulnerable = false;
   }
 
   _changeAnimationFrame = () => (this.animationFrame ^= 1);
@@ -91,6 +92,7 @@ export default class Tank extends GameObject {
   };
 
   hit(object) {
+    if (this.invulnerable) return false;
     if (object.type !== ObjectType.PROJECTILE) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
@@ -115,7 +117,7 @@ export default class Tank extends GameObject {
     ];
   }
 
-  update(activeKeys) {
+  update(deltaTime, activeKeys) {
     const speed = this.world.hasCollision(this) ? 0 : this.speed;
     let tankTryToMove = false;
 
