@@ -1,4 +1,4 @@
-import { DebugManager } from './debug-manager';
+import { DebugManager } from './debug-manager.js';
 
 export class EventEmitter {
   constructor(game) {

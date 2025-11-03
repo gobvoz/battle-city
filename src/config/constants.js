@@ -65,6 +65,13 @@ export const TankType = {
   PLAYER_2: 2,
 };
 
+export const EnemyType = {
+  COMMON: 1,
+  FAST: 2,
+  POWER: 3,
+  ARMOR: 4,
+};
+
 export const ResurrectionOption = {
   ANIMATION_TIME: 3000,
   ANIMATION_INTERVAL: 200,
@@ -143,6 +150,7 @@ export const Player2TankOption = {
 
 // common tank
 export const Enemy1TankOption = {
+  ENEMY_TYPE: EnemyType.COMMON,
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
@@ -176,6 +184,7 @@ export const Enemy1TankOption = {
 
 // fast tank
 export const Enemy2TankOption = {
+  ENEMY_TYPE: EnemyType.FAST,
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
@@ -209,6 +218,7 @@ export const Enemy2TankOption = {
 
 // power tank
 export const Enemy3TankOption = {
+  ENEMY_TYPE: EnemyType.POWER,
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,
@@ -242,6 +252,7 @@ export const Enemy3TankOption = {
 
 // armor tank
 export const Enemy4TankOption = {
+  ENEMY_TYPE: EnemyType.ARMOR,
   WIDTH: WorldOption.UNIT_SIZE,
   HEIGHT: WorldOption.UNIT_SIZE,
   START_DIRECTION: Direction.DOWN,

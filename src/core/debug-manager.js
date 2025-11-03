@@ -1,5 +1,6 @@
 export class DebugManager {
   static enabled = false;
+  static overlay = null;
 
   static log(...args) {
     if (!DebugManager.enabled) return;
@@ -9,6 +10,10 @@ export class DebugManager {
     const location = match ? `${match[1]}:${match[2]}` : 'unknown location';
 
     console.log(`${args.join(' ')} ${location}`);
+  }
+
+  static render() {
+    if (!DebugManager.enabled) return;
   }
 
   static toggle() {

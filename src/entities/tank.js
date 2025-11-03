@@ -97,6 +97,10 @@ export default class Tank extends GameObject {
     if (object.type === ObjectType.PROJECTILE && object.tank === this) return false;
     if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
 
+    if (this.type === TankType.ENEMY) {
+      this.emit(event.stats.RECORD_KILL, this.tankOptions.ENEMY_TYPE, object.tank.type);
+    }
+
     this.emit(event.object.DESTROYED, this);
     this.state = 'dead';
     return true;

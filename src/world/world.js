@@ -20,6 +20,7 @@ import {
   Player1TankOption,
   Player2TankOption,
   EnemyTankToOption,
+  EnemyType,
   ShieldEffectOptions,
 } from '../config/constants.js';
 
@@ -58,6 +59,7 @@ export class World {
     this._removeTank = this._removeTank.bind(this);
     this._destroyBase = this._destroyBase.bind(this);
     this._removeEffect = this._removeEffect.bind(this);
+    this._recordKill = this._recordKill.bind(this);
   }
 
   start() {
@@ -286,6 +288,7 @@ export class World {
 
     tank.on(event.object.FIRE, this._addProjectile);
     tank.on(event.object.DESTROYED, this._removeTank);
+    tank.on(event.stats.RECORD_KILL, this._recordKill);
 
     if (tank.type === TankType.PLAYER_1) {
       this.player1Tank = tank;
@@ -320,6 +323,10 @@ export class World {
       //this.game.audio.stop('player-move');
       //this.game.audio.stop('player-standby');
     }
+  }
+
+  _recordKill(enemyType, player) {
+    this.game.stats.recordKill(player, enemyType);
   }
 
   _removeProjectile(projectile) {

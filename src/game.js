@@ -13,6 +13,7 @@ import { ResultsState } from './states/results.state.js';
 import { NextLevelState } from './states/next-level.state.js';
 import { RestartGameState } from './states/restart-game.state.js';
 import { DebugManager } from './core/debug-manager.js';
+import { StatsManager } from './core/stats-manager.js';
 
 const DEFAULT_DELAY = 0;
 
@@ -40,6 +41,7 @@ export class Game {
       events: { get: () => game.events },
       input: { get: () => game.input },
       sprite: { get: () => game.sprite },
+      stats: { get: () => game.stats },
       currentLevel: {
         get: () => game.currentLevel,
         set: level => (game.currentLevel = level),
@@ -59,6 +61,7 @@ export class Game {
     this.events = new EventEmitter(this.context);
     this.audio = new AudioManager();
     this.sprite = new Sprite('./src/assets/sprites/sprite.png');
+    this.stats = new StatsManager();
 
     this.input = new Input(this.context);
     this.state = new MenuState(this.context);

@@ -37,4 +37,7 @@ export const event = {
     DESTROYED: 'destroyed',
     FIRE: 'fire',
   },
+  stats: {
+    RECORD_KILL: 'stats:recordkill',
+  },
 };
