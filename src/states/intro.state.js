@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class IntroState {
   constructor(game) {
@@ -10,7 +11,7 @@ export class IntroState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Intro State');
+    DebugManager.log('Entering Intro State');
 
     this.timer = 0;
   }
@@ -61,6 +62,6 @@ export class IntroState {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Intro State');
+    DebugManager.log('Exiting Intro State');
   }
 }

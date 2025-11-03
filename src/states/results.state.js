@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class ResultsState {
   constructor(game) {
@@ -8,7 +9,7 @@ export class ResultsState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Results State');
+    DebugManager.log('Entering Results State');
     this.game.events.on(event.key.ENTER, this.changeState);
   }
 
@@ -36,6 +37,6 @@ export class ResultsState {
 
   exit() {
     this.game.events.off(event.key.ENTER, this.changeState);
-    if (this.game.DEBUG) console.log('Exiting Results State');
+    DebugManager.log('Exiting Results State');
   }
 }

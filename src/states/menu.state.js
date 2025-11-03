@@ -1,5 +1,6 @@
 import { event } from '../config/events.js';
 import { keyCode } from '../config/key-codes.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class MenuState {
   constructor(game) {
@@ -10,7 +11,7 @@ export class MenuState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Menu State');
+    DebugManager.log('Entering Menu State');
     this.game.events.on(event.key.ENTER, this.changeState);
   }
 
@@ -50,7 +51,7 @@ export class MenuState {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Menu State');
+    DebugManager.log('Exiting Menu State');
     this.game.events.off(event.key.ENTER, this.changeState);
   }
 }

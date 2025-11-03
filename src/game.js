@@ -12,6 +12,7 @@ import { GameOverState } from './states/game-over.state.js';
 import { ResultsState } from './states/results.state.js';
 import { NextLevelState } from './states/next-level.state.js';
 import { RestartGameState } from './states/restart-game.state.js';
+import { DebugManager } from './core/debug-manager.js';
 
 const DEFAULT_DELAY = 0;
 
@@ -165,7 +166,6 @@ export class Game {
     )
       return;
 
-    this.DEBUG = !this.DEBUG;
-    console.log(`Debug mode: ${this.DEBUG}`);
+    DebugManager.toggle();
   }
 }

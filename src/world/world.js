@@ -11,6 +11,7 @@ import Projectile from '../entities/projectile.js';
 import Explosive from '../entities/explosive.js';
 
 import { generateTerrain } from '../core/utilities.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 import {
   Direction,
@@ -60,7 +61,7 @@ export class World {
   }
 
   start() {
-    if (this.game.DEBUG) console.log(`Starting world for level ${this.game.currentLevel}`);
+    DebugManager.log(`Starting world for level ${this.game.currentLevel}`);
 
     this.stage = generateTerrain(stages[this.game.currentLevel - 1].terrain, this._removeWall);
 
@@ -90,17 +91,17 @@ export class World {
     //this.player.update(deltaTime);
     //this.enemies.forEach(e => e.update(deltaTime));
     if (this.enemyTanksOnMap <= 0 && this.enemyArray.length === 0) {
-      if (this.game.DEBUG) console.log('level complete - victory');
+      DebugManager.log('level complete - victory');
       this.game.events.emit(event.CHANGE_STATE, event.state.RESULTS);
     }
 
     if (this.base.destroyed) {
-      if (this.game.DEBUG) console.log('level complete - base destroyed - game over');
+      DebugManager.log('level complete - base destroyed - game over');
       this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
     }
 
     if (this.player1Tank === null && this.game.player1Lives === 0) {
-      if (this.game.DEBUG) console.log('level complete - player 1 dead - game over');
+      DebugManager.log('level complete - player 1 dead - game over');
       this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
     }
 
@@ -551,7 +552,7 @@ export class World {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log(`Exiting world for level ${this.game.currentLevel}`);
+    DebugManager.log(`Exiting world for level ${this.game.currentLevel}`);
     this.entities = [];
 
     document.removeEventListener('keydown', this.handleKeyDown);

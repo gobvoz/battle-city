@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class NextLevelState {
   constructor(game) {
@@ -6,7 +7,7 @@ export class NextLevelState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Next Level State');
+    DebugManager.log('Entering Next Level State');
 
     this.game.currentLevel++;
 
@@ -18,6 +19,6 @@ export class NextLevelState {
   render() {}
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Next Level State');
+    DebugManager.log('Exiting Next Level State');
   }
 }

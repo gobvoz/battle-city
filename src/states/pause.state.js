@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class PauseState {
   constructor(game) {
@@ -11,7 +12,7 @@ export class PauseState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Pause State');
+    DebugManager.log('Entering Pause State');
 
     this.timer = 0;
     this.textVisible = true;
@@ -60,7 +61,7 @@ export class PauseState {
   }
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Pause State');
+    DebugManager.log('Exiting Pause State');
 
     this.game.events.off(event.key.ESCAPE, this.exit);
   }

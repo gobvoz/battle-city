@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { DebugManager } from '../core/debug-manager.js';
 
 export class RestartGameState {
   constructor(game) {
@@ -6,7 +7,7 @@ export class RestartGameState {
   }
 
   start() {
-    if (this.game.DEBUG) console.log('Entering Restart Game State');
+    DebugManager.log('Entering Restart Game State');
 
     this.game.currentLevel = 1;
 
@@ -21,6 +22,6 @@ export class RestartGameState {
   render() {}
 
   exit() {
-    if (this.game.DEBUG) console.log('Exiting Restart Game State');
+    DebugManager.log('Exiting Restart Game State');
   }
 }
