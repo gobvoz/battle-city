@@ -348,6 +348,17 @@ export const IceOption = {
   SPRITES: [[17, 4.5]],
 };
 
+export const ShieldEffectOptions = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  EFFECT_DURATION: 5,
+  ANIMATION_INTERVAL: 0.04,
+  SPRITES: [
+    [16, 9],
+    [17, 9],
+  ],
+};
+
 export const SidePanelOption = {
   TANK: {
     OFFSET_X: 228 * MULTIPLEXER,

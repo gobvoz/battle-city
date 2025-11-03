@@ -1,7 +1,6 @@
 import { event } from '../config/events.js';
 import stages from '../config/stages/index.js';
 
-import EffectsManager from '../core/effects-manager.js';
 import ShieldEffect from '../effects/shield-effect.js';
 
 import Resurrection from '../entities/resurrection.js';
@@ -20,6 +19,7 @@ import {
   Player1TankOption,
   Player2TankOption,
   EnemyTankToOption,
+  ShieldEffectOptions,
 } from '../config/constants.js';
 
 const TANKS_ON_MAP = 4;
@@ -33,6 +33,7 @@ export class World {
     this.enemyTanks = [];
     this.resurrections = [];
     this.enemyArray = [];
+    this.effects = [];
 
     this.currentMoveState = 'standby'; // "standby", "move"
     this.player1Tank = null;
@@ -45,8 +46,6 @@ export class World {
 
     this.collisionTiles = [];
 
-    this.effects = new EffectsManager(this);
-
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
 
@@ -57,6 +56,7 @@ export class World {
     this._removeResurrection = this._removeResurrection.bind(this);
     this._removeTank = this._removeTank.bind(this);
     this._destroyBase = this._destroyBase.bind(this);
+    this._removeEffect = this._removeEffect.bind(this);
   }
 
   start() {
@@ -203,7 +203,7 @@ export class World {
       ...this.projectiles,
       ...this.explosives,
       ...this.resurrections,
-      ...this.effects.activeEffects,
+      ...this.effects,
     ];
   }
 
@@ -264,9 +264,13 @@ export class World {
         y: resurrection.y,
       });
 
-      const shield = new ShieldEffect(tank, 3000);
+      const shield = new ShieldEffect({
+        target: tank,
+        effectOptions: ShieldEffectOptions,
+      });
       shield.start();
-      this.effects.addEffect(shield);
+      shield.on(event.object.DESTROYED, this._removeEffect);
+      this.effects.push(shield);
 
       // this.game.audio.play('player-standby', { loop: false });
     } else {
@@ -290,6 +294,11 @@ export class World {
     }
 
     this.enemyTanks.push(tank);
+  }
+
+  _removeEffect(effect) {
+    effect.end();
+    this.effects = this.effects.filter(e => e !== effect);
   }
 
   _removeTank(tank) {
