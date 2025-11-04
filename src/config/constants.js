@@ -72,6 +72,13 @@ export const EnemyType = {
   ARMOR: 4,
 };
 
+export const PointPerEnemyType = {
+  [EnemyType.COMMON]: 100,
+  [EnemyType.FAST]: 200,
+  [EnemyType.POWER]: 300,
+  [EnemyType.ARMOR]: 400,
+};
+
 export const ResurrectionOption = {
   ANIMATION_TIME: 3000,
   ANIMATION_INTERVAL: 200,

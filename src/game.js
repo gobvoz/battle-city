@@ -138,7 +138,8 @@ export class Game {
         this.state = new MenuState(this.context);
         break;
       case event.state.PLAY:
-        this.state = new PlayState(this.context);
+        //this.state = new PlayState(this.context);
+        this.state = new ResultsState(this.context);
         break;
       case event.state.GAME_OVER:
         this.state = new GameOverState(this.context);

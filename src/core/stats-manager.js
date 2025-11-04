@@ -1,41 +1,23 @@
-import { TankType } from '../config/constants.js';
+import { TankType, EnemyType } from '../config/constants.js';
 
 export class StatsManager {
   constructor() {
     this.scores = {
-      [TankType.PLAYER_1]: this._createPlayerStats(),
-      [TankType.PLAYER_2]: this._createPlayerStats(),
-      total: 0,
+      [EnemyType.COMMON]: [3, 3],
+      [EnemyType.FAST]: [0, 0],
+      [EnemyType.POWER]: [0, 0],
+      [EnemyType.ARMOR]: [9, 0],
+      level: [0, 0],
+      total: [0, 0],
     };
   }
 
-  reset() {
-    this.scores[TankType.PLAYER_1] = this._createPlayerStats();
-    this.scores[TankType.PLAYER_2] = this._createPlayerStats();
-    this.scores.total = 0;
-  }
+  reset() {}
 
-  nextLevel() {
-    this.scores.total +=
-      this.scores[TankType.PLAYER_1].level + this.scores[TankType.PLAYER_2].level;
-
-    this.scores[TankType.PLAYER_1] = this._createPlayerStats();
-    this.scores[TankType.PLAYER_2] = this._createPlayerStats();
-  }
-
-  _createPlayerStats() {
-    return {
-      [1]: 0,
-      [2]: 0,
-      [3]: 0,
-      [4]: 0,
-
-      level: 0,
-    };
-  }
+  nextLevel() {}
 
   recordKill(player, enemyType) {
-    this.scores[player][enemyType]++;
+    this.scores[enemyType][player]++;
     console.log(this.scores);
   }
 }
