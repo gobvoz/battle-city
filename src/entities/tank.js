@@ -19,6 +19,7 @@ export default class Tank extends GameObject {
     this.speed = tankOptions.MOVEMENT_SPEED;
     this.projectileSpeed = tankOptions.PROJECTILE_SPEED;
     this.power = tankOptions.DEFAULT_POWER;
+    this.playerIndex = tankOptions.PLAYER_INDEX;
 
     this.oldX = this.x;
     this.oldY = this.y;
@@ -98,7 +99,7 @@ export default class Tank extends GameObject {
     if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
 
     if (this.type === TankType.ENEMY) {
-      this.emit(event.stats.RECORD_KILL, this.tankOptions.ENEMY_TYPE, object.tank.type);
+      this.emit(event.stats.RECORD_KILL, this.tankOptions.ENEMY_TYPE, object.tank.playerIndex);
     }
 
     this.emit(event.object.DESTROYED, this);

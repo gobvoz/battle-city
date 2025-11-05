@@ -6,7 +6,7 @@ export class IntroState {
     this.game = game;
 
     this.timer = 0;
-    this.duration = 1;
+    this.duration = 3;
     this.transitionTime = 0.5;
   }
 

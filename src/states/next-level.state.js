@@ -10,6 +10,7 @@ export class NextLevelState {
     DebugManager.log('Entering Next Level State');
 
     this.game.currentLevel++;
+    this.game.stats.nextLevel();
 
     this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
   }

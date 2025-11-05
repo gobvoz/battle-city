@@ -25,7 +25,6 @@ export class ResultsState {
 
   start() {
     DebugManager.log('Entering Results State');
-    // this.game.events.on(event.key.ENTER, this.changeState);
   }
 
   update(deltaTime) {
@@ -74,20 +73,16 @@ export class ResultsState {
     ctx.fillStyle = 'rgba(230, 50, 0, 1)';
     ctx.fillText('HI-SCORE', ctx.canvas.width / 2 - 50, 20);
 
-    ctx.textAlign = 'left';
-    ctx.fillStyle = 'rgba(248, 154, 47, 1)';
-    ctx.fillText('2000', ctx.canvas.width / 2 + 50, 20);
-
     ctx.textAlign = 'center';
     ctx.fillStyle = 'white';
-    ctx.fillText('STAGE 8', ctx.canvas.width / 2, 60);
+    ctx.fillText(`STAGE ${this.game.currentLevel}`, ctx.canvas.width / 2, 60);
 
     this._drawResultTable(ctx);
 
     if (this.finished) {
       ctx.font = '16px monospace';
+      ctx.fillStyle = 'white';
       ctx.textAlign = 'center';
-
       ctx.fillText('PRESS ENTER TO NEXT LEVEL', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
     }
   }
@@ -101,8 +96,8 @@ export class ResultsState {
     ctx.textAlign = 'right';
     ctx.fillText('I-PLAYER', ctx.canvas.width / 2 - 100, startY);
 
-    ctx.fillStyle = 'rgba(248, 154, 47, 1)';
-    ctx.fillText('3700', ctx.canvas.width / 2 - 100, startY + lineHeight);
+    // ctx.fillStyle = 'rgba(248, 154, 47, 1)';
+    // ctx.fillText(`${this.scores.total[0]}`, ctx.canvas.width / 2 - 100, startY + lineHeight);
 
     ctx.fillStyle = 'white';
     ctx.fillText('PTS', ctx.canvas.width / 2 - 100, startY + lineHeight * 2);
@@ -115,8 +110,8 @@ export class ResultsState {
     ctx.textAlign = 'left';
     ctx.fillText('II-PLAYER', ctx.canvas.width / 2 + 100, startY);
 
-    ctx.fillStyle = 'rgba(248, 154, 47, 1)';
-    ctx.fillText('3700', ctx.canvas.width / 2 + 100, startY + lineHeight);
+    // ctx.fillStyle = 'rgba(248, 154, 47, 1)';
+    // ctx.fillText(`${this.scores.total[1]}`, ctx.canvas.width / 2 + 100, startY + lineHeight);
 
     ctx.fillStyle = 'white';
     ctx.fillText('PTS', ctx.canvas.width / 2 + 100, startY + lineHeight * 2);
@@ -154,6 +149,7 @@ export class ResultsState {
     const levelCounts = [0, 0];
 
     this.displayedCounts.forEach((count, enemyType) => {
+      ctx.fillStyle = 'white';
       ctx.textAlign = 'right';
       ctx.fillText(count[0], ctx.canvas.width / 2 - 60, (enemyType + 1) * lineHeight + startY);
       ctx.fillText(
@@ -185,17 +181,43 @@ export class ResultsState {
     ctx.lineTo(ctx.canvas.width - 100, startY + 6 * lineHeight - 30);
     ctx.stroke();
 
-    // total scores
+    // level scores
+    ctx.fillStyle = 'white';
     ctx.textAlign = 'right';
     ctx.fillText(`${levelScores[0]}`, ctx.canvas.width / 2 - 150, startY + 6 * lineHeight);
     ctx.textAlign = 'left';
     ctx.fillText(`${levelScores[1]}`, ctx.canvas.width / 2 + 150, startY + 6 * lineHeight);
 
-    // total tanks
+    // level tanks
     ctx.textAlign = 'right';
     ctx.fillText(`${levelCounts[0]}`, ctx.canvas.width / 2 - 60, startY + 6 * lineHeight);
     ctx.textAlign = 'left';
     ctx.fillText(`${levelCounts[1]}`, ctx.canvas.width / 2 + 60, startY + 6 * lineHeight);
+
+    // total scores
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(248, 154, 47, 1)';
+    ctx.fillText(
+      `${this.scores.total[0] + levelScores[0]}`,
+      ctx.canvas.width / 2 - 100,
+      startY + lineHeight,
+    );
+    ctx.textAlign = 'left';
+    ctx.fillText(
+      `${this.scores.total[1] + levelScores[1]}`,
+      ctx.canvas.width / 2 + 100,
+      startY + lineHeight,
+    );
+
+    // hi-score
+    const hiScore = Math.max(
+      this.scores.hiScore,
+      this.scores.total[0] + levelScores[0],
+      this.scores.total[1] + levelScores[1],
+    );
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(248, 154, 47, 1)';
+    ctx.fillText(`${hiScore}`, ctx.canvas.width / 2 + 50, 20);
   }
 
   changeState(key) {

@@ -6,6 +6,8 @@ const STAGE_SIZE = 13;
 const BASE_CHANGE_DIRECTION_DELAY = 32;
 const BASE_FIRE_DELAY = 32;
 
+export const HI_SCORE_KEY = 'battle-city:hi-score';
+
 export const WorldOption = {
   TILE_SIZE,
   STAGE_SIZE,
@@ -96,6 +98,7 @@ export const ResurrectionOption = {
 };
 
 export const Player1TankOption = {
+  PLAYER_INDEX: 0,
   START_X: 5 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   WIDTH: WorldOption.UNIT_SIZE,
@@ -126,6 +129,7 @@ export const Player1TankOption = {
 };
 
 export const Player2TankOption = {
+  PLAYER_INDEX: 1,
   START_X: 9 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   START_Y: 13 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
   WIDTH: WorldOption.UNIT_SIZE,
