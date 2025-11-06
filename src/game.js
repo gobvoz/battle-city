@@ -63,7 +63,7 @@ export class Game {
 
     this.events = new EventEmitter(this.context);
     this.audio = new AudioManager();
-    this.sprite = new Sprite('./src/assets/sprites/sprite.png');
+    this.sprite = new Sprite('/sprites/sprite.png');
     this.stats = new StatsManager();
 
     this.input = new Input(this.context);
