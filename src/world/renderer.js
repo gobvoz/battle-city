@@ -1,6 +1,5 @@
 import { SidePanelOption } from '../config/constants.js';
 import { RenderOption } from '../config/render.js';
-import { DebugManager } from '../core/debug-manager.js';
 
 export class Renderer {
   constructor(game, world) {
@@ -24,12 +23,14 @@ export class Renderer {
 
   render(ctx) {
     this._drawField(ctx);
-    if (DebugManager.enabled) this._renderGrid(ctx);
+
+    __DEBUG__ && this._renderGrid(ctx);
+
     const postRender = this._renderField(ctx);
 
     this.world.objects.forEach(gameObject => {
       this._renderObject(ctx, gameObject);
-      if (DebugManager.enabled) this._renderObjectBorder(ctx, gameObject);
+      __DEBUG__ && this._renderObjectBorder(ctx, gameObject);
     });
 
     postRender.forEach(tile => {
@@ -38,8 +39,8 @@ export class Renderer {
 
     this._renderSidePanel(ctx);
 
-    if (DebugManager.enabled) this._renderCollisionTile(ctx);
-    if (DebugManager.enabled) this._renderDebugInfo(ctx, this.world);
+    __DEBUG__ && this._renderCollisionTile(ctx);
+    __DEBUG__ && this._renderDebugInfo(ctx, this.world);
   }
 
   _drawField(ctx) {

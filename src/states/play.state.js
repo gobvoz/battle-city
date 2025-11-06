@@ -4,7 +4,6 @@ import { World } from '../world/world.js';
 import { Renderer } from '../world/renderer.js';
 
 import { event } from '../config/events.js';
-import { DebugManager } from '../core/debug-manager.js';
 
 export class PlayState {
   constructor(game) {
@@ -22,7 +21,7 @@ export class PlayState {
   }
 
   start() {
-    DebugManager.log('Entering Play State');
+    __DEBUG__ && console.log('Entering Play State');
 
     this.subState.start();
     this.world.start();
@@ -52,7 +51,7 @@ export class PlayState {
   }
 
   exit() {
-    DebugManager.log('Exiting Play State');
+    __DEBUG__ && console.log('Exiting Play State');
 
     this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
     this.game.events.off(event.TOGGLE_PAUSE, this.togglePause);
@@ -78,6 +77,6 @@ export class PlayState {
 
     this.paused = !this.paused;
 
-    if (this.game.DEBUG) console.log(this.paused ? 'Paused gameplay' : 'Resumed gameplay');
+    __DEBUG__ && console.log(this.paused ? 'Paused gameplay' : 'Resumed gameplay');
   }
 }

@@ -1,9 +1,11 @@
+const DEFAULT_DEBUG_DELAY = 0;
+
 export class DebugManager {
-  static enabled = false;
   static overlay = null;
+  static debugDelay = DEFAULT_DEBUG_DELAY;
 
   static log(...args) {
-    if (!DebugManager.enabled) return;
+    if (!__DEBUG__) return;
 
     const stack = new Error().stack?.split('\n')[2] || '';
     const match = stack.match(/(\/[\w./-]+):(\d+):(\d+)/);
@@ -13,11 +15,21 @@ export class DebugManager {
   }
 
   static render() {
-    if (!DebugManager.enabled) return;
+    if (!__DEBUG__) return;
   }
 
   static toggle() {
-    DebugManager.enabled = !DebugManager.enabled;
-    console.log(`Debug mode: ${DebugManager.enabled ? 'ON' : 'OFF'}`);
+    __DEBUG__ = !__DEBUG__;
+    console.log(`Debug mode: ${__DEBUG__ ? 'ON' : 'OFF'}`);
+  }
+
+  static handleDebugDelay() {
+    if (DebugManager.debugDelay > 0) {
+      DebugManager.debugDelay--;
+      return true;
+    }
+
+    DebugManager.debugDelay = DEFAULT_DEBUG_DELAY;
+    return false;
   }
 }

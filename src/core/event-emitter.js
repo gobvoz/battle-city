@@ -1,5 +1,3 @@
-import { DebugManager } from './debug-manager.js';
-
 export class EventEmitter {
   constructor(game) {
     this.game = game;
@@ -7,7 +5,7 @@ export class EventEmitter {
   }
 
   on(event, listener) {
-    DebugManager.log('-> event added: ' + event);
+    __DEBUG__ && console.log('-> event added: ' + event);
 
     if (!this.listeners[event]) {
       this.listeners[event] = [];
@@ -16,14 +14,14 @@ export class EventEmitter {
   }
 
   off(event, listener) {
-    DebugManager.log('-< event removed: ' + event);
+    __DEBUG__ && console.log('-< event removed: ' + event);
     if (!this.listeners[event]) return;
 
     this.listeners[event] = this.listeners[event].filter(l => l !== listener);
   }
 
   emit(event, ...args) {
-    DebugManager.log('>> event emitted: ' + event);
+    __DEBUG__ && console.log('>> event emitted: ' + event);
 
     if (!this.listeners[event]) return;
 

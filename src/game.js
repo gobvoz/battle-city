@@ -12,10 +12,15 @@ import { GameOverState } from './states/game-over.state.js';
 import { ResultsState } from './states/results.state.js';
 import { NextLevelState } from './states/next-level.state.js';
 import { RestartGameState } from './states/restart-game.state.js';
-import { DebugManager } from './core/debug-manager.js';
 import { StatsManager } from './core/stats-manager.js';
 
-const DEFAULT_DELAY = 0;
+let DebugManager;
+
+if (__DEBUG__) {
+  import('./core/debug-manager.js').then(module => {
+    DebugManager = module.DebugManager;
+  });
+}
 
 export class Game {
   fps = 0;
@@ -26,7 +31,6 @@ export class Game {
 
   constructor(ctx) {
     this.ctx = ctx;
-    this.DEBUG = false;
 
     this.currentLevel = 1;
 
@@ -37,7 +41,6 @@ export class Game {
 
     this.context = {};
     Object.defineProperties(this.context, {
-      DEBUG: { get: () => game.DEBUG }, // need to remove (switch to vite)
       events: { get: () => game.events },
       input: { get: () => game.input },
       sprite: { get: () => game.sprite },
@@ -72,18 +75,21 @@ export class Game {
 
     this.loop = this.loop.bind(this);
     this.changeState = this.changeState.bind(this);
-    this.toggleDebug = this.toggleDebug.bind(this);
+
+    __DEBUG__ && (this.toggleDebug = this.toggleDebug.bind(this));
   }
 
   async start() {
+    __DEBUG__ && this.events.on(event.key.D, this.toggleDebug);
+
     this.events.on(event.CHANGE_STATE, this.changeState);
-    this.events.on(event.key.D, this.toggleDebug);
 
     this.lastTime = performance.now();
     this.running = true;
 
     await this.sprite.load();
     this.state.start();
+
     requestAnimationFrame(this.loop);
 
     setInterval(() => {
@@ -101,14 +107,12 @@ export class Game {
     const deltaTime = (currentTime - this.lastTime) / 1000;
     this.lastTime = currentTime;
 
-    if (this.debugDelay > 0) {
-      this.debugDelay--;
+    if (__DEBUG__ && DebugManager?.handleDebugDelay()) {
       requestAnimationFrame(this.loop);
-
       return;
     }
 
-    this.debugDelay = DEFAULT_DELAY;
+    this.busyTimeCounter += deltaTime;
 
     this.update(deltaTime);
     this.render();
@@ -170,6 +174,6 @@ export class Game {
     )
       return;
 
-    DebugManager.toggle();
+    DebugManager?.toggle();
   }
 }

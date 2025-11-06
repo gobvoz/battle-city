@@ -1,5 +1,4 @@
 import { event } from '../config/events.js';
-import { DebugManager } from '../core/debug-manager.js';
 
 export class GameOverState {
   constructor(game) {
@@ -9,7 +8,7 @@ export class GameOverState {
   }
 
   start() {
-    DebugManager.log('Entering Game Over State');
+    __DEBUG__ && console.log('Entering Game Over State');
     this.game.events.on(event.key.ENTER, this.changeState);
   }
 
@@ -37,6 +36,6 @@ export class GameOverState {
 
   exit() {
     this.game.events.off(event.key.ENTER, this.changeState);
-    DebugManager.log('Exiting Game Over State');
+    __DEBUG__ && console.log('Exiting Game Over State');
   }
 }

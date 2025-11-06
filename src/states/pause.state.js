@@ -1,5 +1,4 @@
 import { event } from '../config/events.js';
-import { DebugManager } from '../core/debug-manager.js';
 
 export class PauseState {
   constructor(game) {
@@ -12,7 +11,7 @@ export class PauseState {
   }
 
   start() {
-    DebugManager.log('Entering Pause State');
+    __DEBUG__ && console.log('Entering Pause State');
 
     this.timer = 0;
     this.textVisible = true;
@@ -53,7 +52,7 @@ export class PauseState {
     this.active = !this.active;
     this.timer = 0;
 
-    if (this.game.DEBUG) console.log(this.active ? 'Game paused' : 'Game resumed');
+    __DEBUG__ && console.log(this.active ? 'Game paused' : 'Game resumed');
 
     this.active
       ? this.game.events.emit(event.TOGGLE_PAUSE, event.pauseAction.ON)
@@ -61,7 +60,7 @@ export class PauseState {
   }
 
   exit() {
-    DebugManager.log('Exiting Pause State');
+    __DEBUG__ && console.log('Exiting Pause State');
 
     this.game.events.off(event.key.ESCAPE, this.exit);
   }

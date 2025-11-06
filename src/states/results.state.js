@@ -1,5 +1,4 @@
 import { event } from '../config/events.js';
-import { DebugManager } from '../core/debug-manager.js';
 import {
   PointPerEnemyType,
   EnemyTankToOption,
@@ -24,7 +23,7 @@ export class ResultsState {
   }
 
   start() {
-    DebugManager.log('Entering Results State');
+    __DEBUG__ && console.log('Entering Results State');
   }
 
   update(deltaTime) {
@@ -227,6 +226,6 @@ export class ResultsState {
 
   exit() {
     this.game.events.off(event.key.ENTER, this.changeState);
-    DebugManager.log('Exiting Results State');
+    __DEBUG__ && console.log('Exiting Results State');
   }
 }
