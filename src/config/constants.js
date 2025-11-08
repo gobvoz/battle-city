@@ -1,6 +1,7 @@
 const TILE_SIZE = 8;
 const UNIT_SIZE = 16;
 const MULTIPLEXER = 2.5;
+const FONT_SIZE = 7 * MULTIPLEXER;
 const STAGE_SIZE = 13;
 
 const BASE_CHANGE_DIRECTION_DELAY = 32;

@@ -66,7 +66,6 @@ export class ResultsState {
   render(ctx) {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.font = 'bold 20px monospace';
 
     ctx.textAlign = 'right';
     ctx.fillStyle = 'rgba(230, 50, 0, 1)';
@@ -79,7 +78,6 @@ export class ResultsState {
     this._drawResultTable(ctx);
 
     if (this.finished) {
-      ctx.font = '16px monospace';
       ctx.fillStyle = 'white';
       ctx.textAlign = 'center';
       ctx.fillText('PRESS ENTER TO NEXT LEVEL', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);

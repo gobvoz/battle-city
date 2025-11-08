@@ -18,14 +18,12 @@ export class GameOverState {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 32px monospace';
+
     ctx.textAlign = 'center';
     ctx.fillText('BATTLE CITY', ctx.canvas.width / 2, ctx.canvas.height / 2 - 80);
 
-    ctx.font = '24px monospace';
     ctx.fillText('GAME OVER', ctx.canvas.width / 2, ctx.canvas.height / 2 - 10);
 
-    ctx.font = '16px monospace';
     ctx.fillText('PRESS ENTER TO RESTART', ctx.canvas.width / 2, ctx.canvas.height / 2 + 110);
   }
 

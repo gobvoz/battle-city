@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'digits-4x7';
+  src: url('/fonts/digits-4x7.woff2') format('woff2'),
+    url('/fonts/digits-4x7.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'font-7x7';
+  src: url('/fonts/font-7x7.woff2') format('woff2'), url('/fonts/font-7x7.ttf') format('truetype');
+  font-display: swap;
+}
+
+body {
+  font-family: 'font-7x7', monospace;
+}

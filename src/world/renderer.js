@@ -127,6 +127,7 @@ export class Renderer {
         224 * RenderOption.MULTIPLEXER + 40 + index * 10,
       );
     });
+    ctx.font = `${RenderOption.FONT_SIZE}px font-7x7`;
   }
 
   _renderTile(ctx, tile) {

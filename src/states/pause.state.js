@@ -39,7 +39,6 @@ export class PauseState {
 
     if (this.textVisible) {
       ctx.fillStyle = 'white';
-      ctx.font = '20px monospace';
       ctx.textAlign = 'center';
       ctx.fillText('PAUSE', ctx.canvas.width / 2, ctx.canvas.height / 2);
     }

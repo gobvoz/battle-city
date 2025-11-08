@@ -53,10 +53,10 @@ export class IntroState {
     // Draw level text when shutter is fully closed
     if (t > this.transitionTime / this.duration && t < 1 - this.transitionTime / this.duration) {
       ctx.fillStyle = 'black';
-      ctx.font = 'bold 20px monospace';
+  
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`LEVEL ${this.game.currentLevel}`, width / 2, height / 2);
+      ctx.fillText(`STAGE ${this.game.currentLevel}`, width / 2, height / 2);
     }
   }
 

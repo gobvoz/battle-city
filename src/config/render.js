@@ -6,4 +6,5 @@ export const RenderOption = {
   TILE_SIZE: WorldOption.TILE_SIZE,
   UNIT_SIZE: WorldOption.UNIT_SIZE,
   MULTIPLEXER: WorldOption.MULTIPLEXER,
+  FONT_SIZE: 7 * WorldOption.MULTIPLEXER,
 };
