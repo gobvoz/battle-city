@@ -61,6 +61,6 @@ export class PauseState {
   exit() {
     __DEBUG__ && console.log('Exiting Pause State');
 
-    this.game.events.off(event.key.ESCAPE, this.exit);
+    this.game.events.off(event.key.ESCAPE, this.toggle);
   }
 }

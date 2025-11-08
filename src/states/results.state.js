@@ -148,18 +148,18 @@ export class ResultsState {
     this.displayedCounts.forEach((count, enemyType) => {
       ctx.fillStyle = 'white';
       ctx.textAlign = 'right';
-      ctx.fillText(count[0], ctx.canvas.width / 2 - 60, (enemyType + 1) * lineHeight + startY);
+      ctx.fillText(count[0], ctx.canvas.width / 2 - 55, (enemyType + 1) * lineHeight + startY);
       ctx.fillText(
         count[0] * PointPerEnemyType[enemyType],
-        ctx.canvas.width / 2 - 150,
+        ctx.canvas.width / 2 - 160,
         (enemyType + 1) * lineHeight + startY,
       );
 
       ctx.textAlign = 'left';
-      ctx.fillText(count[1], ctx.canvas.width / 2 + 60, (enemyType + 1) * lineHeight + startY);
+      ctx.fillText(count[1], ctx.canvas.width / 2 + 55, (enemyType + 1) * lineHeight + startY);
       ctx.fillText(
         count[1] * PointPerEnemyType[enemyType],
-        ctx.canvas.width / 2 + 150,
+        ctx.canvas.width / 2 + 160,
         (enemyType + 1) * lineHeight + startY,
       );
 

@@ -89,6 +89,8 @@ export default class Tank extends GameObject {
   stopRight = () => {};
 
   fire = () => {
+    if (this.state !== 'active') return;
+
     this.emit(event.object.FIRE, this);
   };
 
