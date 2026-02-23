@@ -224,10 +224,10 @@ export class World {
   _resurrectPlayer2() {
     const resurrection = new Resurrection({
       world: this,
-      tankType: TankType.PLAYER_1,
-      options: Player1TankOption,
-      x: Player1TankOption.START_X,
-      y: Player1TankOption.START_Y,
+      tankType: TankType.PLAYER_2,
+      options: Player2TankOption,
+      x: Player2TankOption.START_X,
+      y: Player2TankOption.START_Y,
     });
     resurrection.on(event.object.DESTROYED, this._removeResurrection);
     this.resurrections.push(resurrection);

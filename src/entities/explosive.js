@@ -61,8 +61,8 @@ export default class Explosive extends GameObject {
     this._changeAnimationFrame = this._changeAnimationFrame.bind(this);
     this._removeExplosive = this._removeExplosive.bind(this);
 
-    this.interval = setInterval(this._changeAnimationFrame, 150);
-    setTimeout(this._removeExplosive, 450);
+    this._intervalId = setInterval(this._changeAnimationFrame, 150);
+    this._timeoutId = setTimeout(this._removeExplosive, 450);
   }
 
   _getStartX(projectile) {
@@ -94,8 +94,15 @@ export default class Explosive extends GameObject {
     this.animationFrame = (this.animationFrame + 1) % this.sprites.length;
   }
 
+  destroy() {
+    clearInterval(this._intervalId);
+    clearTimeout(this._timeoutId);
+    this._intervalId = null;
+    this._timeoutId = null;
+  }
+
   _removeExplosive() {
-    clearInterval(this.interval);
+    this.destroy();
     this.emit(event.object.DESTROYED, this);
   }
 

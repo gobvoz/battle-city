@@ -23,8 +23,11 @@ export default class Resurrection extends GameObject {
     this._changeAnimationFrame = this._changeAnimationFrame.bind(this);
     this._removeResurrection = this._removeResurrection.bind(this);
 
-    this.interval = setInterval(this._changeAnimationFrame, ResurrectionOption.ANIMATION_INTERVAL);
-    setTimeout(this._removeResurrection, ResurrectionOption.ANIMATION_TIME);
+    this._intervalId = setInterval(
+      this._changeAnimationFrame,
+      ResurrectionOption.ANIMATION_INTERVAL,
+    );
+    this._timeoutId = setTimeout(this._removeResurrection, ResurrectionOption.ANIMATION_TIME);
   }
 
   _changeAnimationFrame() {
@@ -35,8 +38,15 @@ export default class Resurrection extends GameObject {
     }
   }
 
+  destroy() {
+    clearInterval(this._intervalId);
+    clearTimeout(this._timeoutId);
+    this._intervalId = null;
+    this._timeoutId = null;
+  }
+
   _removeResurrection() {
-    clearInterval(this.interval);
+    this.destroy();
     this.emit(event.object.DESTROYED, this);
   }
 

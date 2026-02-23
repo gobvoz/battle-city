@@ -245,7 +245,7 @@ export class Renderer {
     if (this.world.player2Tank) {
       const player2logo = SidePanelOption.PLAYER_2;
       ctx.drawImage(
-        this.sprite.image,
+        this.game.sprite.image,
         ...player2logo.SPRITES,
         player2logo.WIDTH,
         player2logo.HEIGHT,
