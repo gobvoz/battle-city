@@ -1,10 +1,15 @@
+type Listener = (...args: unknown[]) => void;
+
 export class EventEmitter {
-  constructor(game) {
+  game: unknown;
+  private listeners: Record<string, Listener[]>;
+
+  constructor(game?: unknown) {
     this.game = game;
     this.listeners = {};
   }
 
-  on(event, listener) {
+  on(event: string, listener: Listener): void {
     __DEBUG__ && console.log('-> event added: ' + event);
 
     if (!this.listeners[event]) {
@@ -13,14 +18,14 @@ export class EventEmitter {
     this.listeners[event].push(listener);
   }
 
-  off(event, listener) {
+  off(event: string, listener: Listener): void {
     __DEBUG__ && console.log('-< event removed: ' + event);
     if (!this.listeners[event]) return;
 
     this.listeners[event] = this.listeners[event].filter(l => l !== listener);
   }
 
-  emit(event, ...args) {
+  emit(event: string, ...args: unknown[]): void {
     __DEBUG__ && console.log('>> event emitted: ' + event);
 
     if (!this.listeners[event]) return;
