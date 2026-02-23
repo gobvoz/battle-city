@@ -1,13 +1,15 @@
 export class AudioManager {
+  private sounds: Record<string, HTMLAudioElement>;
+
   constructor() {
     this.sounds = {};
   }
 
-  loadSound(name, src) {
+  loadSound(name: string, src: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const audio = new Audio();
       audio.src = src;
-      audio.onload = () => {
+      audio.oncanplaythrough = () => {
         this.sounds[name] = audio;
         resolve();
       };
@@ -15,7 +17,7 @@ export class AudioManager {
     });
   }
 
-  playSound(name) {
+  playSound(name: string): void {
     const sound = this.sounds[name];
     if (!sound) return;
 
@@ -25,9 +27,8 @@ export class AudioManager {
     });
   }
 
-  stopSound(name) {
+  stopSound(name: string): void {
     const sound = this.sounds[name];
-
     if (sound) {
       sound.pause();
       sound.currentTime = 0;
@@ -36,7 +37,7 @@ export class AudioManager {
     }
   }
 
-  setVolume(name, volume) {
+  setVolume(name: string, volume: number): void {
     const sound = this.sounds[name];
     if (sound) {
       sound.volume = volume;
@@ -45,13 +46,13 @@ export class AudioManager {
     }
   }
 
-  muteAll() {
+  muteAll(): void {
     for (const name in this.sounds) {
       this.sounds[name].muted = true;
     }
   }
 
-  unmuteAll() {
+  unmuteAll(): void {
     for (const name in this.sounds) {
       this.sounds[name].muted = false;
     }
