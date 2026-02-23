@@ -7,8 +7,7 @@ export const WorldOption = {
   TILE_SIZE,
   STAGE_SIZE,
   STEP_SIZE: TILE_SIZE / 2,
-
   SIZE: STAGE_SIZE * UNIT_SIZE,
   UNIT_SIZE,
   MULTIPLEXER,
-};
+} as const;

@@ -12,4 +12,4 @@ export const keyCode = {
   DOWN: 'ArrowDown',
   LEFT: 'ArrowLeft',
   RIGHT: 'ArrowRight',
-};
+} as const;

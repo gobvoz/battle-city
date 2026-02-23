@@ -18,10 +18,10 @@ export const event = {
     S: 'key:' + keyCode.S,
     D: 'key:' + keyCode.D,
     W: 'key:' + keyCode.W,
-    UP: 'key:' + keyCode.ArrowUp,
-    DOWN: 'key:' + keyCode.ArrowDown,
-    LEFT: 'key:' + keyCode.ArrowLeft,
-    RIGHT: 'key:' + keyCode.ArrowRight,
+    UP: 'key:' + keyCode.UP,
+    DOWN: 'key:' + keyCode.DOWN,
+    LEFT: 'key:' + keyCode.LEFT,
+    RIGHT: 'key:' + keyCode.RIGHT,
   },
   inputAction: {
     PRESSED: 'pressed',
@@ -40,4 +40,4 @@ export const event = {
   stats: {
     RECORD_KILL: 'stats:recordkill',
   },
-};
+} as const;

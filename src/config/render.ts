@@ -7,4 +7,4 @@ export const RenderOption = {
   UNIT_SIZE: WorldOption.UNIT_SIZE,
   MULTIPLEXER: WorldOption.MULTIPLEXER,
   FONT_SIZE: 7 * WorldOption.MULTIPLEXER,
-};
+} as const;

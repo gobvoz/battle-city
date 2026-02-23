@@ -1,7 +1,6 @@
 const TILE_SIZE = 8;
 const UNIT_SIZE = 16;
 const MULTIPLEXER = 2.5;
-const FONT_SIZE = 7 * MULTIPLEXER;
 const STAGE_SIZE = 13;
 
 const BASE_CHANGE_DIRECTION_DELAY = 32;
@@ -13,10 +12,10 @@ export const WorldOption = {
   TILE_SIZE,
   STAGE_SIZE,
   STEP_SIZE: TILE_SIZE / 2,
-
   SIZE: STAGE_SIZE * UNIT_SIZE,
   UNIT_SIZE,
-};
+  ENEMY_FRIENDLY_FIRE: false,
+} as const;
 
 export const RenderOption = {
   PADDING_LEFT: 10 * MULTIPLEXER,
@@ -24,20 +23,19 @@ export const RenderOption = {
   TILE_SIZE,
   UNIT_SIZE,
   MULTIPLEXER,
-};
+} as const;
 
-// numbers only for sprite.png position
 export const Direction = {
   UP: 4,
   DOWN: 2,
   LEFT: 3,
   RIGHT: 1,
-};
+} as const;
 
 export const BaseState = {
   LIVE: 0,
   DEAD: 1,
-};
+} as const;
 
 export const TerrainType = {
   EMPTY: 0,
@@ -46,7 +44,7 @@ export const TerrainType = {
   TREE: 3,
   WATER: 4,
   ICE: 5,
-};
+} as const;
 
 export const ObjectType = {
   PLAYER_TANK: 0,
@@ -54,33 +52,33 @@ export const ObjectType = {
   PROJECTILE: 2,
   ENEMY_PROJECTILE: 3,
   BASE: 4,
-};
+} as const;
 
 export const KeyCode = [
   {},
   { UP: 'KeyW', LEFT: 'KeyA', DOWN: 'KeyS', RIGHT: 'KeyD', FIRE: 'Space' },
   { UP: 'ArrowUp', LEFT: 'ArrowLeft', DOWN: 'ArrowDown', RIGHT: 'ArrowRight', FIRE: 'Enter' },
-];
+] as const;
 
 export const TankType = {
   ENEMY: 0,
   PLAYER_1: 1,
   PLAYER_2: 2,
-};
+} as const;
 
 export const EnemyType = {
   COMMON: 1,
   FAST: 2,
   POWER: 3,
   ARMOR: 4,
-};
+} as const;
 
 export const PointPerEnemyType = {
   [EnemyType.COMMON]: 100,
   [EnemyType.FAST]: 200,
   [EnemyType.POWER]: 300,
   [EnemyType.ARMOR]: 400,
-};
+} as const;
 
 export const ResurrectionOption = {
   ANIMATION_TIME: 3000,
@@ -96,7 +94,7 @@ export const ResurrectionOption = {
     [17, 6],
     [16, 6],
   ],
-};
+} as const;
 
 export const Player1TankOption = {
   PLAYER_INDEX: 0,
@@ -127,7 +125,7 @@ export const Player1TankOption = {
       [7, 0],
     ],
   },
-};
+} as const;
 
 export const Player2TankOption = {
   PLAYER_INDEX: 1,
@@ -158,7 +156,7 @@ export const Player2TankOption = {
       [7, 8],
     ],
   },
-};
+} as const;
 
 // common tank
 export const Enemy1TankOption = {
@@ -192,7 +190,7 @@ export const Enemy1TankOption = {
       [15, 4],
     ],
   },
-};
+} as const;
 
 // fast tank
 export const Enemy2TankOption = {
@@ -226,7 +224,7 @@ export const Enemy2TankOption = {
       [15, 5],
     ],
   },
-};
+} as const;
 
 // power tank
 export const Enemy3TankOption = {
@@ -260,7 +258,7 @@ export const Enemy3TankOption = {
       [15, 6],
     ],
   },
-};
+} as const;
 
 // armor tank
 export const Enemy4TankOption = {
@@ -294,14 +292,14 @@ export const Enemy4TankOption = {
       [15, 7],
     ],
   },
-};
+} as const;
 
 export const EnemyTankToOption = {
   [1]: Enemy1TankOption,
   [2]: Enemy2TankOption,
   [3]: Enemy3TankOption,
   [4]: Enemy4TankOption,
-};
+} as const;
 
 export const ProjectileOption = {
   WIDTH: WorldOption.UNIT_SIZE / 4,
@@ -313,7 +311,7 @@ export const ProjectileOption = {
     [Direction.DOWN]: [21, 6.5],
     [Direction.RIGHT]: [21.5, 6.5],
   },
-};
+} as const;
 
 export const ExplosiveOption = {
   SMALL_WIDTH: WorldOption.UNIT_SIZE,
@@ -331,7 +329,7 @@ export const ExplosiveOption = {
       [21, 8],
     ],
   ],
-};
+} as const;
 
 export const BaseOption = {
   START_X: 7 * WorldOption.UNIT_SIZE - WorldOption.UNIT_SIZE,
@@ -342,7 +340,7 @@ export const BaseOption = {
     [BaseState.LIVE]: [19, 2],
     [BaseState.DEAD]: [20, 2],
   },
-};
+} as const;
 
 export const BrickWallOption = {
   SPRITES: [
@@ -352,24 +350,28 @@ export const BrickWallOption = {
     [17.5, 4],
     [18, 4],
   ],
-};
+} as const;
+
 export const SteelWallOption = {
   SPRITES: [[16, 4.5]],
-};
+} as const;
+
 export const TreeOption = {
   SPRITES: [[16.5, 4.5]],
   Z_INDEX: 1,
-};
+} as const;
+
 export const WaterOption = {
   SPRITES: [
     [16, 5],
     [16.5, 5],
     [17, 5],
   ],
-};
+} as const;
+
 export const IceOption = {
   SPRITES: [[17, 4.5]],
-};
+} as const;
 
 export const ShieldEffectOptions = {
   WIDTH: WorldOption.UNIT_SIZE,
@@ -380,7 +382,7 @@ export const ShieldEffectOptions = {
     [16, 9],
     [17, 9],
   ],
-};
+} as const;
 
 export const SidePanelOption = {
   TANK: {
@@ -413,64 +415,54 @@ export const SidePanelOption = {
   },
   NUMBER: [
     {
-      // 0
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [20.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
-    },
+    }, // 0
     {
-      // 1
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [21 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
-    },
+    }, // 1
     {
-      // 2
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [21.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
-    },
+    }, // 2
     {
-      // 3
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [22 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
-    },
+    }, // 3
     {
-      // 4
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [22.5 * WorldOption.UNIT_SIZE, 11.5 * WorldOption.UNIT_SIZE],
-    },
+    }, // 4
     {
-      // 5
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [20.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
-    },
+    }, // 5
     {
-      // 6
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [21 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
-    },
+    }, // 6
     {
-      // 7
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [21.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
-    },
+    }, // 7
     {
-      // 8
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [22 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
-    },
+    }, // 8
     {
-      // 9
       WIDTH: WorldOption.UNIT_SIZE / 2,
       HEIGHT: WorldOption.UNIT_SIZE / 2,
       SPRITES: [22.5 * WorldOption.UNIT_SIZE, 12 * WorldOption.UNIT_SIZE],
-    },
+    }, // 9
   ],
-};
+} as const;

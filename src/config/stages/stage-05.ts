@@ -1,3 +1,5 @@
+import type { StageConfig } from '../constants.type.js';
+
 export default {
   terrain: [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,4 +30,4 @@ export default {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ],
   enemies: [],
-};
+} satisfies StageConfig;
