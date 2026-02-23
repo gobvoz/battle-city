@@ -1,7 +1,7 @@
 import { EventEmitter } from './event-emitter.js';
 
 export interface GameObjectOptions {
-  world: unknown;
+  world?: unknown;
   x: number;
   y: number;
   width: number;

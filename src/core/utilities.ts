@@ -15,7 +15,7 @@ export interface IMapTile extends EventEmitter {
   width: number;
   height: number;
   zIndex?: number;
-  sprite: [number, number];
+  sprite: readonly number[];
   hit(object: unknown): boolean;
   moveThrough(object: unknown): boolean;
 }
