@@ -1,7 +1,18 @@
 import { EventEmitter } from '../core/event-emitter.js';
 
+export interface IEffectTarget {
+  invulnerable: boolean;
+  x: number;
+  y: number;
+}
+
 export default class BaseEffect extends EventEmitter {
-  constructor(target, duration = 3000) {
+  target: IEffectTarget;
+  interval: number;
+  startTime: number;
+  finished: boolean;
+
+  constructor(target: IEffectTarget, duration = 3000) {
     super();
 
     this.target = target;
@@ -10,10 +21,12 @@ export default class BaseEffect extends EventEmitter {
     this.finished = false;
   }
 
-  update(deltaTime) {
+  update(_deltaTime?: number): void {
     if (Date.now() - this.startTime > this.interval) {
       this.end();
       this.finished = true;
     }
   }
+
+  end(): void {}
 }

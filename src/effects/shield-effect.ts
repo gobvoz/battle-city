@@ -1,20 +1,32 @@
 import BaseEffect from './base-effect.js';
-
-import { WorldOption } from '../config/constants.js';
+import { WorldOption, ShieldEffectOptions } from '../config/constants.js';
 import { event } from '../config/events.js';
 
-export default class ShieldEffect extends BaseEffect {
-  constructor({ world, target, effectOptions, ...rest }) {
-    super(target);
+type ShieldEffectOptions = typeof ShieldEffectOptions;
 
-    this.effectOptions = effectOptions;
+export default class ShieldEffect extends BaseEffect {
+  private sprites: ShieldEffectOptions['SPRITES'];
+  private currentSprite: number;
+  private timer: number;
+  private effectDuration: number;
+
+  width: number;
+  height: number;
+
+  constructor({
+    target,
+    effectOptions,
+  }: {
+    target: InstanceType<typeof BaseEffect>['target'];
+    effectOptions: ShieldEffectOptions;
+  }) {
+    super(target);
 
     this.sprites = effectOptions.SPRITES;
     this.currentSprite = 0;
 
     this.timer = 0;
     this.interval = effectOptions.ANIMATION_INTERVAL;
-
     this.effectDuration = effectOptions.EFFECT_DURATION;
     this.finished = false;
 
@@ -22,13 +34,12 @@ export default class ShieldEffect extends BaseEffect {
     this.height = effectOptions.HEIGHT;
   }
 
-  start() {
+  start(): void {
     this.target.invulnerable = true;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     this.timer += deltaTime;
-
     this.effectDuration -= deltaTime;
 
     if (this.effectDuration <= 0) {
@@ -44,22 +55,22 @@ export default class ShieldEffect extends BaseEffect {
     }
   }
 
-  end() {
+  end(): void {
     this.target.invulnerable = false;
   }
 
-  get sprite() {
+  get sprite(): [number, number] {
     return [
       this.sprites[this.currentSprite][0] * WorldOption.UNIT_SIZE,
       this.sprites[this.currentSprite][1] * WorldOption.UNIT_SIZE,
     ];
   }
 
-  get x() {
+  get x(): number {
     return this.target.x;
   }
 
-  get y() {
+  get y(): number {
     return this.target.y;
   }
 }
