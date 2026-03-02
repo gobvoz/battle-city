@@ -1,8 +1,17 @@
 import { SidePanelOption } from '../config/constants.js';
 import { RenderOption } from '../config/render.js';
+import type { IGameContext } from '../core/game-context.type.js';
+import type { World } from './world.js';
+import type { IWorldObject } from './world.type.js';
+import type { IMapTile } from '../core/utilities.js';
 
 export class Renderer {
-  constructor(game, world) {
+  private game: IGameContext;
+  private world: World;
+  private blinkedFrame: boolean;
+  private blinkCounter: number;
+
+  constructor(game: IGameContext, world: World) {
     this.game = game;
     this.world = world;
 
@@ -10,7 +19,7 @@ export class Renderer {
     this.blinkCounter = 0;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     this.blinkCounter += deltaTime;
 
     if (this.blinkCounter >= 0.5) {
@@ -19,9 +28,9 @@ export class Renderer {
     }
   }
 
-  start() {}
+  start(): void {}
 
-  render(ctx) {
+  render(ctx: CanvasRenderingContext2D): void {
     this._drawField(ctx);
 
     __DEBUG__ && this._renderGrid(ctx);
@@ -40,10 +49,10 @@ export class Renderer {
     this._renderSidePanel(ctx);
 
     __DEBUG__ && this._renderCollisionTile(ctx);
-    __DEBUG__ && this._renderDebugInfo(ctx, this.world);
+    __DEBUG__ && this._renderDebugInfo(ctx);
   }
 
-  _drawField(ctx) {
+  private _drawField(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = '#666';
     ctx.fillRect(0, 0, 256 * RenderOption.MULTIPLEXER, 224 * RenderOption.MULTIPLEXER);
 
@@ -56,7 +65,7 @@ export class Renderer {
     );
   }
 
-  _renderGrid(ctx) {
+  private _renderGrid(ctx: CanvasRenderingContext2D): void {
     for (let mapUnit = 0; mapUnit <= this.world.stage.length; mapUnit++) {
       ctx.strokeStyle = '#555';
       if (mapUnit % 2 === 0) {
@@ -87,7 +96,7 @@ export class Renderer {
     }
   }
 
-  _renderCollisionTile(ctx) {
+  private _renderCollisionTile(ctx: CanvasRenderingContext2D): void {
     if (this.world.collisionTiles.length === 0) return;
 
     ctx.fillStyle = this.blinkedFrame ? 'rgba(0, 255, 0, 0.5)' : 'transparent';
@@ -103,16 +112,10 @@ export class Renderer {
     });
   }
 
-  _renderDebugInfo(ctx) {
+  private _renderDebugInfo(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
     ctx.textAlign = 'left';
-
-    // ctx.fillText(
-    //   `${this.world.player1Tank.x},${this.world.player1Tank.y}`,
-    //   RenderOption.PADDING_LEFT + this.world.player1Tank.x * RenderOption.MULTIPLEXER,
-    //   RenderOption.PADDING_TOP + this.world.player1Tank.y * RenderOption.MULTIPLEXER,
-    // );
 
     ctx.fillText(`fps:  ${this.game.fps}`, 10, 224 * RenderOption.MULTIPLEXER + 10);
     ctx.fillText(`busy: ${this.game.busyTime}`, 10, 224 * RenderOption.MULTIPLEXER + 20);
@@ -130,7 +133,7 @@ export class Renderer {
     ctx.font = `${RenderOption.FONT_SIZE}px font-7x7`;
   }
 
-  _renderTile(ctx, tile) {
+  private _renderTile(ctx: CanvasRenderingContext2D, tile: IMapTile): void {
     ctx.drawImage(
       this.game.sprite.image,
       tile.sprite[0] * RenderOption.UNIT_SIZE,
@@ -144,9 +147,9 @@ export class Renderer {
     );
   }
 
-  _renderField(ctx) {
+  private _renderField(ctx: CanvasRenderingContext2D): IMapTile[] {
     const stage = this.world.stage;
-    const postRender = [];
+    const postRender: IMapTile[] = [];
 
     for (let y = 0; y < stage.length; y++) {
       for (let x = 0; x < stage[y].length; x++) {
@@ -168,11 +171,10 @@ export class Renderer {
     return postRender;
   }
 
-  _renderObject(ctx, gameObject) {
-    // 272 96 16 16 505 20 40 40
+  private _renderObject(ctx: CanvasRenderingContext2D, gameObject: IWorldObject): void {
     ctx.drawImage(
       this.game.sprite.image,
-      ...gameObject.sprite,
+      ...(gameObject.sprite as [number, number]),
       gameObject.width,
       gameObject.height,
       RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
@@ -182,7 +184,7 @@ export class Renderer {
     );
   }
 
-  _renderObjectBorder(ctx, gameObject) {
+  private _renderObjectBorder(ctx: CanvasRenderingContext2D, gameObject: IWorldObject): void {
     ctx.strokeStyle = '#fff';
     ctx.beginPath();
     ctx.rect(
@@ -194,7 +196,7 @@ export class Renderer {
     ctx.stroke();
   }
 
-  _renderSidePanel(ctx) {
+  private _renderSidePanel(ctx: CanvasRenderingContext2D): void {
     let isNextRow = true;
     let offsetY = 0;
 
@@ -205,7 +207,7 @@ export class Renderer {
         SidePanelOption.TANK.WIDTH,
         SidePanelOption.TANK.HEIGHT,
         SidePanelOption.TANK.OFFSET_X +
-          SidePanelOption.TANK.WIDTH * RenderOption.MULTIPLEXER * isNextRow,
+          SidePanelOption.TANK.WIDTH * RenderOption.MULTIPLEXER * Number(isNextRow),
         SidePanelOption.TANK.OFFSET_Y + offsetY * RenderOption.MULTIPLEXER,
         SidePanelOption.TANK.WIDTH * RenderOption.MULTIPLEXER,
         SidePanelOption.TANK.HEIGHT * RenderOption.MULTIPLEXER,
@@ -215,7 +217,6 @@ export class Renderer {
       if (isNextRow) offsetY = ((i + 1) * SidePanelOption.TANK.HEIGHT) / 2;
     }
 
-    // player 1
     if (this.world.player1Tank) {
       const player1logo = SidePanelOption.PLAYER_1;
       ctx.drawImage(
@@ -241,7 +242,6 @@ export class Renderer {
       );
     }
 
-    //player 2
     if (this.world.player2Tank) {
       const player2logo = SidePanelOption.PLAYER_2;
       ctx.drawImage(
@@ -254,7 +254,7 @@ export class Renderer {
         player2logo.WIDTH * RenderOption.MULTIPLEXER,
         player2logo.HEIGHT * RenderOption.MULTIPLEXER,
       );
-      const player2Lives = SidePanelOption.NUMBER[this.world.player2Lives];
+      const player2Lives = SidePanelOption.NUMBER[this.game.player2Lives];
       ctx.drawImage(
         this.game.sprite.image,
         ...player2Lives.SPRITES,
@@ -267,7 +267,6 @@ export class Renderer {
       );
     }
 
-    //stage
     const stage = SidePanelOption.STAGE;
     ctx.drawImage(
       this.game.sprite.image,
@@ -307,5 +306,5 @@ export class Renderer {
     );
   }
 
-  exit() {}
+  exit(): void {}
 }

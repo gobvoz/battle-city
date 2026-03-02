@@ -11,6 +11,8 @@ import Projectile from '../entities/projectile.js';
 import Explosive from '../entities/explosive.js';
 
 import { generateTerrain } from '../core/utilities.js';
+import type { IMapTile } from '../core/utilities.js';
+import type { IGameContext } from '../core/game-context.type.js';
 
 import {
   Direction,
@@ -19,14 +21,40 @@ import {
   Player1TankOption,
   Player2TankOption,
   EnemyTankToOption,
-  EnemyType,
   ShieldEffectOptions,
 } from '../config/constants.js';
+import type { EnemyTypeValue } from '../config/constants.type.js';
+import type { IHittable } from '../map/map.type.js';
+import type { IHitObject, PlayerIndex } from '../entities/entities.type.js';
+import type { IWorld, ICollidable, IWorldObject } from './world.type.js';
 
 const TANKS_ON_MAP = 4;
 
-export class World {
-  constructor(game) {
+type MoveState = 'standby' | 'move';
+
+export class World implements IWorld {
+  game: IGameContext;
+  stage: (IMapTile | null)[][];
+  projectiles: Projectile[];
+  explosives: Explosive[];
+  enemyTanks: Tank[];
+  resurrections: Resurrection[];
+  enemyArray: EnemyTypeValue[];
+  effects: ShieldEffect[];
+  currentMoveState: MoveState;
+  player1Tank: Tank | null;
+  player2Tank: Tank | null;
+  minWorldX: number;
+  maxWorldX: number;
+  minWorldY: number;
+  maxWorldY: number;
+  collisionTiles: [number, number][];
+  enemyTanksOnMap: number;
+  tanksTotal: number;
+  enemyFriendlyFire: boolean;
+  base!: Base;
+
+  constructor(game: IGameContext) {
     this.game = game;
     this.stage = [];
     this.projectiles = [];
@@ -36,7 +64,7 @@ export class World {
     this.enemyArray = [];
     this.effects = [];
 
-    this.currentMoveState = 'standby'; // "standby", "move"
+    this.currentMoveState = 'standby';
     this.player1Tank = null;
     this.player2Tank = null;
 
@@ -46,6 +74,9 @@ export class World {
     this.maxWorldY = 0;
 
     this.collisionTiles = [];
+    this.enemyTanksOnMap = 0;
+    this.tanksTotal = 0;
+    this.enemyFriendlyFire = false;
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -61,7 +92,7 @@ export class World {
     this._recordKill = this._recordKill.bind(this);
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log(`Starting world for level ${this.game.currentLevel}`);
 
     this.stage = generateTerrain(stages[this.game.currentLevel - 1].terrain, this._removeWall);
@@ -76,21 +107,15 @@ export class World {
     this.enemyFriendlyFire = WorldOption.ENEMY_FRIENDLY_FIRE;
 
     this._resurrectPlayer1();
-    // this._resurrectPlayer2();
 
-    this.base = new Base({
-      world: this,
-    });
-
+    this.base = new Base({ world: this });
     this.base.on(event.object.DESTROYED, this._destroyBase);
 
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
   }
 
-  update(deltaTime) {
-    //this.player.update(deltaTime);
-    //this.enemies.forEach(e => e.update(deltaTime));
+  update(deltaTime: number): void {
     if (this.enemyTanksOnMap <= 0 && this.enemyArray.length === 0) {
       __DEBUG__ && console.log('level complete - victory');
       this.game.events.emit(event.CHANGE_STATE, event.state.RESULTS);
@@ -107,10 +132,11 @@ export class World {
     }
 
     if (this.enemyTanksOnMap < TANKS_ON_MAP && this.enemyArray.length) {
+      const enemyType = this.enemyArray.shift()!;
       const enemyResurrection = new Resurrection({
         world: this,
         tankType: TankType.ENEMY,
-        options: EnemyTankToOption[this.enemyArray.shift()],
+        options: EnemyTankToOption[enemyType],
         x: Math.floor(Math.random() * 3) * 6 * WorldOption.UNIT_SIZE,
         y: 0,
       });
@@ -121,11 +147,11 @@ export class World {
 
     const activeKeys = this.game.input.activeKeys();
     this.objects.forEach(gameObject => {
-      gameObject && gameObject.update(deltaTime, activeKeys);
+      gameObject?.update(deltaTime, activeKeys);
     });
   }
 
-  handleKeyDown(evt) {
+  handleKeyDown(evt: KeyboardEvent): void {
     let moving = false;
 
     if (this.player1Tank) {
@@ -152,15 +178,12 @@ export class World {
       }
     }
 
-    if (moving && this.currentMoveState !== 'move' && this.player1Tank.state === 'active') {
+    if (moving && this.currentMoveState !== 'move' && this.player1Tank?.state === 'active') {
       this.currentMoveState = 'move';
-      // this.audio.play('player-move', { loop: true });
     }
-
-    // evt.preventDefault();
   }
 
-  handleKeyUp(evt) {
+  handleKeyUp(evt: KeyboardEvent): void {
     if (this.player1Tank) {
       switch (evt.code) {
         case 'KeyW':
@@ -179,7 +202,6 @@ export class World {
     }
 
     const activeKeys = this.game.input.activeKeys();
-
     const stillMoving =
       activeKeys.has('KeyW') ||
       activeKeys.has('KeyS') ||
@@ -192,13 +214,10 @@ export class World {
       this.player1Tank?.state === 'active'
     ) {
       this.currentMoveState = 'standby';
-      //this.audio.play('player-standby', { loop: true });
     }
-
-    // evt.preventDefault();
   }
 
-  get objects() {
+  get objects(): IWorldObject[] {
     return [
       this.base,
       ...this.enemyTanks,
@@ -209,7 +228,7 @@ export class World {
     ];
   }
 
-  _resurrectPlayer1() {
+  private _resurrectPlayer1(): void {
     const resurrection = new Resurrection({
       world: this,
       tankType: TankType.PLAYER_1,
@@ -221,7 +240,7 @@ export class World {
     this.resurrections.push(resurrection);
   }
 
-  _resurrectPlayer2() {
+  private _resurrectPlayer2(): void {
     const resurrection = new Resurrection({
       world: this,
       tankType: TankType.PLAYER_2,
@@ -233,29 +252,24 @@ export class World {
     this.resurrections.push(resurrection);
   }
 
-  _addProjectile(tank) {
+  private _addProjectile(tank: Tank): void {
     if (tank.hasProjectile) return;
     tank.hasProjectile = true;
 
     const projectile = new Projectile({
       world: this,
-      tank: tank,
+      tank,
       direction: tank.direction,
-      tankType: tank.type,
     });
-
-    if (tank.type === TankType.PLAYER_1 && tank.state !== 'dead') {
-      // this.game.audio.play('player-shoot', { loop: false, isEffect: true });
-    }
 
     projectile.on(event.object.DESTROYED, this._removeProjectile);
     this.projectiles.push(projectile);
   }
 
-  _removeResurrection(resurrection) {
+  private _removeResurrection(resurrection: Resurrection): void {
     this.resurrections = this.resurrections.filter(r => r !== resurrection);
 
-    let tank = null;
+    let tank: Tank;
 
     if (resurrection.tankType === TankType.PLAYER_1) {
       tank = new Tank({
@@ -273,13 +287,12 @@ export class World {
       shield.start();
       shield.on(event.object.DESTROYED, this._removeEffect);
       this.effects.push(shield);
-
-      // this.game.audio.play('player-standby', { loop: false });
     } else {
       tank = EnemyTank.createRandom({
         world: this,
         type: resurrection.tankType,
-        tankOptions: resurrection.tankOptions,
+        tankOptions:
+          resurrection.tankOptions as import('../entities/entities.type.js').IEnemyTankOptions,
         x: resurrection.x,
         y: resurrection.y,
       });
@@ -299,49 +312,39 @@ export class World {
     this.enemyTanks.push(tank);
   }
 
-  _removeEffect(effect) {
+  private _removeEffect(effect: ShieldEffect): void {
     effect.end();
     this.effects = this.effects.filter(e => e !== effect);
   }
 
-  _removeTank(tank) {
+  private _removeTank(tank: Tank): void {
     this.enemyTanks = this.enemyTanks.filter(t => t !== tank);
 
-    const explosive = new Explosive({
-      world: this,
-      tank,
-    });
-
+    const explosive = new Explosive({ world: this, tank });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
 
     if (tank.type === TankType.ENEMY) {
       this.enemyTanksOnMap--;
       this.tanksTotal--;
-    } else if (tank.type === TankType.PLAYER_1) {
-      //this.game.audio.stop('player-move');
-      //this.game.audio.stop('player-standby');
     }
   }
 
-  _recordKill(enemyType, player) {
+  private _recordKill(enemyType: EnemyTypeValue, player: PlayerIndex | undefined): void {
+    if (player === undefined) return;
     this.game.stats.recordKill(player, enemyType);
   }
 
-  _removeProjectile(projectile) {
+  private _removeProjectile(projectile: Projectile): void {
     projectile.tank.hasProjectile = false;
     this.projectiles = this.projectiles.filter(p => p !== projectile);
 
-    const explosive = new Explosive({
-      world: this,
-      projectile,
-    });
-
+    const explosive = new Explosive({ world: this, projectile });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
   }
 
-  _removeExplosive(explosive) {
+  private _removeExplosive(explosive: Explosive): void {
     this.explosives = this.explosives.filter(e => e !== explosive);
 
     if (explosive.tank?.type === TankType.PLAYER_1) {
@@ -355,35 +358,24 @@ export class World {
     if (explosive.tank?.type === TankType.PLAYER_2) {
       if (this.game.player2Lives) {
         this.game.player2Lives -= 1;
-        this.game._resurrectPlayer2();
+        this._resurrectPlayer2();
       } else {
         this.player2Tank = null;
       }
     }
   }
 
-  _removeWall(wall) {
-    this.stage = this.stage.map(row =>
-      row.map(tile => {
-        if (tile === wall) {
-          return null;
-        }
-        return tile;
-      }),
-    );
+  private _removeWall(wall: IMapTile): void {
+    this.stage = this.stage.map(row => row.map(tile => (tile === wall ? null : tile)));
   }
 
-  _destroyBase(base) {
-    const explosive = new Explosive({
-      world: this,
-      base,
-    });
-
+  private _destroyBase(destroyedBase: Base): void {
+    const explosive = new Explosive({ world: this, base: destroyedBase });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
   }
 
-  hasCollision(object) {
+  hasCollision(object: ICollidable): boolean {
     let nextMinX = object.x;
     let nextMaxX = object.x + object.width - 1;
     let nextMinY = object.y;
@@ -416,7 +408,7 @@ export class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.DOWN:
-        nextMinY += object.speed + 1; // speed might be less than 1. So we add 1 to make sure we don't get a collision
+        nextMinY += object.speed + 1;
         nextMaxY += object.speed + 1;
         if (nextMaxY >= this.maxWorldY) return true;
         tileMinX = nextMinX >> 3;
@@ -425,7 +417,7 @@ export class World {
         tileMaxY = nextMaxY >> 3;
         break;
       case Direction.RIGHT:
-        nextMinX += object.speed + 1; // speed might be less than 1. So we add 1 to make sure we don't get a collision
+        nextMinX += object.speed + 1;
         nextMaxX += object.speed + 1;
         if (nextMaxX >= this.maxWorldX) return true;
         tileMinX = nextMaxX >> 3;
@@ -451,7 +443,6 @@ export class World {
         deltaMaxY <= this.base.height)
     ) {
       this.base.hit(object);
-
       return true;
     }
 
@@ -505,18 +496,18 @@ export class World {
           break;
       }
 
-      // When tank respawn it's possible that it collides with another tank. In this case ignore collision
       if (object.x === tank.x && object.y === tank.y) continue;
 
-      objectHasWallCollision = tank.hit(object) ? true : objectHasWallCollision;
-      objectHasWallCollision = tank.moveThrough(object) ? true : objectHasWallCollision;
+      objectHasWallCollision = tank.hit(object as IHitObject) ? true : objectHasWallCollision;
+      objectHasWallCollision = tank.moveThrough(object as IHitObject)
+        ? true
+        : objectHasWallCollision;
 
       if (objectHasWallCollision) {
         return true;
       }
     }
 
-    // condition to stay in array
     tileMinX = tileMinX < 0 ? 0 : tileMinX;
     tileMaxX = tileMaxX >= this.stage.length ? this.stage.length - 1 : tileMaxX;
     tileMinY = tileMinY < 0 ? 0 : tileMinY;
@@ -524,42 +515,37 @@ export class World {
 
     const tile1 = this.stage[tileMinY][tileMinX];
     if (tile1) {
-      const isItHit = tile1.hit(object);
+      const isItHit = tile1.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
 
-      const isMoveThrough = tile1.moveThrough(object);
+      const isMoveThrough = tile1.moveThrough(object as unknown as IHittable);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
 
-      if (isItHit || isMoveThrough);
-      {
+      if (isItHit || isMoveThrough) {
         this.collisionTiles[0] = [tileMinX, tileMinY];
       }
     }
 
     const tile2 = this.stage[tileMaxY][tileMaxX];
     if (tile2) {
-      const isItHit = tile2.hit(object);
+      const isItHit = tile2.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
 
-      const isMoveThrough = tile2.moveThrough(object);
+      const isMoveThrough = tile2.moveThrough(object as unknown as IHittable);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
 
-      if (isItHit || isMoveThrough);
-      {
+      if (isItHit || isMoveThrough) {
         this.collisionTiles[1] = [tileMaxX, tileMaxY];
       }
     }
 
     if (objectHasWallCollision) return true;
 
-    this.collisionTileX = null;
-    this.collisionTileY = null;
     return false;
   }
 
-  exit() {
+  exit(): void {
     __DEBUG__ && console.log(`Exiting world for level ${this.game.currentLevel}`);
-    this.entities = [];
 
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);

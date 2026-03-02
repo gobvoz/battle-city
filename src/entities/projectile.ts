@@ -17,6 +17,7 @@ export interface ITankForProjectile {
   height: number;
   type: TankTypeValue;
   playerIndex: PlayerIndex | undefined;
+  hasProjectile: boolean;
 }
 
 export default class Projectile extends GameObject {

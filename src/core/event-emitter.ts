@@ -1,4 +1,5 @@
-type Listener = (...args: unknown[]) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Listener = (...args: any[]) => void;
 
 export class EventEmitter {
   game: unknown;
