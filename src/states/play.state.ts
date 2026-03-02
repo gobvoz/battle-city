@@ -2,11 +2,18 @@ import { IntroState } from './intro.state.js';
 import { PauseState } from './pause.state.js';
 import { World } from '../world/world.js';
 import { Renderer } from '../world/renderer.js';
-
 import { event } from '../config/events.js';
+import type { IGameContext } from '../core/game-context.type.js';
 
 export class PlayState {
-  constructor(game) {
+  private game: IGameContext;
+  private paused: boolean;
+  private subState: IntroState | null;
+  private pause: PauseState;
+  private world: World;
+  private renderer: Renderer;
+
+  constructor(game: IGameContext) {
     this.game = game;
     this.paused = false;
 
@@ -20,10 +27,10 @@ export class PlayState {
     this.togglePause = this.togglePause.bind(this);
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log('Entering Play State');
 
-    this.subState.start();
+    this.subState?.start();
     this.world.start();
     this.renderer.start();
 
@@ -31,7 +38,7 @@ export class PlayState {
     this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     if (this.subState) this.subState.update(deltaTime);
 
     if (this.paused) {
@@ -43,28 +50,28 @@ export class PlayState {
     this.renderer.update(deltaTime);
   }
 
-  render(ctx) {
+  render(ctx: CanvasRenderingContext2D): void {
     this.renderer.render(ctx);
 
     if (this.subState) this.subState.render(ctx);
     this.pause.render(ctx);
   }
 
-  exit() {
+  exit(): void {
     __DEBUG__ && console.log('Exiting Play State');
 
     this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
     this.game.events.off(event.TOGGLE_PAUSE, this.togglePause);
 
     if (this.subState) this.subState.exit();
-    if (this.pause) this.pause.exit();
+    this.pause.exit();
     this.world.exit();
 
     this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
   }
 
-  completeIntro() {
-    if (this.game.DEBUG) console.log('Intro complete, starting gameplay');
+  private completeIntro(): void {
+    __DEBUG__ && console.log('Intro complete, starting gameplay');
 
     this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
     this.subState = null;
@@ -72,9 +79,7 @@ export class PlayState {
     this.pause.start();
   }
 
-  togglePause() {
-    if (this.intro) return;
-
+  private togglePause(): void {
     this.paused = !this.paused;
 
     __DEBUG__ && console.log(this.paused ? 'Paused gameplay' : 'Resumed gameplay');

@@ -5,9 +5,23 @@ import {
   Direction,
   RenderOption,
 } from '../config/constants.js';
+import type { IGameContext } from '../core/game-context.type.js';
+import type { InputAction } from '../config/events.type.js';
+import type { EnemyTypeValue } from '../config/constants.type.js';
+import type { Scores } from '../core/stats-manager.js';
+
+type DisplayedCount = [number, number];
 
 export class ResultsState {
-  constructor(game) {
+  private game: IGameContext;
+  private enemyType: number;
+  private interval: number;
+  private elapsed: number;
+  private finished: boolean;
+  private scores: Scores;
+  private displayedCounts: DisplayedCount[];
+
+  constructor(game: IGameContext) {
     this.game = game;
 
     this.enemyType = 1;
@@ -16,17 +30,16 @@ export class ResultsState {
     this.finished = false;
 
     this.scores = this.game.stats.scores;
-
     this.displayedCounts = [];
 
     this.changeState = this.changeState.bind(this);
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log('Entering Results State');
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     if (this.finished) return;
 
     this.elapsed += deltaTime;
@@ -63,7 +76,7 @@ export class ResultsState {
     }
   }
 
-  render(ctx) {
+  render(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -84,17 +97,13 @@ export class ResultsState {
     }
   }
 
-  _drawResultTable(ctx) {
+  private _drawResultTable(ctx: CanvasRenderingContext2D): void {
     const startY = 100;
     const lineHeight = (RenderOption.UNIT_SIZE + 4) * RenderOption.MULTIPLEXER;
 
-    // 1 player
     ctx.fillStyle = 'rgba(230, 50, 0, 1)';
     ctx.textAlign = 'right';
     ctx.fillText('I-PLAYER', ctx.canvas.width / 2 - 100, startY);
-
-    // ctx.fillStyle = 'rgba(248, 154, 47, 1)';
-    // ctx.fillText(`${this.scores.total[0]}`, ctx.canvas.width / 2 - 100, startY + lineHeight);
 
     ctx.fillStyle = 'white';
     ctx.fillText('PTS', ctx.canvas.width / 2 - 100, startY + lineHeight * 2);
@@ -102,13 +111,9 @@ export class ResultsState {
     ctx.fillText('PTS', ctx.canvas.width / 2 - 100, startY + lineHeight * 4);
     ctx.fillText('PTS', ctx.canvas.width / 2 - 100, startY + lineHeight * 5);
 
-    // 2 player
     ctx.fillStyle = 'rgba(230, 50, 0, 1)';
     ctx.textAlign = 'left';
     ctx.fillText('II-PLAYER', ctx.canvas.width / 2 + 100, startY);
-
-    // ctx.fillStyle = 'rgba(248, 154, 47, 1)';
-    // ctx.fillText(`${this.scores.total[1]}`, ctx.canvas.width / 2 + 100, startY + lineHeight);
 
     ctx.fillStyle = 'white';
     ctx.fillText('PTS', ctx.canvas.width / 2 + 100, startY + lineHeight * 2);
@@ -116,9 +121,8 @@ export class ResultsState {
     ctx.fillText('PTS', ctx.canvas.width / 2 + 100, startY + lineHeight * 4);
     ctx.fillText('PTS', ctx.canvas.width / 2 + 100, startY + lineHeight * 5);
 
-    // tanks icons
     for (let i = 1; i <= 4; i++) {
-      const tankOptions = EnemyTankToOption[i];
+      const tankOptions = EnemyTankToOption[i as EnemyTypeValue];
       const sprite = tankOptions.SPRITES[Direction.UP][0];
 
       ctx.drawImage(
@@ -141,36 +145,42 @@ export class ResultsState {
     ctx.fillText('⇽     ⇾', ctx.canvas.width / 2, startY + lineHeight * 4);
     ctx.fillText('⇽     ⇾', ctx.canvas.width / 2, startY + lineHeight * 5);
 
-    // scores
-    const levelScores = [0, 0];
-    const levelCounts = [0, 0];
+    const levelScores: [number, number] = [0, 0];
+    const levelCounts: [number, number] = [0, 0];
 
     this.displayedCounts.forEach((count, enemyType) => {
       ctx.fillStyle = 'white';
       ctx.textAlign = 'right';
-      ctx.fillText(count[0], ctx.canvas.width / 2 - 55, (enemyType + 1) * lineHeight + startY);
       ctx.fillText(
-        count[0] * PointPerEnemyType[enemyType],
+        String(count[0]),
+        ctx.canvas.width / 2 - 55,
+        (enemyType + 1) * lineHeight + startY,
+      );
+      ctx.fillText(
+        String(count[0] * PointPerEnemyType[enemyType as EnemyTypeValue]),
         ctx.canvas.width / 2 - 160,
         (enemyType + 1) * lineHeight + startY,
       );
 
       ctx.textAlign = 'left';
-      ctx.fillText(count[1], ctx.canvas.width / 2 + 55, (enemyType + 1) * lineHeight + startY);
       ctx.fillText(
-        count[1] * PointPerEnemyType[enemyType],
+        String(count[1]),
+        ctx.canvas.width / 2 + 55,
+        (enemyType + 1) * lineHeight + startY,
+      );
+      ctx.fillText(
+        String(count[1] * PointPerEnemyType[enemyType as EnemyTypeValue]),
         ctx.canvas.width / 2 + 160,
         (enemyType + 1) * lineHeight + startY,
       );
 
-      levelScores[0] += count[0] * PointPerEnemyType[enemyType];
-      levelScores[1] += count[1] * PointPerEnemyType[enemyType];
+      levelScores[0] += count[0] * PointPerEnemyType[enemyType as EnemyTypeValue];
+      levelScores[1] += count[1] * PointPerEnemyType[enemyType as EnemyTypeValue];
 
       levelCounts[0] += count[0];
       levelCounts[1] += count[1];
     });
 
-    //draw horizontal line
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -178,20 +188,17 @@ export class ResultsState {
     ctx.lineTo(ctx.canvas.width - 100, startY + 6 * lineHeight - 30);
     ctx.stroke();
 
-    // level scores
     ctx.fillStyle = 'white';
     ctx.textAlign = 'right';
     ctx.fillText(`${levelScores[0]}`, ctx.canvas.width / 2 - 150, startY + 6 * lineHeight);
     ctx.textAlign = 'left';
     ctx.fillText(`${levelScores[1]}`, ctx.canvas.width / 2 + 150, startY + 6 * lineHeight);
 
-    // level tanks
     ctx.textAlign = 'right';
     ctx.fillText(`${levelCounts[0]}`, ctx.canvas.width / 2 - 60, startY + 6 * lineHeight);
     ctx.textAlign = 'left';
     ctx.fillText(`${levelCounts[1]}`, ctx.canvas.width / 2 + 60, startY + 6 * lineHeight);
 
-    // total scores
     ctx.textAlign = 'right';
     ctx.fillStyle = 'rgba(248, 154, 47, 1)';
     ctx.fillText(
@@ -206,7 +213,6 @@ export class ResultsState {
       startY + lineHeight,
     );
 
-    // hi-score
     const hiScore = Math.max(
       this.scores.hiScore,
       this.scores.total[0] + levelScores[0],
@@ -217,12 +223,12 @@ export class ResultsState {
     ctx.fillText(`${hiScore}`, ctx.canvas.width / 2 + 50, 20);
   }
 
-  changeState(key) {
+  changeState(key: InputAction): void {
     if (key !== event.inputAction.PRESSED) return;
     this.game.events.emit(event.CHANGE_STATE, event.state.NEXT_LEVEL);
   }
 
-  exit() {
+  exit(): void {
     this.game.events.off(event.key.ENTER, this.changeState);
     __DEBUG__ && console.log('Exiting Results State');
   }

@@ -1,7 +1,14 @@
 import { event } from '../config/events.js';
+import type { IGameContext } from '../core/game-context.type.js';
+import type { InputAction } from '../config/events.type.js';
 
 export class PauseState {
-  constructor(game) {
+  private game: IGameContext;
+  private active: boolean;
+  private timer: number;
+  private textVisible: boolean;
+
+  constructor(game: IGameContext) {
     this.game = game;
     this.active = false;
     this.timer = 0;
@@ -10,7 +17,7 @@ export class PauseState {
     this.toggle = this.toggle.bind(this);
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log('Entering Pause State');
 
     this.timer = 0;
@@ -19,7 +26,7 @@ export class PauseState {
     this.game.events.on(event.key.ESCAPE, this.toggle);
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     if (!this.active) return;
 
     this.timer += deltaTime;
@@ -30,7 +37,7 @@ export class PauseState {
     }
   }
 
-  render(ctx) {
+  render(ctx: CanvasRenderingContext2D): void {
     if (!this.active) return;
 
     ctx.save();
@@ -46,7 +53,7 @@ export class PauseState {
     ctx.restore();
   }
 
-  toggle(key) {
+  toggle(key: InputAction): void {
     if (key !== event.inputAction.PRESSED) return;
     this.active = !this.active;
     this.timer = 0;
@@ -58,9 +65,8 @@ export class PauseState {
       : this.game.events.emit(event.TOGGLE_PAUSE, event.pauseAction.OFF);
   }
 
-  exit() {
+  exit(): void {
     __DEBUG__ && console.log('Exiting Pause State');
-
     this.game.events.off(event.key.ESCAPE, this.toggle);
   }
 }

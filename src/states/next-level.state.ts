@@ -1,11 +1,14 @@
 import { event } from '../config/events.js';
+import type { IGameContext } from '../core/game-context.type.js';
 
 export class NextLevelState {
-  constructor(game) {
+  private game: IGameContext;
+
+  constructor(game: IGameContext) {
     this.game = game;
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log('Entering Next Level State');
 
     this.game.currentLevel++;
@@ -14,11 +17,11 @@ export class NextLevelState {
     this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
   }
 
-  update() {}
+  update(): void {}
 
-  render() {}
+  render(): void {}
 
-  exit() {
+  exit(): void {
     __DEBUG__ && console.log('Exiting Next Level State');
   }
 }

@@ -1,7 +1,13 @@
 import { event } from '../config/events.js';
+import type { IGameContext } from '../core/game-context.type.js';
 
 export class IntroState {
-  constructor(game) {
+  private game: IGameContext;
+  private timer: number;
+  private duration: number;
+  private transitionTime: number;
+
+  constructor(game: IGameContext) {
     this.game = game;
 
     this.timer = 0;
@@ -9,13 +15,12 @@ export class IntroState {
     this.transitionTime = 0.5;
   }
 
-  start() {
+  start(): void {
     __DEBUG__ && console.log('Entering Intro State');
-
     this.timer = 0;
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     this.timer += deltaTime;
 
     if (this.timer >= this.duration) {
@@ -24,25 +29,21 @@ export class IntroState {
     }
   }
 
-  render(ctx) {
+  render(ctx: CanvasRenderingContext2D): void {
     const { width, height } = ctx.canvas;
 
-    // map timer to [0,1]
     const t = Math.min(this.timer / this.duration, 1);
 
     let shutterHeight = 0;
     const maxHeight = height / 2;
 
     if (t < this.transitionTime / this.duration) {
-      // closing stage
       const progress = t / (this.transitionTime / this.duration);
       shutterHeight = progress * maxHeight;
     } else if (t > 1 - this.transitionTime / this.duration) {
-      // opening stage
       const progress = (1 - t) / (this.transitionTime / this.duration);
       shutterHeight = progress * maxHeight;
     } else {
-      // fully closed
       shutterHeight = maxHeight;
     }
 
@@ -50,17 +51,15 @@ export class IntroState {
     ctx.fillRect(0, 0, width, shutterHeight);
     ctx.fillRect(0, height - shutterHeight, width, shutterHeight);
 
-    // Draw level text when shutter is fully closed
     if (t > this.transitionTime / this.duration && t < 1 - this.transitionTime / this.duration) {
       ctx.fillStyle = 'black';
-  
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(`STAGE ${this.game.currentLevel}`, width / 2, height / 2);
     }
   }
 
-  exit() {
+  exit(): void {
     __DEBUG__ && console.log('Exiting Intro State');
   }
 }

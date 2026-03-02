@@ -4,7 +4,7 @@ import type { EnemyTypeValue } from '../config/constants.type.js';
 export type PlayerIndex = 0 | 1;
 type KillScores = Record<number, [number, number]>;
 
-interface Scores extends KillScores {
+export interface Scores extends KillScores {
   total: [number, number];
   hiScore: number;
 }
