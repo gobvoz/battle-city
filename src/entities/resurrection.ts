@@ -1,19 +1,41 @@
 import GameObject from '../core/game-object.js';
 import { event } from '../config/events.js';
+import { ResurrectionOption } from '../config/constants.js';
+import type { TankTypeValue } from '../config/constants.type.js';
+import type { TankOptions } from './entities.type.js';
 
-import { WorldOption, ResurrectionOption, KeyCode } from '../config/constants.js';
+type ResurrectionSprites = readonly (readonly [number, number])[];
 
 export default class Resurrection extends GameObject {
-  constructor({ x, y, tankType, options: tankOptions, ...rest }) {
-    const options = {
+  tankType: TankTypeValue;
+  tankOptions: TankOptions;
+  animationFrame: number;
+  declare sprites: ResurrectionSprites;
+
+  private _intervalId: ReturnType<typeof setInterval> | null;
+  private _timeoutId: ReturnType<typeof setTimeout> | null;
+
+  constructor({
+    x,
+    y,
+    tankType,
+    options: tankOptions,
+    world,
+  }: {
+    x: number;
+    y: number;
+    tankType: TankTypeValue;
+    options: TankOptions;
+    world?: unknown;
+  }) {
+    super({
+      world,
       x,
       y,
       width: ResurrectionOption.WIDTH,
       height: ResurrectionOption.HEIGHT,
       sprites: ResurrectionOption.SPRITES,
-    };
-
-    super({ ...rest, ...options });
+    });
 
     this.tankType = tankType;
     this.tankOptions = tankOptions;
@@ -30,7 +52,7 @@ export default class Resurrection extends GameObject {
     this._timeoutId = setTimeout(this._removeResurrection, ResurrectionOption.ANIMATION_TIME);
   }
 
-  _changeAnimationFrame() {
+  private _changeAnimationFrame(): void {
     this.animationFrame = this.animationFrame + 1;
 
     if (this.animationFrame === this.sprites.length) {
@@ -38,19 +60,19 @@ export default class Resurrection extends GameObject {
     }
   }
 
-  destroy() {
-    clearInterval(this._intervalId);
-    clearTimeout(this._timeoutId);
+  destroy(): void {
+    if (this._intervalId !== null) clearInterval(this._intervalId);
+    if (this._timeoutId !== null) clearTimeout(this._timeoutId);
     this._intervalId = null;
     this._timeoutId = null;
   }
 
-  _removeResurrection() {
+  private _removeResurrection(): void {
     this.destroy();
     this.emit(event.object.DESTROYED, this);
   }
 
-  get sprite() {
+  get sprite(): [number, number] {
     return [
       this.sprites[this.animationFrame][0] * this.width,
       this.sprites[this.animationFrame][1] * this.height,

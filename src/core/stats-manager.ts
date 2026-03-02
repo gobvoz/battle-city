@@ -1,7 +1,7 @@
 import { PointPerEnemyType, HI_SCORE_KEY } from '../config/constants.js';
 import type { EnemyTypeValue } from '../config/constants.type.js';
 
-type PlayerIndex = 0 | 1;
+export type PlayerIndex = 0 | 1;
 type KillScores = Record<number, [number, number]>;
 
 interface Scores extends KillScores {

@@ -1,18 +1,30 @@
 import Tank from './tank.js';
 import { event } from '../config/events.js';
-
 import { Direction } from '../config/constants.js';
+import type { TankTypeValue } from '../config/constants.type.js';
+import type { IEnemyTankOptions } from './entities.type.js';
+import type { IWorld } from '../world/world.type.js';
+
+export interface EnemyTankProps {
+  type: TankTypeValue;
+  tankOptions: IEnemyTankOptions;
+  world: IWorld;
+  x: number;
+  y: number;
+}
 
 export default class EnemyTank extends Tank {
-  static createRandom(props) {
+  declare protected readonly tankOptions: IEnemyTankOptions;
+
+  actionDelay: number;
+  shootDelay: number;
+
+  static createRandom(props: EnemyTankProps): EnemyTank {
     return new EnemyTank(props);
   }
 
-  constructor(props) {
+  constructor(props: EnemyTankProps) {
     super(props);
-
-    const { tankOptions } = props;
-    this.tankOptions = tankOptions;
 
     this.actionDelay =
       this.tankOptions.BASE_CHANGE_DIRECTION_DELAY +
@@ -22,7 +34,7 @@ export default class EnemyTank extends Tank {
       ((Math.random() * this.tankOptions.FIRE_DELAY_MULTIPLEXER * 8) >> 0);
   }
 
-  update() {
+  update(): void {
     this.actionDelay--;
     this.shootDelay--;
 
@@ -36,8 +48,6 @@ export default class EnemyTank extends Tank {
       let newDirection = this.direction + changeDirection;
       if (newDirection > 4) newDirection = 1;
       if (newDirection < 1) newDirection = 4;
-
-      // this._stickToGrid();
 
       switch (newDirection) {
         case Direction.UP:
@@ -63,7 +73,9 @@ export default class EnemyTank extends Tank {
       this.emit(event.object.FIRE, this);
     }
 
-    const speed = this.world.hasCollision(this) ? 0 : this.speed;
+    const speed = (this.world as import('../world/world.type.js').IWorld).hasCollision(this)
+      ? 0
+      : this.speed;
     if (!speed) this.actionDelay = this.actionDelay >> 1;
     if (!speed) this.shootDelay = this.shootDelay >> 1;
 
@@ -80,7 +92,6 @@ export default class EnemyTank extends Tank {
     if (this.oldX !== this.x || this.oldY !== this.y) {
       this.oldX = this.x;
       this.oldY = this.y;
-
       this._changeAnimationFrame();
     }
 

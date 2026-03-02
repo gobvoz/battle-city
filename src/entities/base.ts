@@ -1,41 +1,45 @@
 import GameObject from '../core/game-object.js';
 import { event } from '../config/events.js';
-
 import { BaseOption, ObjectType } from '../config/constants.js';
+import type { ObjectTypeValue } from '../config/constants.type.js';
+
+type BaseSprites = Record<0 | 1, readonly [number, number]>;
 
 export default class Base extends GameObject {
-  constructor({ ...rest }) {
-    const options = {
+  destroyed: boolean;
+  declare sprites: BaseSprites;
+
+  constructor({ world }: { world?: unknown }) {
+    super({
+      world,
       x: BaseOption.START_X,
       y: BaseOption.START_Y,
       width: BaseOption.WIDTH,
       height: BaseOption.HEIGHT,
       sprites: BaseOption.SPRITES,
-    };
-
-    super({ ...rest, ...options });
+    });
 
     this.destroyed = false;
   }
 
-  update() {
+  update(): void {
     // do nothing
   }
 
-  get sprite() {
-    return [
-      this.sprites[Number(this.destroyed)][0] * this.width,
-      this.sprites[Number(this.destroyed)][1] * this.height,
-    ];
+  get sprite(): [number, number] {
+    const key = Number(this.destroyed) as 0 | 1;
+    return [this.sprites[key][0] * this.width, this.sprites[key][1] * this.height];
   }
 
-  hit(object) {
+  hit(object: { type: ObjectTypeValue }): boolean {
     if (object.type !== ObjectType.PROJECTILE) return false;
 
     this.emit(event.object.DESTROYED, this);
     this.destroyed = true;
+    return true;
   }
-  moveThrough() {
+
+  moveThrough(): boolean {
     return true;
   }
 }
