@@ -2,6 +2,7 @@ import { EventEmitter } from './core/event-emitter.js';
 import { Input } from './core/input-handler.js';
 import { AudioManager } from './core/audio-manager.js';
 import { Sprite } from './core/sprite.js';
+import { StatsManager } from './core/stats-manager.js';
 
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
@@ -12,9 +13,11 @@ import { GameOverState } from './states/game-over.state.js';
 import { ResultsState } from './states/results.state.js';
 import { NextLevelState } from './states/next-level.state.js';
 import { RestartGameState } from './states/restart-game.state.js';
-import { StatsManager } from './core/stats-manager.js';
 
-let DebugManager;
+import type { IGameContext } from './core/game-context.type.js';
+import type { DebugManager as DebugManagerType } from './core/debug-manager.js';
+
+let DebugManager: typeof DebugManagerType | undefined;
 
 if (__DEBUG__) {
   import('./core/debug-manager.js').then(module => {
@@ -22,44 +25,67 @@ if (__DEBUG__) {
   });
 }
 
+type GameState = {
+  start(): void;
+  update(deltaTime: number): void;
+  render(ctx: CanvasRenderingContext2D): void;
+  exit(): void;
+};
+
 export class Game {
   fps = 0;
   fpsCounter = 0;
-
-  busyTime = 0;
+  busyTime: number | string = 0;
   busyTimeCounter = 0;
 
-  constructor(ctx) {
+  private ctx: CanvasRenderingContext2D;
+
+  currentLevel: number;
+  player1Lives: number;
+  player2Lives: number;
+
+  context: IGameContext;
+  events: EventEmitter;
+  audio: AudioManager;
+  sprite: Sprite;
+  stats: StatsManager;
+  input: Input;
+  state: GameState;
+
+  private lastTime: number;
+  private running: boolean;
+
+  constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
 
     this.currentLevel = 1;
-
     this.player1Lives = 2;
     this.player2Lives = 2;
 
     const game = this;
 
-    this.context = {};
-    Object.defineProperties(this.context, {
+    const context = {} as IGameContext;
+    Object.defineProperties(context, {
       events: { get: () => game.events },
       input: { get: () => game.input },
       sprite: { get: () => game.sprite },
       stats: { get: () => game.stats },
       currentLevel: {
         get: () => game.currentLevel,
-        set: level => (game.currentLevel = level),
+        set: (level: number) => (game.currentLevel = level),
       },
       player1Lives: {
         get: () => game.player1Lives,
-        set: lives => (game.player1Lives = lives),
+        set: (lives: number) => (game.player1Lives = lives),
       },
       player2Lives: {
         get: () => game.player2Lives,
-        set: lives => (game.player2Lives = lives),
+        set: (lives: number) => (game.player2Lives = lives),
       },
       fps: { get: () => game.fps },
       busyTime: { get: () => game.busyTime },
     });
+    this.context = context;
 
     this.events = new EventEmitter(this.context);
     this.audio = new AudioManager();
@@ -70,17 +96,18 @@ export class Game {
     this.state = new MenuState(this.context);
 
     this.lastTime = 0;
-
     this.running = false;
 
     this.loop = this.loop.bind(this);
     this.changeState = this.changeState.bind(this);
 
-    __DEBUG__ && (this.toggleDebug = this.toggleDebug.bind(this));
+    if (__DEBUG__) {
+      this.toggleDebug = this.toggleDebug.bind(this);
+    }
   }
 
-  async start() {
-    __DEBUG__ && this.events.on(event.key.D, this.toggleDebug);
+  async start(): Promise<void> {
+    __DEBUG__ && this.events.on(event.key.D, this.toggleDebug.bind(this));
 
     this.events.on(event.CHANGE_STATE, this.changeState);
 
@@ -103,7 +130,7 @@ export class Game {
     }, 500);
   }
 
-  loop(currentTime) {
+  loop(currentTime: number): void {
     const deltaTime = (currentTime - this.lastTime) / 1000;
     this.lastTime = currentTime;
 
@@ -117,23 +144,21 @@ export class Game {
     this.update(deltaTime);
     this.render();
 
-    const now = window.performance.now();
     this.fpsCounter++;
 
     if (this.running) requestAnimationFrame(this.loop);
   }
 
-  update(deltaTime) {
+  update(deltaTime: number): void {
     this.state.update(deltaTime);
   }
 
-  render() {
+  render(): void {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-
     this.state.render(this.ctx);
   }
 
-  changeState(newStateName) {
+  changeState(newStateName: string): void {
     this.events.off(event.CHANGE_STATE, this.changeState);
     this.state.exit();
 
@@ -143,7 +168,6 @@ export class Game {
         break;
       case event.state.PLAY:
         this.state = new PlayState(this.context);
-        //this.state = new ResultsState(this.context);
         break;
       case event.state.GAME_OVER:
         this.state = new GameOverState(this.context);
@@ -165,7 +189,7 @@ export class Game {
     this.state.start();
   }
 
-  toggleDebug(key) {
+  toggleDebug(key: string): void {
     if (key !== 'pressed') return;
 
     if (

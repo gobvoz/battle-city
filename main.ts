@@ -1,4 +1,4 @@
-import { Game } from './src/game.js';
+import { Game } from './src/game.ts';
 import { RenderOption } from './src/config/render.js';
 
 window.onload = () => {
