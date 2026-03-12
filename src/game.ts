@@ -62,28 +62,26 @@ export class Game {
     this.player1Lives = 2;
     this.player2Lives = 2;
 
-    const game = this;
-
     const context = {} as IGameContext;
     Object.defineProperties(context, {
-      events: { get: () => game.events },
-      input: { get: () => game.input },
-      sprite: { get: () => game.sprite },
-      stats: { get: () => game.stats },
+      events: { get: () => this.events },
+      input: { get: () => this.input },
+      sprite: { get: () => this.sprite },
+      stats: { get: () => this.stats },
       currentLevel: {
-        get: () => game.currentLevel,
-        set: (level: number) => (game.currentLevel = level),
+        get: () => this.currentLevel,
+        set: (level: number) => (this.currentLevel = level),
       },
       player1Lives: {
-        get: () => game.player1Lives,
-        set: (lives: number) => (game.player1Lives = lives),
+        get: () => this.player1Lives,
+        set: (lives: number) => (this.player1Lives = lives),
       },
       player2Lives: {
-        get: () => game.player2Lives,
-        set: (lives: number) => (game.player2Lives = lives),
+        get: () => this.player2Lives,
+        set: (lives: number) => (this.player2Lives = lives),
       },
-      fps: { get: () => game.fps },
-      busyTime: { get: () => game.busyTime },
+      fps: { get: () => this.fps },
+      busyTime: { get: () => this.busyTime },
     });
     this.context = context;
 

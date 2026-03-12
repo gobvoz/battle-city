@@ -47,7 +47,7 @@ export default class Resurrection extends GameObject {
 
     this._intervalId = setInterval(
       this._changeAnimationFrame,
-      ResurrectionOption.ANIMATION_INTERVAL,
+      ResurrectionOption.ANIMATION_INTERVAL
     );
     this._timeoutId = setTimeout(this._removeResurrection, ResurrectionOption.ANIMATION_TIME);
   }

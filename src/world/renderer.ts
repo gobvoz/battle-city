@@ -61,7 +61,7 @@ export class Renderer {
       RenderOption.PADDING_LEFT,
       RenderOption.PADDING_TOP,
       this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      this.world.stage[0].length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      this.world.stage[0].length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
     );
   }
 
@@ -74,23 +74,23 @@ export class Renderer {
       ctx.beginPath();
       ctx.moveTo(
         RenderOption.PADDING_LEFT + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-        RenderOption.PADDING_TOP,
+        RenderOption.PADDING_TOP
       );
       ctx.lineTo(
         RenderOption.PADDING_LEFT + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         RenderOption.PADDING_TOP +
-          this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+          this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
       );
       ctx.stroke();
       ctx.beginPath();
       ctx.moveTo(
         RenderOption.PADDING_LEFT,
-        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
       );
       ctx.lineTo(
         RenderOption.PADDING_LEFT +
           this.world.stage.length * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.PADDING_TOP + mapUnit * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
       );
       ctx.stroke();
     }
@@ -106,7 +106,7 @@ export class Renderer {
         RenderOption.PADDING_LEFT + tile[0] * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         RenderOption.PADDING_TOP + tile[1] * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-        RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
       );
       ctx.fill();
     });
@@ -127,7 +127,7 @@ export class Renderer {
           .padStart(3, ' ')
           .slice(0, 3)}`,
         10,
-        224 * RenderOption.MULTIPLEXER + 40 + index * 10,
+        224 * RenderOption.MULTIPLEXER + 40 + index * 10
       );
     });
     ctx.font = `${RenderOption.FONT_SIZE}px font-7x7`;
@@ -143,7 +143,7 @@ export class Renderer {
       RenderOption.PADDING_LEFT + tile.x * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       RenderOption.PADDING_TOP + tile.y * RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
-      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
+      RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER
     );
   }
 
@@ -180,7 +180,7 @@ export class Renderer {
       RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
       RenderOption.PADDING_TOP + gameObject.y * RenderOption.MULTIPLEXER,
       gameObject.width * RenderOption.MULTIPLEXER,
-      gameObject.width * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER
     );
   }
 
@@ -191,7 +191,7 @@ export class Renderer {
       RenderOption.PADDING_LEFT + gameObject.x * RenderOption.MULTIPLEXER,
       RenderOption.PADDING_TOP + gameObject.y * RenderOption.MULTIPLEXER,
       gameObject.width * RenderOption.MULTIPLEXER,
-      gameObject.width * RenderOption.MULTIPLEXER,
+      gameObject.width * RenderOption.MULTIPLEXER
     );
     ctx.stroke();
   }
@@ -210,7 +210,7 @@ export class Renderer {
           SidePanelOption.TANK.WIDTH * RenderOption.MULTIPLEXER * Number(isNextRow),
         SidePanelOption.TANK.OFFSET_Y + offsetY * RenderOption.MULTIPLEXER,
         SidePanelOption.TANK.WIDTH * RenderOption.MULTIPLEXER,
-        SidePanelOption.TANK.HEIGHT * RenderOption.MULTIPLEXER,
+        SidePanelOption.TANK.HEIGHT * RenderOption.MULTIPLEXER
       );
 
       isNextRow = !isNextRow;
@@ -227,7 +227,7 @@ export class Renderer {
         player1logo.OFFSET_X,
         player1logo.OFFSET_Y,
         player1logo.WIDTH * RenderOption.MULTIPLEXER,
-        player1logo.HEIGHT * RenderOption.MULTIPLEXER,
+        player1logo.HEIGHT * RenderOption.MULTIPLEXER
       );
       const player1Lives = SidePanelOption.NUMBER[this.game.player1Lives];
       ctx.drawImage(
@@ -238,7 +238,7 @@ export class Renderer {
         player1logo.OFFSET_X + RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         player1logo.OFFSET_Y + RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         player1Lives.WIDTH * RenderOption.MULTIPLEXER,
-        player1Lives.HEIGHT * RenderOption.MULTIPLEXER,
+        player1Lives.HEIGHT * RenderOption.MULTIPLEXER
       );
     }
 
@@ -252,7 +252,7 @@ export class Renderer {
         player2logo.OFFSET_X,
         player2logo.OFFSET_Y,
         player2logo.WIDTH * RenderOption.MULTIPLEXER,
-        player2logo.HEIGHT * RenderOption.MULTIPLEXER,
+        player2logo.HEIGHT * RenderOption.MULTIPLEXER
       );
       const player2Lives = SidePanelOption.NUMBER[this.game.player2Lives];
       ctx.drawImage(
@@ -263,7 +263,7 @@ export class Renderer {
         player2logo.OFFSET_X + RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         player2logo.OFFSET_Y + RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
         player2Lives.WIDTH * RenderOption.MULTIPLEXER,
-        player2Lives.HEIGHT * RenderOption.MULTIPLEXER,
+        player2Lives.HEIGHT * RenderOption.MULTIPLEXER
       );
     }
 
@@ -276,7 +276,7 @@ export class Renderer {
       stage.OFFSET_X,
       stage.OFFSET_Y,
       stage.WIDTH * RenderOption.MULTIPLEXER,
-      stage.HEIGHT * RenderOption.MULTIPLEXER,
+      stage.HEIGHT * RenderOption.MULTIPLEXER
     );
     const stageLevelRight = this.game.currentLevel % 10;
     const stageLevelLeft = (this.game.currentLevel - stageLevelRight) / 10;
@@ -290,7 +290,7 @@ export class Renderer {
         stage.OFFSET_X,
         stage.OFFSET_Y + RenderOption.TILE_SIZE * 2 * RenderOption.MULTIPLEXER,
         number.WIDTH * RenderOption.MULTIPLEXER,
-        number.HEIGHT * RenderOption.MULTIPLEXER,
+        number.HEIGHT * RenderOption.MULTIPLEXER
       );
     }
     const number = SidePanelOption.NUMBER[stageLevelRight];
@@ -302,7 +302,7 @@ export class Renderer {
       stage.OFFSET_X + RenderOption.TILE_SIZE * RenderOption.MULTIPLEXER,
       stage.OFFSET_Y + RenderOption.TILE_SIZE * 2 * RenderOption.MULTIPLEXER,
       number.WIDTH * RenderOption.MULTIPLEXER,
-      number.HEIGHT * RenderOption.MULTIPLEXER,
+      number.HEIGHT * RenderOption.MULTIPLEXER
     );
   }
 

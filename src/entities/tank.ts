@@ -154,7 +154,7 @@ export default class Tank extends GameObject {
       this.emit(
         event.stats.RECORD_KILL,
         (this.tankOptions as IEnemyTankOptions).ENEMY_TYPE,
-        object.tank.playerIndex,
+        object.tank.playerIndex
       );
     }
 

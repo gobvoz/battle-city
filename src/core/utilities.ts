@@ -45,7 +45,7 @@ const generateWall = ({
     const Terrain = TerrainList[terrainType];
     if (!Terrain) throw new Error(`Unknown terrain type: ${terrainType}`);
     return new Terrain({ x, y });
-  } catch (e) {
+  } catch {
     console.warn(`Unknown terrain type: ${terrainType}`);
     return null;
   }
@@ -53,7 +53,7 @@ const generateWall = ({
 
 export const generateTerrain = (
   stage: TerrainTypeValue[][],
-  removeWallCallBack: (wall: IMapTile) => void,
+  removeWallCallBack: (wall: IMapTile) => void
 ): (IMapTile | null)[][] =>
   stage.map((row, rowIndex) =>
     row.map((terrainType, columnIndex) => {
@@ -64,5 +64,5 @@ export const generateTerrain = (
       }
 
       return wall;
-    }),
+    })
   );

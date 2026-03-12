@@ -134,7 +134,7 @@ export class ResultsState {
         ctx.canvas.width / 2 - (RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER) / 2,
         startY + lineHeight * i + lineHeight / 2,
         RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
-        RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER,
+        RenderOption.UNIT_SIZE * RenderOption.MULTIPLEXER
       );
     }
 
@@ -154,24 +154,24 @@ export class ResultsState {
       ctx.fillText(
         String(count[0]),
         ctx.canvas.width / 2 - 55,
-        (enemyType + 1) * lineHeight + startY,
+        (enemyType + 1) * lineHeight + startY
       );
       ctx.fillText(
         String(count[0] * PointPerEnemyType[enemyType as EnemyTypeValue]),
         ctx.canvas.width / 2 - 160,
-        (enemyType + 1) * lineHeight + startY,
+        (enemyType + 1) * lineHeight + startY
       );
 
       ctx.textAlign = 'left';
       ctx.fillText(
         String(count[1]),
         ctx.canvas.width / 2 + 55,
-        (enemyType + 1) * lineHeight + startY,
+        (enemyType + 1) * lineHeight + startY
       );
       ctx.fillText(
         String(count[1] * PointPerEnemyType[enemyType as EnemyTypeValue]),
         ctx.canvas.width / 2 + 160,
-        (enemyType + 1) * lineHeight + startY,
+        (enemyType + 1) * lineHeight + startY
       );
 
       levelScores[0] += count[0] * PointPerEnemyType[enemyType as EnemyTypeValue];
@@ -204,19 +204,19 @@ export class ResultsState {
     ctx.fillText(
       `${this.scores.total[0] + levelScores[0]}`,
       ctx.canvas.width / 2 - 100,
-      startY + lineHeight,
+      startY + lineHeight
     );
     ctx.textAlign = 'left';
     ctx.fillText(
       `${this.scores.total[1] + levelScores[1]}`,
       ctx.canvas.width / 2 + 100,
-      startY + lineHeight,
+      startY + lineHeight
     );
 
     const hiScore = Math.max(
       this.scores.hiScore,
       this.scores.total[0] + levelScores[0],
-      this.scores.total[1] + levelScores[1],
+      this.scores.total[1] + levelScores[1]
     );
     ctx.textAlign = 'left';
     ctx.fillStyle = 'rgba(248, 154, 47, 1)';

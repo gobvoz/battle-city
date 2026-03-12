@@ -34,7 +34,7 @@ export class IntroState {
 
     const t = Math.min(this.timer / this.duration, 1);
 
-    let shutterHeight = 0;
+    let shutterHeight: number;
     const maxHeight = height / 2;
 
     if (t < this.transitionTime / this.duration) {
