@@ -36,4 +36,8 @@ export class EventEmitter {
       listener(...args);
     }
   }
+
+  clearListeners(): void {
+    this.listeners = {};
+  }
 }

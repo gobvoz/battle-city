@@ -33,26 +33,37 @@ export default class Explosive extends GameObject {
   private _intervalId: ReturnType<typeof setInterval> | null;
   private _timeoutId: ReturnType<typeof setTimeout> | null;
 
-  constructor({ projectile, tank, base, world }: IExplosiveProps) {
-    let width = 0;
-    let height = 0;
-    let sprites: ExplosiveSprites = [];
+  constructor() {
+    super({ world: undefined, x: 0, y: 0, width: 0, height: 0, sprites: [] });
 
-    if (projectile) {
-      width = ExplosiveOption.SMALL_WIDTH;
-      height = ExplosiveOption.SMALL_HEIGHT;
-      sprites = ExplosiveOption.SPRITES[0];
-    } else if (tank || base) {
-      width = ExplosiveOption.BIG_WIDTH;
-      height = ExplosiveOption.BIG_HEIGHT;
-      sprites = ExplosiveOption.SPRITES[1];
-    }
+    this.projectile = undefined;
+    this.tank = undefined;
+    this.base = undefined;
+    this.animationFrame = 0;
 
-    super({ world, x: 0, y: 0, width, height, sprites });
+    this._intervalId = null;
+    this._timeoutId = null;
 
+    this._changeAnimationFrame = this._changeAnimationFrame.bind(this);
+    this._removeExplosive = this._removeExplosive.bind(this);
+  }
+
+  init({ projectile, tank, base, world }: IExplosiveProps): void {
+    this.world = world;
     this.projectile = projectile;
     this.tank = tank;
     this.base = base;
+    this.animationFrame = 0;
+
+    if (projectile) {
+      this.width = ExplosiveOption.SMALL_WIDTH;
+      this.height = ExplosiveOption.SMALL_HEIGHT;
+      this.sprites = ExplosiveOption.SPRITES[0];
+    } else if (tank || base) {
+      this.width = ExplosiveOption.BIG_WIDTH;
+      this.height = ExplosiveOption.BIG_HEIGHT;
+      this.sprites = ExplosiveOption.SPRITES[1];
+    }
 
     if (projectile) {
       this.x = this._getStartX(projectile);
@@ -66,11 +77,6 @@ export default class Explosive extends GameObject {
       this.x = base.x - (this.width >> 1) + (base.width >> 1);
       this.y = base.y - (this.height >> 1) + (base.height >> 1);
     }
-
-    this.animationFrame = 0;
-
-    this._changeAnimationFrame = this._changeAnimationFrame.bind(this);
-    this._removeExplosive = this._removeExplosive.bind(this);
 
     this._intervalId = setInterval(this._changeAnimationFrame, 150);
     this._timeoutId = setTimeout(this._removeExplosive, 450);

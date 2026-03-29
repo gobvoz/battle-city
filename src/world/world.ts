@@ -13,6 +13,7 @@ import Explosive from '../entities/explosive.js';
 import { generateTerrain } from '../core/utilities.js';
 import type { IMapTile } from '../core/utilities.js';
 import type { IGameContext } from '../core/game-context.type.js';
+import { ObjectPool } from '../core/object-pool.js';
 
 import {
   Direction,
@@ -53,6 +54,9 @@ export class World implements IWorld {
   tanksTotal: number;
   enemyFriendlyFire: boolean;
   base!: Base;
+
+  private readonly _projectilePool = new ObjectPool(() => new Projectile());
+  private readonly _explosivePool = new ObjectPool(() => new Explosive());
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -256,12 +260,8 @@ export class World implements IWorld {
     if (tank.hasProjectile) return;
     tank.hasProjectile = true;
 
-    const projectile = new Projectile({
-      world: this,
-      tank,
-      direction: tank.direction,
-    });
-
+    const projectile = this._projectilePool.acquire();
+    projectile.init({ world: this, tank, direction: tank.direction });
     projectile.on(event.object.DESTROYED, this._removeProjectile);
     this.projectiles.push(projectile);
   }
@@ -320,7 +320,8 @@ export class World implements IWorld {
   private _removeTank(tank: Tank): void {
     this.enemyTanks = this.enemyTanks.filter(t => t !== tank);
 
-    const explosive = new Explosive({ world: this, tank });
+    const explosive = this._explosivePool.acquire();
+    explosive.init({ world: this, tank });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
 
@@ -339,9 +340,13 @@ export class World implements IWorld {
     projectile.tank.hasProjectile = false;
     this.projectiles = this.projectiles.filter(p => p !== projectile);
 
-    const explosive = new Explosive({ world: this, projectile });
+    const explosive = this._explosivePool.acquire();
+    explosive.init({ world: this, projectile });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
+
+    projectile.clearListeners();
+    this._projectilePool.release(projectile);
   }
 
   private _removeExplosive(explosive: Explosive): void {
@@ -363,6 +368,10 @@ export class World implements IWorld {
         this.player2Tank = null;
       }
     }
+
+    explosive.destroy();
+    explosive.clearListeners();
+    this._explosivePool.release(explosive);
   }
 
   private _removeWall(wall: IMapTile): void {
@@ -370,7 +379,8 @@ export class World implements IWorld {
   }
 
   private _destroyBase(destroyedBase: Base): void {
-    const explosive = new Explosive({ world: this, base: destroyedBase });
+    const explosive = this._explosivePool.acquire();
+    explosive.init({ world: this, base: destroyedBase });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
   }

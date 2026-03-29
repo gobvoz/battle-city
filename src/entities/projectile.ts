@@ -21,24 +21,16 @@ export interface ITankForProjectile {
 }
 
 export default class Projectile extends GameObject {
-  tank: ITankForProjectile;
-  power: number;
-  direction: DirectionType;
-  speed: number;
+  tank!: ITankForProjectile;
+  power!: number;
+  direction!: DirectionType;
+  speed!: number;
   type: ObjectTypeValue;
   declare sprites: ProjectileSprites;
 
-  constructor({
-    tank,
-    direction,
-    world,
-  }: {
-    tank: ITankForProjectile;
-    direction: DirectionType;
-    world: IWorld;
-  }) {
+  constructor() {
     super({
-      world,
+      world: undefined,
       x: 0,
       y: 0,
       width: ProjectileOption.WIDTH,
@@ -46,17 +38,29 @@ export default class Projectile extends GameObject {
       sprites: ProjectileOption.SPRITES,
     });
 
+    this.type = ObjectType.PROJECTILE;
+  }
+
+  init({
+    tank,
+    direction,
+    world,
+  }: {
+    tank: ITankForProjectile;
+    direction: DirectionType;
+    world: IWorld;
+  }): void {
+    this.world = world;
     this.tank = tank;
     this.power = tank.power;
 
     this.realX = this._getStartX(tank);
     this.realY = this._getStartY(tank);
-    this.x = this._getStartX(tank);
-    this.y = this._getStartY(tank);
+    this.x = this.realX;
+    this.y = this.realY;
 
     this.direction = direction;
     this.speed = tank.projectileSpeed;
-    this.type = ObjectType.PROJECTILE;
   }
 
   private _getStartX(tank: ITankForProjectile): number {
