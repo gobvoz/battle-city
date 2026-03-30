@@ -1,8 +1,5 @@
-import { EventEmitter } from './core/event-emitter.js';
-import { Input } from './core/input-handler.js';
 import { AudioManager } from './core/audio-manager.js';
-import { Sprite } from './core/sprite.js';
-import { StatsManager } from './core/stats-manager.js';
+import { GameContainer } from './core/game-container.js';
 
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
@@ -33,68 +30,24 @@ type GameState = {
 };
 
 export class Game {
-  fps = 0;
-  fpsCounter = 0;
-  busyTime: number | string = 0;
-  busyTimeCounter = 0;
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly container: GameContainer;
+  readonly audio: AudioManager;
+  private state: GameState;
+  private lastTime = 0;
+  private running = false;
+  private fpsCounter = 0;
+  private busyTimeCounter = 0;
 
-  private ctx: CanvasRenderingContext2D;
-
-  currentLevel: number;
-  player1Lives: number;
-  player2Lives: number;
-
-  context: IGameContext;
-  events: EventEmitter;
-  audio: AudioManager;
-  sprite: Sprite;
-  stats: StatsManager;
-  input: Input;
-  state: GameState;
-
-  private lastTime: number;
-  private running: boolean;
+  get context(): IGameContext {
+    return this.container;
+  }
 
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
-
-    this.currentLevel = 1;
-    this.player1Lives = 2;
-    this.player2Lives = 2;
-
-    const context = {} as IGameContext;
-    Object.defineProperties(context, {
-      events: { get: () => this.events },
-      input: { get: () => this.input },
-      sprite: { get: () => this.sprite },
-      stats: { get: () => this.stats },
-      currentLevel: {
-        get: () => this.currentLevel,
-        set: (level: number) => (this.currentLevel = level),
-      },
-      player1Lives: {
-        get: () => this.player1Lives,
-        set: (lives: number) => (this.player1Lives = lives),
-      },
-      player2Lives: {
-        get: () => this.player2Lives,
-        set: (lives: number) => (this.player2Lives = lives),
-      },
-      fps: { get: () => this.fps },
-      busyTime: { get: () => this.busyTime },
-    });
-    this.context = context;
-
-    this.events = new EventEmitter(this.context);
+    this.container = new GameContainer();
     this.audio = new AudioManager();
-    this.sprite = new Sprite('/sprites/sprite.png');
-    this.stats = new StatsManager();
-
-    this.input = new Input(this.context);
-    this.state = new MenuState(this.context);
-
-    this.lastTime = 0;
-    this.running = false;
+    this.state = new MenuState(this.container);
 
     this.loop = this.loop.bind(this);
     this.changeState = this.changeState.bind(this);
@@ -105,23 +58,23 @@ export class Game {
   }
 
   async start(): Promise<void> {
-    __DEBUG__ && this.events.on(event.key.D, this.toggleDebug.bind(this));
+    __DEBUG__ && this.container.events.on(event.key.D, this.toggleDebug);
 
-    this.events.on(event.CHANGE_STATE, this.changeState);
+    this.container.events.on(event.CHANGE_STATE, this.changeState);
 
     this.lastTime = performance.now();
     this.running = true;
 
-    await this.sprite.load();
+    await this.container.sprite.load();
     this.state.start();
 
     requestAnimationFrame(this.loop);
 
     setInterval(() => {
-      this.fps = this.fpsCounter * 2;
+      this.container.fps = this.fpsCounter * 2;
       this.fpsCounter = 0;
 
-      this.busyTime = String(this.busyTimeCounter / this.fps)
+      this.container.busyTime = String(this.busyTimeCounter / this.container.fps)
         .padEnd(5, ' ')
         .slice(0, 5);
       this.busyTimeCounter = 0;
@@ -157,33 +110,33 @@ export class Game {
   }
 
   changeState(newStateName: string): void {
-    this.events.off(event.CHANGE_STATE, this.changeState);
+    this.container.events.off(event.CHANGE_STATE, this.changeState);
     this.state.exit();
 
     switch (newStateName) {
       case event.state.MENU:
-        this.state = new MenuState(this.context);
+        this.state = new MenuState(this.container);
         break;
       case event.state.PLAY:
-        this.state = new PlayState(this.context);
+        this.state = new PlayState(this.container);
         break;
       case event.state.GAME_OVER:
-        this.state = new GameOverState(this.context);
+        this.state = new GameOverState(this.container);
         break;
       case event.state.RESULTS:
-        this.state = new ResultsState(this.context);
+        this.state = new ResultsState(this.container);
         break;
       case event.state.NEXT_LEVEL:
-        this.state = new NextLevelState(this.context);
+        this.state = new NextLevelState(this.container);
         break;
       case event.state.RESTART:
-        this.state = new RestartGameState(this.context);
+        this.state = new RestartGameState(this.container);
         break;
       default:
         console.warn(`Unknown state: ${newStateName}`);
     }
 
-    this.events.on(event.CHANGE_STATE, this.changeState);
+    this.container.events.on(event.CHANGE_STATE, this.changeState);
     this.state.start();
   }
 
@@ -191,8 +144,8 @@ export class Game {
     if (key !== 'pressed') return;
 
     if (
-      !this.input.isKeyPressed(keyCode.CONTROL_LEFT) &&
-      !this.input.isKeyPressed(keyCode.CONTROL_RIGHT)
+      !this.container.input.isKeyPressed(keyCode.CONTROL_LEFT) &&
+      !this.container.input.isKeyPressed(keyCode.CONTROL_RIGHT)
     )
       return;
 

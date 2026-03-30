@@ -2,11 +2,9 @@
 type Listener = (...args: any[]) => void;
 
 export class EventEmitter {
-  game: unknown;
   private listeners: Record<string, Listener[]>;
 
-  constructor(game?: unknown) {
-    this.game = game;
+  constructor() {
     this.listeners = {};
   }
 

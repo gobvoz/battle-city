@@ -12,5 +12,5 @@ export interface IGameContext {
   player1Lives: number;
   player2Lives: number;
   fps: number;
-  busyTime: number;
+  busyTime: number | string;
 }
