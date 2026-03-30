@@ -6,6 +6,7 @@ import type { InputAction } from '../config/events.type.js';
 export class MenuState {
   private game: IGameContext;
   private selection: 0 | 1;
+  private _offEnter: (() => void) | null = null;
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -16,7 +17,7 @@ export class MenuState {
 
   start(): void {
     __DEBUG__ && console.log('Entering Menu State');
-    this.game.events.on(event.key.ENTER, this.changeState);
+    this._offEnter = this.game.events.on(event.key.ENTER, this.changeState);
   }
 
   update(): void {
@@ -50,6 +51,7 @@ export class MenuState {
 
   exit(): void {
     __DEBUG__ && console.log('Exiting Menu State');
-    this.game.events.off(event.key.ENTER, this.changeState);
+    this._offEnter?.();
+    this._offEnter = null;
   }
 }

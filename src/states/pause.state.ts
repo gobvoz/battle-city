@@ -7,6 +7,7 @@ export class PauseState {
   private active: boolean;
   private timer: number;
   private textVisible: boolean;
+  private _offEscape: (() => void) | null = null;
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -23,7 +24,7 @@ export class PauseState {
     this.timer = 0;
     this.textVisible = true;
 
-    this.game.events.on(event.key.ESCAPE, this.toggle);
+    this._offEscape = this.game.events.on(event.key.ESCAPE, this.toggle);
   }
 
   update(deltaTime: number): void {
@@ -67,6 +68,7 @@ export class PauseState {
 
   exit(): void {
     __DEBUG__ && console.log('Exiting Pause State');
-    this.game.events.off(event.key.ESCAPE, this.toggle);
+    this._offEscape?.();
+    this._offEscape = null;
   }
 }

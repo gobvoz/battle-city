@@ -12,6 +12,8 @@ export class PlayState {
   private pause: PauseState;
   private world: World;
   private renderer: Renderer;
+  private _offCompleteIntro: (() => void) | null = null;
+  private _offTogglePause: (() => void) | null = null;
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -34,8 +36,8 @@ export class PlayState {
     this.world.start();
     this.renderer.start();
 
-    this.game.events.on(event.COMPLETE_INTRO, this.completeIntro);
-    this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
+    this._offCompleteIntro = this.game.events.on(event.COMPLETE_INTRO, this.completeIntro);
+    this._offTogglePause = this.game.events.on(event.TOGGLE_PAUSE, this.togglePause);
   }
 
   update(deltaTime: number): void {
@@ -60,8 +62,10 @@ export class PlayState {
   exit(): void {
     __DEBUG__ && console.log('Exiting Play State');
 
-    this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
-    this.game.events.off(event.TOGGLE_PAUSE, this.togglePause);
+    this._offCompleteIntro?.();
+    this._offCompleteIntro = null;
+    this._offTogglePause?.();
+    this._offTogglePause = null;
 
     if (this.subState) this.subState.exit();
     this.pause.exit();
@@ -73,7 +77,7 @@ export class PlayState {
   private completeIntro(): void {
     __DEBUG__ && console.log('Intro complete, starting gameplay');
 
-    this.game.events.off(event.COMPLETE_INTRO, this.completeIntro);
+    this._offCompleteIntro = null;
     this.subState = null;
 
     this.pause.start();

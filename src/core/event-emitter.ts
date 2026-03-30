@@ -10,13 +10,22 @@ export class EventEmitter {
     this.listeners = {};
   }
 
-  on(event: string, listener: Listener): void {
+  on(event: string, listener: Listener): () => void {
     __DEBUG__ && console.log('-> event added: ' + event);
 
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
     this.listeners[event].push(listener);
+    return () => this.off(event, listener);
+  }
+
+  once(event: string, listener: Listener): () => void {
+    const wrapper: Listener = (...args) => {
+      this.off(event, wrapper);
+      listener(...args);
+    };
+    return this.on(event, wrapper);
   }
 
   off(event: string, listener: Listener): void {

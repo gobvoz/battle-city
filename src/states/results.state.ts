@@ -20,6 +20,7 @@ export class ResultsState {
   private finished: boolean;
   private scores: Scores;
   private displayedCounts: DisplayedCount[];
+  private _offEnter: (() => void) | null = null;
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -48,7 +49,7 @@ export class ResultsState {
     this.elapsed = 0;
 
     if (this.enemyType > 4) {
-      this.game.events.on(event.key.ENTER, this.changeState);
+      this._offEnter = this.game.events.once(event.key.ENTER, this.changeState);
       this.finished = true;
       return;
     }
@@ -229,7 +230,8 @@ export class ResultsState {
   }
 
   exit(): void {
-    this.game.events.off(event.key.ENTER, this.changeState);
+    this._offEnter?.();
+    this._offEnter = null;
     __DEBUG__ && console.log('Exiting Results State');
   }
 }

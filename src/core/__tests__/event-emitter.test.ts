@@ -71,4 +71,76 @@ describe('EventEmitter', () => {
     expect(a).not.toHaveBeenCalled();
     expect(b).not.toHaveBeenCalled();
   });
+
+  describe('on() unsubscribe', () => {
+    it('returns a function that removes the listener', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      const off = ee.on('test', listener);
+      off();
+      ee.emit('test');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('unsubscribe does not affect other listeners for same event', () => {
+      const ee = new EventEmitter();
+      const a = vi.fn();
+      const b = vi.fn();
+      const off = ee.on('e', a);
+      ee.on('e', b);
+      off();
+      ee.emit('e');
+      expect(a).not.toHaveBeenCalled();
+      expect(b).toHaveBeenCalledOnce();
+    });
+
+    it('calling unsubscribe twice is safe', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      const off = ee.on('test', listener);
+      off();
+      expect(() => off()).not.toThrow();
+      ee.emit('test');
+      expect(listener).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('once()', () => {
+    it('fires listener exactly once', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      ee.once('test', listener);
+      ee.emit('test');
+      ee.emit('test');
+      expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it('passes arguments to the listener', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      ee.once('data', listener);
+      ee.emit('data', 42, 'hello');
+      expect(listener).toHaveBeenCalledWith(42, 'hello');
+    });
+
+    it('returns an unsubscribe that cancels before first fire', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      const off = ee.once('test', listener);
+      off();
+      ee.emit('test');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('auto-removes listener after firing so it does not appear in clearListeners count', () => {
+      const ee = new EventEmitter();
+      const listener = vi.fn();
+      ee.once('test', listener);
+      ee.emit('test');
+      // After firing, the wrapper is gone — a second clearListeners + emit should be a no-op
+      ee.clearListeners();
+      ee.emit('test');
+      expect(listener).toHaveBeenCalledOnce();
+    });
+  });
 });

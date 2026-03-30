@@ -4,6 +4,7 @@ import type { InputAction } from '../config/events.type.js';
 
 export class GameOverState {
   private game: IGameContext;
+  private _offEnter: (() => void) | null = null;
 
   constructor(game: IGameContext) {
     this.game = game;
@@ -13,7 +14,7 @@ export class GameOverState {
 
   start(): void {
     __DEBUG__ && console.log('Entering Game Over State');
-    this.game.events.on(event.key.ENTER, this.changeState);
+    this._offEnter = this.game.events.on(event.key.ENTER, this.changeState);
   }
 
   update(_deltaTime?: number): void {}
@@ -35,7 +36,8 @@ export class GameOverState {
   }
 
   exit(): void {
-    this.game.events.off(event.key.ENTER, this.changeState);
+    this._offEnter?.();
+    this._offEnter = null;
     __DEBUG__ && console.log('Exiting Game Over State');
   }
 }
