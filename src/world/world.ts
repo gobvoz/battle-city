@@ -12,13 +12,20 @@ import Explosive from '../entities/explosive.js';
 
 import BrickWall from '../map/brick-wall.js';
 
+import {
+  computeNextBounds,
+  isOutOfBounds,
+  overlapsRect,
+  overlapsDirectional,
+  computeTileRange,
+} from './collision.js';
+
 import { generateTerrain } from '../core/utilities.js';
 import type { IMapTile } from '../core/utilities.js';
 import type { IGameContext } from '../core/game-context.type.js';
 import { ObjectPool } from '../core/object-pool.js';
 
 import {
-  Direction,
   WorldOption,
   TankType,
   Player1TankOption,
@@ -403,84 +410,31 @@ export class World implements IWorld {
   hasCollision(object: ICollidable): boolean {
     const isProjectile = object instanceof Projectile;
     const isPlayerProjectile = isProjectile && object.tank?.playerIndex !== undefined;
-    let nextMinX = object.x;
-    let nextMaxX = object.x + object.width - 1;
-    let nextMinY = object.y;
-    let nextMaxY = object.y + object.height - 1;
 
-    let tileMinX = 0;
-    let tileMaxX = 0;
-    let tileMinY = 0;
-    let tileMaxY = 0;
-
-    let objectHasWallCollision = false;
-
-    switch (object.direction) {
-      case Direction.UP:
-        nextMinY -= object.speed;
-        nextMaxY -= object.speed;
-        if (nextMinY < this.minWorldY) {
-          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
-          return true;
-        }
-        tileMinX = nextMinX >> 3;
-        tileMaxX = nextMaxX >> 3;
-        tileMinY = nextMinY >> 3;
-        tileMaxY = nextMinY >> 3;
-        break;
-      case Direction.LEFT:
-        nextMinX -= object.speed;
-        nextMaxX -= object.speed;
-        if (nextMinX < this.minWorldX) {
-          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
-          return true;
-        }
-        tileMinX = nextMinX >> 3;
-        tileMaxX = nextMinX >> 3;
-        tileMinY = nextMinY >> 3;
-        tileMaxY = nextMaxY >> 3;
-        break;
-      case Direction.DOWN:
-        nextMinY += object.speed + 1;
-        nextMaxY += object.speed + 1;
-        if (nextMaxY >= this.maxWorldY) {
-          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
-          return true;
-        }
-        tileMinX = nextMinX >> 3;
-        tileMaxX = nextMaxX >> 3;
-        tileMinY = nextMaxY >> 3;
-        tileMaxY = nextMaxY >> 3;
-        break;
-      case Direction.RIGHT:
-        nextMinX += object.speed + 1;
-        nextMaxX += object.speed + 1;
-        if (nextMaxX >= this.maxWorldX) {
-          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
-          return true;
-        }
-        tileMinX = nextMaxX >> 3;
-        tileMaxX = nextMaxX >> 3;
-        tileMinY = nextMinY >> 3;
-        tileMaxY = nextMaxY >> 3;
-        break;
-    }
-
-    const deltaMinX = nextMinX - this.base.x;
-    const deltaMaxX = nextMaxX - this.base.x;
-    const deltaMinY = nextMinY - this.base.y;
-    const deltaMaxY = nextMaxY - this.base.y;
+    const bounds = computeNextBounds(
+      object.x,
+      object.y,
+      object.width,
+      object.height,
+      object.direction,
+      object.speed
+    );
 
     if (
-      (deltaMinX >= 0 &&
-        deltaMinX <= this.base.width &&
-        deltaMinY >= 0 &&
-        deltaMinY <= this.base.height) ||
-      (deltaMaxX >= 0 &&
-        deltaMaxX <= this.base.width &&
-        deltaMaxY >= 0 &&
-        deltaMaxY <= this.base.height)
+      isOutOfBounds(
+        bounds,
+        object.direction,
+        this.minWorldX,
+        this.maxWorldX,
+        this.minWorldY,
+        this.maxWorldY
+      )
     ) {
+      if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
+      return true;
+    }
+
+    if (overlapsRect(bounds, this.base)) {
       this.base.hit(object);
       return true;
     }
@@ -488,55 +442,9 @@ export class World implements IWorld {
     for (let i = 0; i < this.enemyTanks.length; i++) {
       const tank = this.enemyTanks[i];
 
-      switch (object.direction) {
-        case Direction.UP:
-          if (
-            !(
-              tank.bottom > nextMinY &&
-              tank.top < nextMinY &&
-              ((tank.left < nextMinX && tank.right > nextMinX) ||
-                (tank.left < nextMaxX && tank.right > nextMaxX))
-            )
-          )
-            continue;
-          break;
-        case Direction.LEFT:
-          if (
-            !(
-              tank.right > nextMinX &&
-              tank.left < nextMinX &&
-              ((tank.top < nextMinY && tank.bottom > nextMinY) ||
-                (tank.top < nextMaxY && tank.bottom > nextMaxY))
-            )
-          )
-            continue;
-          break;
-        case Direction.DOWN:
-          if (
-            !(
-              tank.top < nextMaxY &&
-              tank.bottom > nextMaxY &&
-              ((tank.left < nextMinX && tank.right > nextMinX) ||
-                (tank.left < nextMaxX && tank.right > nextMaxX))
-            )
-          )
-            continue;
-          break;
-        case Direction.RIGHT:
-          if (
-            !(
-              tank.left < nextMaxX &&
-              tank.right > nextMaxX &&
-              ((tank.top < nextMinY && tank.bottom > nextMinY) ||
-                (tank.top < nextMaxY && tank.bottom > nextMaxY))
-            )
-          )
-            continue;
-          break;
-      }
+      if (!overlapsDirectional(bounds, object.direction, tank, object.x, object.y)) continue;
 
-      if (object.x === tank.x && object.y === tank.y) continue;
-
+      let objectHasWallCollision = false;
       objectHasWallCollision = tank.hit(object as IHitObject) ? true : objectHasWallCollision;
       objectHasWallCollision = tank.moveThrough(object as IHitObject)
         ? true
@@ -547,12 +455,16 @@ export class World implements IWorld {
       }
     }
 
-    tileMinX = tileMinX < 0 ? 0 : tileMinX;
-    tileMaxX = tileMaxX >= this.stage.length ? this.stage.length - 1 : tileMaxX;
-    tileMinY = tileMinY < 0 ? 0 : tileMinY;
-    tileMaxY = tileMaxY >= this.stage[0].length ? this.stage[0].length - 1 : tileMaxY;
+    const tileRange = computeTileRange(
+      bounds,
+      object.direction,
+      this.stage.length,
+      this.stage[0].length
+    );
 
-    const tile1 = this.stage[tileMinY][tileMinX];
+    let objectHasWallCollision = false;
+
+    const tile1 = this.stage[tileRange.minY][tileRange.minX];
     if (tile1) {
       const isItHit = tile1.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
@@ -567,11 +479,11 @@ export class World implements IWorld {
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
 
       if (isItHit || isMoveThrough) {
-        this.collisionTiles[0] = [tileMinX, tileMinY];
+        this.collisionTiles[0] = [tileRange.minX, tileRange.minY];
       }
     }
 
-    const tile2 = this.stage[tileMaxY][tileMaxX];
+    const tile2 = this.stage[tileRange.maxY][tileRange.maxX];
     if (tile2) {
       const isItHit = tile2.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
@@ -586,7 +498,7 @@ export class World implements IWorld {
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
 
       if (isItHit || isMoveThrough) {
-        this.collisionTiles[1] = [tileMaxX, tileMaxY];
+        this.collisionTiles[1] = [tileRange.maxX, tileRange.maxY];
       }
     }
 
