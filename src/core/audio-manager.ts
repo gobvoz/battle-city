@@ -27,6 +27,32 @@ export class AudioManager {
     });
   }
 
+  playLoop(name: string): void {
+    const sound = this.sounds[name];
+    if (!sound) return;
+    sound.loop = true;
+    if (!sound.paused) return;
+    sound.play().catch(e => {
+      console.warn(`Failed to play loop: ${name}`, e);
+    });
+  }
+
+  stopLoop(name: string): void {
+    const sound = this.sounds[name];
+    if (!sound) return;
+    sound.pause();
+    sound.currentTime = 0;
+    sound.loop = false;
+  }
+
+  stopAll(): void {
+    for (const name in this.sounds) {
+      this.sounds[name].pause();
+      this.sounds[name].currentTime = 0;
+      this.sounds[name].loop = false;
+    }
+  }
+
   stopSound(name: string): void {
     const sound = this.sounds[name];
     if (sound) {

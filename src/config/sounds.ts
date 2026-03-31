@@ -1,0 +1,33 @@
+export const SoundName = {
+  GAME_OVER: 'sfx-01',
+  PAUSE: 'sfx-02',
+  LIFE_UP: 'sfx-03',
+  BONUS_PICK: 'sfx-04',
+  BASE_EXPLODE: 'sfx-05',
+  BONUS_SPAWN: 'sfx-07',
+  TANK_EXPLODE: 'sfx-08',
+  BRICK_HIT: 'sfx-10',
+  WALL_HIT: 'sfx-11',
+  PLAYER_SHOT: 'sfx-13',
+  SCORE_TICK: 'sfx-16',
+  INTRO: 'track-01',
+  ENGINE_MOVE: 'track-03',
+  ENGINE_IDLE: 'track-04',
+} as const;
+
+export const SoundPath: Record<string, string> = {
+  [SoundName.GAME_OVER]: '/sounds/sfx-01.mp3',
+  [SoundName.PAUSE]: '/sounds/sfx-02.mp3',
+  [SoundName.LIFE_UP]: '/sounds/sfx-03.mp3',
+  [SoundName.BONUS_PICK]: '/sounds/sfx-04.mp3',
+  [SoundName.BASE_EXPLODE]: '/sounds/sfx-05.mp3',
+  [SoundName.BONUS_SPAWN]: '/sounds/sfx-07.mp3',
+  [SoundName.TANK_EXPLODE]: '/sounds/sfx-08.mp3',
+  [SoundName.BRICK_HIT]: '/sounds/sfx-10.mp3',
+  [SoundName.WALL_HIT]: '/sounds/sfx-11.mp3',
+  [SoundName.PLAYER_SHOT]: '/sounds/sfx-13.mp3',
+  [SoundName.SCORE_TICK]: '/sounds/sfx-16.mp3',
+  [SoundName.INTRO]: '/sounds/track-01.mp3',
+  [SoundName.ENGINE_MOVE]: '/sounds/track-03.mp3',
+  [SoundName.ENGINE_IDLE]: '/sounds/track-04.mp3',
+};

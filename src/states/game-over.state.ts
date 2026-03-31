@@ -14,6 +14,7 @@ export class GameOverState {
 
   start(): void {
     __DEBUG__ && console.log('Entering Game Over State');
+    this.game.events.emit(event.sound.GAME_OVER);
     this._offEnter = this.game.events.on(event.key.ENTER, this.changeState);
   }
 
@@ -38,6 +39,7 @@ export class GameOverState {
   exit(): void {
     this._offEnter?.();
     this._offEnter = null;
+    this.game.events.emit(event.sound.STOP_ALL);
     __DEBUG__ && console.log('Exiting Game Over State');
   }
 }

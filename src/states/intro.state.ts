@@ -18,6 +18,7 @@ export class IntroState {
   start(): void {
     __DEBUG__ && console.log('Entering Intro State');
     this.timer = 0;
+    this.game.events.emit(event.sound.INTRO);
   }
 
   update(deltaTime: number): void {

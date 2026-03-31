@@ -59,6 +59,8 @@ export class PauseState {
     this.active = !this.active;
     this.timer = 0;
 
+    this.game.events.emit(event.sound.PAUSE);
+
     __DEBUG__ && console.log(this.active ? 'Game paused' : 'Game resumed');
 
     this.active

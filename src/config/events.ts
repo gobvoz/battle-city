@@ -40,4 +40,20 @@ export const event = {
   stats: {
     RECORD_KILL: 'stats:recordkill',
   },
+  sound: {
+    PLAYER_SHOT: 'sound:player-shot',
+    TANK_EXPLODE: 'sound:tank-explode',
+    BASE_EXPLODE: 'sound:base-explode',
+    BRICK_HIT: 'sound:brick-hit',
+    WALL_HIT: 'sound:wall-hit',
+    PLAYER_SPAWN: 'sound:player-spawn',
+    PLAYER_DEATH: 'sound:player-death',
+    MOVE_START: 'sound:move-start',
+    MOVE_STOP: 'sound:move-stop',
+    GAME_OVER: 'sound:game-over',
+    PAUSE: 'sound:pause',
+    INTRO: 'sound:intro',
+    SCORE_TICK: 'sound:score-tick',
+    STOP_ALL: 'sound:stop-all',
+  },
 } as const;

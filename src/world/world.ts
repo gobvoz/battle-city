@@ -10,6 +10,8 @@ import Base from '../entities/base.js';
 import Projectile from '../entities/projectile.js';
 import Explosive from '../entities/explosive.js';
 
+import BrickWall from '../map/brick-wall.js';
+
 import { generateTerrain } from '../core/utilities.js';
 import type { IMapTile } from '../core/utilities.js';
 import type { IGameContext } from '../core/game-context.type.js';
@@ -184,6 +186,7 @@ export class World implements IWorld {
 
     if (moving && this.currentMoveState !== 'move' && this.player1Tank?.state === 'active') {
       this.currentMoveState = 'move';
+      this.game.events.emit(event.sound.MOVE_START);
     }
   }
 
@@ -205,12 +208,13 @@ export class World implements IWorld {
       }
     }
 
+    const moveKeys = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
+    if (!moveKeys.includes(evt.code)) return;
+
     const activeKeys = this.game.input.activeKeys();
-    const stillMoving =
-      activeKeys.has('KeyW') ||
-      activeKeys.has('KeyS') ||
-      activeKeys.has('KeyA') ||
-      activeKeys.has('KeyD');
+    activeKeys.delete(evt.code);
+
+    const stillMoving = moveKeys.some(k => activeKeys.has(k));
 
     if (
       !stillMoving &&
@@ -218,6 +222,7 @@ export class World implements IWorld {
       this.player1Tank?.state === 'active'
     ) {
       this.currentMoveState = 'standby';
+      this.game.events.emit(event.sound.MOVE_STOP);
     }
   }
 
@@ -259,6 +264,10 @@ export class World implements IWorld {
   private _addProjectile(tank: Tank): void {
     if (tank.hasProjectile) return;
     tank.hasProjectile = true;
+
+    if (tank.type === TankType.PLAYER_1 || tank.type === TankType.PLAYER_2) {
+      this.game.events.emit(event.sound.PLAYER_SHOT);
+    }
 
     const projectile = this._projectilePool.acquire();
     projectile.init({ world: this, tank, direction: tank.direction });
@@ -304,6 +313,7 @@ export class World implements IWorld {
 
     if (tank.type === TankType.PLAYER_1) {
       this.player1Tank = tank;
+      this.game.events.emit(event.sound.PLAYER_SPAWN);
     }
     if (tank.type === TankType.PLAYER_2) {
       this.player2Tank = tank;
@@ -319,6 +329,8 @@ export class World implements IWorld {
 
   private _removeTank(tank: Tank): void {
     this.enemyTanks = this.enemyTanks.filter(t => t !== tank);
+
+    this.game.events.emit(event.sound.TANK_EXPLODE);
 
     const explosive = this._explosivePool.acquire();
     explosive.init({ world: this, tank });
@@ -353,6 +365,8 @@ export class World implements IWorld {
     this.explosives = this.explosives.filter(e => e !== explosive);
 
     if (explosive.tank?.type === TankType.PLAYER_1) {
+      this.game.events.emit(event.sound.PLAYER_DEATH);
+      this.currentMoveState = 'standby';
       if (this.game.player1Lives) {
         this.game.player1Lives -= 1;
         this._resurrectPlayer1();
@@ -379,6 +393,7 @@ export class World implements IWorld {
   }
 
   private _destroyBase(destroyedBase: Base): void {
+    this.game.events.emit(event.sound.BASE_EXPLODE);
     const explosive = this._explosivePool.acquire();
     explosive.init({ world: this, base: destroyedBase });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
@@ -386,6 +401,8 @@ export class World implements IWorld {
   }
 
   hasCollision(object: ICollidable): boolean {
+    const isProjectile = object instanceof Projectile;
+    const isPlayerProjectile = isProjectile && object.tank?.playerIndex !== undefined;
     let nextMinX = object.x;
     let nextMaxX = object.x + object.width - 1;
     let nextMinY = object.y;
@@ -402,7 +419,10 @@ export class World implements IWorld {
       case Direction.UP:
         nextMinY -= object.speed;
         nextMaxY -= object.speed;
-        if (nextMinY < this.minWorldY) return true;
+        if (nextMinY < this.minWorldY) {
+          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
+          return true;
+        }
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMinY >> 3;
@@ -411,7 +431,10 @@ export class World implements IWorld {
       case Direction.LEFT:
         nextMinX -= object.speed;
         nextMaxX -= object.speed;
-        if (nextMinX < this.minWorldX) return true;
+        if (nextMinX < this.minWorldX) {
+          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
+          return true;
+        }
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMinX >> 3;
         tileMinY = nextMinY >> 3;
@@ -420,7 +443,10 @@ export class World implements IWorld {
       case Direction.DOWN:
         nextMinY += object.speed + 1;
         nextMaxY += object.speed + 1;
-        if (nextMaxY >= this.maxWorldY) return true;
+        if (nextMaxY >= this.maxWorldY) {
+          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
+          return true;
+        }
         tileMinX = nextMinX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMaxY >> 3;
@@ -429,7 +455,10 @@ export class World implements IWorld {
       case Direction.RIGHT:
         nextMinX += object.speed + 1;
         nextMaxX += object.speed + 1;
-        if (nextMaxX >= this.maxWorldX) return true;
+        if (nextMaxX >= this.maxWorldX) {
+          if (isPlayerProjectile) this.game.events.emit(event.sound.WALL_HIT);
+          return true;
+        }
         tileMinX = nextMaxX >> 3;
         tileMaxX = nextMaxX >> 3;
         tileMinY = nextMinY >> 3;
@@ -528,6 +557,12 @@ export class World implements IWorld {
       const isItHit = tile1.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
 
+      if (isItHit && isPlayerProjectile) {
+        this.game.events.emit(
+          tile1 instanceof BrickWall ? event.sound.BRICK_HIT : event.sound.WALL_HIT
+        );
+      }
+
       const isMoveThrough = tile1.moveThrough(object as unknown as IHittable);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
 
@@ -540,6 +575,12 @@ export class World implements IWorld {
     if (tile2) {
       const isItHit = tile2.hit(object as unknown as IHittable);
       objectHasWallCollision = isItHit ? true : objectHasWallCollision;
+
+      if (isItHit && isPlayerProjectile) {
+        this.game.events.emit(
+          tile2 instanceof BrickWall ? event.sound.BRICK_HIT : event.sound.WALL_HIT
+        );
+      }
 
       const isMoveThrough = tile2.moveThrough(object as unknown as IHittable);
       objectHasWallCollision = isMoveThrough ? true : objectHasWallCollision;
@@ -556,6 +597,8 @@ export class World implements IWorld {
 
   exit(): void {
     __DEBUG__ && console.log(`Exiting world for level ${this.game.currentLevel}`);
+
+    this.game.events.emit(event.sound.STOP_ALL);
 
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);

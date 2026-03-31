@@ -1,8 +1,9 @@
-import { AudioManager } from './core/audio-manager.js';
 import { GameContainer } from './core/game-container.js';
+import { SoundSystem } from './core/sound-system.js';
 
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
+import { SoundPath } from './config/sounds.js';
 
 import { MenuState } from './states/menu.state.js';
 import { PlayState } from './states/play.state.js';
@@ -32,7 +33,7 @@ type GameState = {
 export class Game {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly container: GameContainer;
-  readonly audio: AudioManager;
+
   private state: GameState;
   private lastTime = 0;
   private running = false;
@@ -46,7 +47,7 @@ export class Game {
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
     this.container = new GameContainer();
-    this.audio = new AudioManager();
+    new SoundSystem(this.container.audio, this.container.events);
     this.state = new MenuState(this.container);
 
     this.loop = this.loop.bind(this);
@@ -65,7 +66,15 @@ export class Game {
     this.lastTime = performance.now();
     this.running = true;
 
-    await this.container.sprite.load();
+    await Promise.all([
+      this.container.sprite.load(),
+      ...Object.entries(SoundPath).map(([name, path]) =>
+        this.container.audio.loadSound(name, path).catch(() => {
+          __DEBUG__ && console.warn(`Failed to load sound: ${name}`);
+        })
+      ),
+    ]);
+
     this.state.start();
 
     requestAnimationFrame(this.loop);

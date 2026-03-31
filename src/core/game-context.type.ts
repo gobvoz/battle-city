@@ -1,9 +1,11 @@
+import { AudioManager } from './audio-manager.js';
 import { EventEmitter } from './event-emitter.js';
 import { Input } from './input-handler.js';
 import { Sprite } from './sprite.js';
 import { StatsManager } from './stats-manager.js';
 
 export interface IGameContext {
+  audio: AudioManager;
   events: EventEmitter;
   input: Input;
   sprite: Sprite;

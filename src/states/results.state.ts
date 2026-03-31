@@ -61,13 +61,19 @@ export class ResultsState {
       return;
     }
 
+    let ticked = false;
+
     if (this.displayedCounts[this.enemyType][0] < currentScores[0]) {
       this.displayedCounts[this.enemyType][0]++;
+      ticked = true;
     }
 
     if (this.displayedCounts[this.enemyType][1] < currentScores[1]) {
       this.displayedCounts[this.enemyType][1]++;
+      ticked = true;
     }
+
+    if (ticked) this.game.events.emit(event.sound.SCORE_TICK);
 
     if (
       this.displayedCounts[this.enemyType][0] === currentScores[0] &&
@@ -232,6 +238,7 @@ export class ResultsState {
   exit(): void {
     this._offEnter?.();
     this._offEnter = null;
+    this.game.events.emit(event.sound.STOP_ALL);
     __DEBUG__ && console.log('Exiting Results State');
   }
 }
