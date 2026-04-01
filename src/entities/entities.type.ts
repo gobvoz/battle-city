@@ -42,11 +42,11 @@ export interface IEnemyTankOptions {
 export type TankOptions = IPlayerTankOptions | IEnemyTankOptions;
 
 export interface ITankRef {
-  type: TankTypeValue;
+  tankType: TankTypeValue;
   playerIndex: PlayerIndex | undefined;
 }
 
 export interface IHitObject {
-  type: ObjectTypeValue;
+  objectType: ObjectTypeValue;
   tank: ITankRef;
 }

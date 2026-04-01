@@ -8,10 +8,10 @@ import type { IHittable } from '../map.type.js';
 
 // Minimal projectile stub satisfying IHittable
 function makeProjectile(power = 1, direction = Direction.UP): IHittable {
-  return { type: ObjectType.PROJECTILE, power, direction } as IHittable;
+  return { objectType: ObjectType.PROJECTILE, power, direction } as IHittable;
 }
 const nonProjectile = {
-  type: ObjectType.PLAYER_TANK,
+  objectType: ObjectType.PLAYER_TANK,
   power: 1,
   direction: Direction.UP,
 } as IHittable;

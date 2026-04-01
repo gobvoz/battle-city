@@ -52,6 +52,7 @@ export class World implements IWorld {
   enemyArray: EnemyTypeValue[];
   effects: ShieldEffect[];
   currentMoveState: MoveState;
+  currentMoveState2: MoveState;
   player1Tank: Tank | null;
   player2Tank: Tank | null;
   minWorldX: number;
@@ -78,6 +79,7 @@ export class World implements IWorld {
     this.effects = [];
 
     this.currentMoveState = 'standby';
+    this.currentMoveState2 = 'standby';
     this.player1Tank = null;
     this.player2Tank = null;
 
@@ -121,6 +123,10 @@ export class World implements IWorld {
 
     this._resurrectPlayer1();
 
+    if (this.game.playerCount === 2) {
+      this._resurrectPlayer2();
+    }
+
     this.base = new Base({ world: this });
     this.base.on(event.object.DESTROYED, this._destroyBase);
 
@@ -140,8 +146,13 @@ export class World implements IWorld {
     }
 
     if (this.player1Tank === null && this.game.player1Lives === 0) {
-      __DEBUG__ && console.log('level complete - player 1 dead - game over');
-      this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
+      if (
+        this.game.playerCount === 1 ||
+        (this.player2Tank === null && this.game.player2Lives === 0)
+      ) {
+        __DEBUG__ && console.log('level complete - all players dead - game over');
+        this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
+      }
     }
 
     if (this.enemyTanksOnMap < TANKS_ON_MAP && this.enemyArray.length) {
@@ -195,6 +206,37 @@ export class World implements IWorld {
       this.currentMoveState = 'move';
       this.game.events.emit(event.sound.MOVE_START);
     }
+
+    let moving2 = false;
+
+    if (this.player2Tank) {
+      switch (evt.code) {
+        case 'ArrowUp':
+          this.player2Tank.moveUp();
+          moving2 = true;
+          break;
+        case 'ArrowDown':
+          this.player2Tank.moveDown();
+          moving2 = true;
+          break;
+        case 'ArrowLeft':
+          this.player2Tank.moveLeft();
+          moving2 = true;
+          break;
+        case 'ArrowRight':
+          this.player2Tank.moveRight();
+          moving2 = true;
+          break;
+        case 'Enter':
+          this.player2Tank.fire();
+          break;
+      }
+    }
+
+    if (moving2 && this.currentMoveState2 !== 'move' && this.player2Tank?.state === 'active') {
+      this.currentMoveState2 = 'move';
+      this.game.events.emit(event.sound.MOVE_START);
+    }
   }
 
   handleKeyUp(evt: KeyboardEvent): void {
@@ -215,21 +257,53 @@ export class World implements IWorld {
       }
     }
 
-    const moveKeys = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
-    if (!moveKeys.includes(evt.code)) return;
+    const moveKeys1 = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
+    if (moveKeys1.includes(evt.code)) {
+      const activeKeys = this.game.input.activeKeys();
+      activeKeys.delete(evt.code);
+      const stillMoving = moveKeys1.some(k => activeKeys.has(k));
 
-    const activeKeys = this.game.input.activeKeys();
-    activeKeys.delete(evt.code);
+      if (
+        !stillMoving &&
+        this.currentMoveState !== 'standby' &&
+        this.player1Tank?.state === 'active'
+      ) {
+        this.currentMoveState = 'standby';
+        this.game.events.emit(event.sound.MOVE_STOP);
+      }
+    }
 
-    const stillMoving = moveKeys.some(k => activeKeys.has(k));
+    if (this.player2Tank) {
+      switch (evt.code) {
+        case 'ArrowUp':
+          this.player2Tank.stopUp();
+          break;
+        case 'ArrowDown':
+          this.player2Tank.stopDown();
+          break;
+        case 'ArrowLeft':
+          this.player2Tank.stopLeft();
+          break;
+        case 'ArrowRight':
+          this.player2Tank.stopRight();
+          break;
+      }
+    }
 
-    if (
-      !stillMoving &&
-      this.currentMoveState !== 'standby' &&
-      this.player1Tank?.state === 'active'
-    ) {
-      this.currentMoveState = 'standby';
-      this.game.events.emit(event.sound.MOVE_STOP);
+    const moveKeys2 = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if (moveKeys2.includes(evt.code)) {
+      const activeKeys = this.game.input.activeKeys();
+      activeKeys.delete(evt.code);
+      const stillMoving = moveKeys2.some(k => activeKeys.has(k));
+
+      if (
+        !stillMoving &&
+        this.currentMoveState2 !== 'standby' &&
+        this.player2Tank?.state === 'active'
+      ) {
+        this.currentMoveState2 = 'standby';
+        this.game.events.emit(event.sound.MOVE_STOP);
+      }
     }
   }
 
@@ -272,7 +346,7 @@ export class World implements IWorld {
     if (tank.hasProjectile) return;
     tank.hasProjectile = true;
 
-    if (tank.type === TankType.PLAYER_1 || tank.type === TankType.PLAYER_2) {
+    if (tank.tankType === TankType.PLAYER_1 || tank.tankType === TankType.PLAYER_2) {
       this.game.events.emit(event.sound.PLAYER_SHOT);
     }
 
@@ -287,7 +361,10 @@ export class World implements IWorld {
 
     let tank: Tank;
 
-    if (resurrection.tankType === TankType.PLAYER_1) {
+    if (
+      resurrection.tankType === TankType.PLAYER_1 ||
+      resurrection.tankType === TankType.PLAYER_2
+    ) {
       tank = new Tank({
         world: this,
         type: resurrection.tankType,
@@ -318,12 +395,13 @@ export class World implements IWorld {
     tank.on(event.object.DESTROYED, this._removeTank);
     tank.on(event.stats.RECORD_KILL, this._recordKill);
 
-    if (tank.type === TankType.PLAYER_1) {
+    if (tank.tankType === TankType.PLAYER_1) {
       this.player1Tank = tank;
       this.game.events.emit(event.sound.PLAYER_SPAWN);
     }
-    if (tank.type === TankType.PLAYER_2) {
+    if (tank.tankType === TankType.PLAYER_2) {
       this.player2Tank = tank;
+      this.game.events.emit(event.sound.PLAYER_SPAWN);
     }
 
     this.enemyTanks.push(tank);
@@ -344,7 +422,7 @@ export class World implements IWorld {
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
 
-    if (tank.type === TankType.ENEMY) {
+    if (tank.tankType === TankType.ENEMY) {
       this.enemyTanksOnMap--;
       this.tanksTotal--;
     }
@@ -371,7 +449,7 @@ export class World implements IWorld {
   private _removeExplosive(explosive: Explosive): void {
     this.explosives = this.explosives.filter(e => e !== explosive);
 
-    if (explosive.tank?.type === TankType.PLAYER_1) {
+    if (explosive.tank?.tankType === TankType.PLAYER_1) {
       this.game.events.emit(event.sound.PLAYER_DEATH);
       this.currentMoveState = 'standby';
       if (this.game.player1Lives) {
@@ -381,7 +459,9 @@ export class World implements IWorld {
         this.player1Tank = null;
       }
     }
-    if (explosive.tank?.type === TankType.PLAYER_2) {
+    if (explosive.tank?.tankType === TankType.PLAYER_2) {
+      this.game.events.emit(event.sound.PLAYER_DEATH);
+      this.currentMoveState2 = 'standby';
       if (this.game.player2Lives) {
         this.game.player2Lives -= 1;
         this._resurrectPlayer2();

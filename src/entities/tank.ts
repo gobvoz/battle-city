@@ -1,7 +1,7 @@
 import GameObject from '../core/game-object.js';
 import { event } from '../config/events.js';
 import { Direction, WorldOption, ObjectType, TankType, KeyCode } from '../config/constants.js';
-import type { DirectionType, TankTypeValue } from '../config/constants.type.js';
+import type { DirectionType, TankTypeValue, ObjectTypeValue } from '../config/constants.type.js';
 import type { PlayerIndex } from '../core/stats-manager.js';
 import type {
   TankOptions,
@@ -31,7 +31,8 @@ export default class Tank extends GameObject {
   animationFrame: 0 | 1;
   movementStep: number;
   movementTile: number;
-  type: TankTypeValue;
+  tankType: TankTypeValue;
+  objectType: ObjectTypeValue;
   hasProjectile: boolean;
   invulnerable: boolean;
 
@@ -72,7 +73,8 @@ export default class Tank extends GameObject {
     this.movementStep = WorldOption.STEP_SIZE;
     this.movementTile = WorldOption.TILE_SIZE;
 
-    this.type = type;
+    this.tankType = type;
+    this.objectType = type === TankType.ENEMY ? ObjectType.ENEMY_TANK : ObjectType.PLAYER_TANK;
 
     this.hasProjectile = false;
     this.invulnerable = false;
@@ -142,15 +144,22 @@ export default class Tank extends GameObject {
 
   hit(object: IHitObject): boolean {
     if (this.invulnerable) return false;
-    if (object.type !== ObjectType.PROJECTILE) return false;
+    if (object.objectType !== ObjectType.PROJECTILE) return false;
     if (
-      object.type === ObjectType.PROJECTILE &&
+      object.objectType === ObjectType.PROJECTILE &&
       object.tank === (this as unknown as typeof object.tank)
     )
       return false;
-    if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
+    if (object.objectType === ObjectType.PROJECTILE && object.tank.tankType === this.tankType)
+      return false;
+    if (
+      object.objectType === ObjectType.PROJECTILE &&
+      object.tank.tankType !== TankType.ENEMY &&
+      this.tankType !== TankType.ENEMY
+    )
+      return false;
 
-    if (this.type === TankType.ENEMY) {
+    if (this.tankType === TankType.ENEMY) {
       this.emit(
         event.stats.RECORD_KILL,
         (this.tankOptions as IEnemyTankOptions).ENEMY_TYPE,
@@ -166,11 +175,18 @@ export default class Tank extends GameObject {
   moveThrough(object: IHitObject): boolean {
     if (this === (object as unknown as this)) return false;
     if (
-      object.type === ObjectType.PROJECTILE &&
+      object.objectType === ObjectType.PROJECTILE &&
       object.tank === (this as unknown as typeof object.tank)
     )
       return false;
-    if (object.type === ObjectType.PROJECTILE && object.tank.type === this.type) return false;
+    if (object.objectType === ObjectType.PROJECTILE && object.tank.tankType === this.tankType)
+      return false;
+    if (
+      object.objectType === ObjectType.PROJECTILE &&
+      object.tank.tankType !== TankType.ENEMY &&
+      this.tankType !== TankType.ENEMY
+    )
+      return false;
 
     return true;
   }
@@ -184,7 +200,7 @@ export default class Tank extends GameObject {
 
   update(_deltaTime: number | undefined, activeKeys: Set<string>): void {
     const speed = (this.world as IWorld).hasCollision(this) ? 0 : this.speed;
-    const kb = KeyCode[this.type] as unknown as PlayerKeyBinding;
+    const kb = KeyCode[this.tankType] as unknown as PlayerKeyBinding;
     let tankTryToMove = false;
 
     if (this.direction === Direction.UP && activeKeys.has(kb.UP)) {

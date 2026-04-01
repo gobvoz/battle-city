@@ -83,7 +83,7 @@ function createCollidable(overrides: Partial<ICollidable> = {}): ICollidable {
     height: 16,
     direction: Direction.UP,
     speed: 2,
-    type: ObjectType.PLAYER_TANK,
+    objectType: ObjectType.PLAYER_TANK,
     ...overrides,
   };
 }
@@ -141,7 +141,7 @@ describe('World.hasCollision', () => {
         height: 4,
         direction: Direction.UP,
         speed: 2,
-        type: ObjectType.PLAYER_TANK,
+        objectType: ObjectType.PLAYER_TANK,
       });
       expect(world.hasCollision(obj)).toBe(true);
     });
@@ -157,7 +157,7 @@ describe('World.hasCollision', () => {
         height: 4,
         direction: Direction.UP,
         speed: 2,
-        type: ObjectType.PLAYER_TANK,
+        objectType: ObjectType.PLAYER_TANK,
       });
       expect(world.hasCollision(obj)).toBe(true);
     });
@@ -174,7 +174,7 @@ describe('World.hasCollision', () => {
         height: 4,
         direction: Direction.UP,
         speed: 2,
-        type: ObjectType.PROJECTILE,
+        objectType: ObjectType.PROJECTILE,
         power: 1,
       });
 
@@ -197,7 +197,7 @@ describe('World.hasCollision', () => {
         height: 4,
         direction: Direction.UP,
         speed: 2,
-        type: ObjectType.PROJECTILE,
+        objectType: ObjectType.PROJECTILE,
         power: 1,
       });
 

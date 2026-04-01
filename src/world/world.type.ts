@@ -8,7 +8,7 @@ export interface ICollidable {
   height: number;
   direction: DirectionType;
   speed: number;
-  type: ObjectTypeValue;
+  objectType: ObjectTypeValue;
   power?: number;
   tank?: ITankRef;
 }

@@ -20,9 +20,9 @@ function makePlayer1(world: IWorld = freeWorld): Tank {
 
 function makeProjectileHit(_tank: Tank, power = 1): IHitObject {
   return {
-    type: ObjectType.PROJECTILE,
+    objectType: ObjectType.PROJECTILE,
     power,
-    tank: { type: TankType.ENEMY, playerIndex: undefined } as never,
+    tank: { tankType: TankType.ENEMY, playerIndex: undefined } as never,
     direction: Direction.UP,
   } as IHitObject;
 }
@@ -92,7 +92,7 @@ describe('Tank', () => {
   describe('hit()', () => {
     it('returns false for non-projectile', () => {
       const tank = makePlayer1();
-      const nonProjectile = { type: ObjectType.PLAYER_TANK } as IHitObject;
+      const nonProjectile = { objectType: ObjectType.PLAYER_TANK } as IHitObject;
       expect(tank.hit(nonProjectile)).toBe(false);
     });
 
@@ -105,7 +105,7 @@ describe('Tank', () => {
     it('returns false when hit by own projectile', () => {
       const tank = makePlayer1();
       const ownProjectile: IHitObject = {
-        type: ObjectType.PROJECTILE,
+        objectType: ObjectType.PROJECTILE,
         power: 1,
         tank: tank as never,
         direction: Direction.UP,
@@ -116,9 +116,9 @@ describe('Tank', () => {
     it('returns false when hit by friendly projectile (same tank type)', () => {
       const tank = makePlayer1();
       const friendlyProjectile: IHitObject = {
-        type: ObjectType.PROJECTILE,
+        objectType: ObjectType.PROJECTILE,
         power: 1,
-        tank: { type: TankType.PLAYER_1, playerIndex: undefined } as never,
+        tank: { tankType: TankType.PLAYER_1, playerIndex: undefined } as never,
         direction: Direction.UP,
       } as IHitObject;
       expect(tank.hit(friendlyProjectile)).toBe(false);

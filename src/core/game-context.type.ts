@@ -11,6 +11,7 @@ export interface IGameContext {
   sprite: Sprite;
   stats: StatsManager;
   currentLevel: number;
+  playerCount: 1 | 2;
   player1Lives: number;
   player2Lives: number;
   fps: number;

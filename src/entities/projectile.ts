@@ -15,7 +15,7 @@ export interface ITankForProjectile {
   y: number;
   width: number;
   height: number;
-  type: TankTypeValue;
+  tankType: TankTypeValue;
   playerIndex: PlayerIndex | undefined;
   hasProjectile: boolean;
 }
@@ -25,7 +25,7 @@ export default class Projectile extends GameObject {
   power!: number;
   direction!: DirectionType;
   speed!: number;
-  type: ObjectTypeValue;
+  objectType: ObjectTypeValue;
   declare sprites: ProjectileSprites;
 
   constructor() {
@@ -38,7 +38,7 @@ export default class Projectile extends GameObject {
       sprites: ProjectileOption.SPRITES,
     });
 
-    this.type = ObjectType.PROJECTILE;
+    this.objectType = ObjectType.PROJECTILE;
   }
 
   init({

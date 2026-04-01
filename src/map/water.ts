@@ -35,7 +35,7 @@ export default class Water extends GameObject {
   }
 
   moveThrough(object: IHittable): boolean {
-    if (object.type === ObjectType.PROJECTILE) return false;
+    if (object.objectType === ObjectType.PROJECTILE) return false;
     return true;
   }
 

@@ -1,7 +1,7 @@
 import type { ObjectTypeValue, DirectionType } from '../config/constants.type.js';
 
 export interface IHittable {
-  type: ObjectTypeValue;
+  objectType: ObjectTypeValue;
   power: number;
   direction: DirectionType;
 }

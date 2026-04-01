@@ -13,6 +13,7 @@ export class GameContainer implements IGameContext {
   readonly stats: StatsManager;
 
   currentLevel = 1;
+  playerCount: 1 | 2 = 1;
   player1Lives = 2;
   player2Lives = 2;
   fps = 0;

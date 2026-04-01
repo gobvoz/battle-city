@@ -19,7 +19,7 @@ export default class SteelWall extends GameObject {
   }
 
   hit(object: IHittable): boolean {
-    if (object.type !== ObjectType.PROJECTILE) return false;
+    if (object.objectType !== ObjectType.PROJECTILE) return false;
 
     if (object.power > 1) {
       this.emit(event.object.DESTROYED, this);

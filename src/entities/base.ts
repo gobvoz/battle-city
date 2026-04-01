@@ -31,8 +31,8 @@ export default class Base extends GameObject {
     return [this.sprites[key][0] * this.width, this.sprites[key][1] * this.height];
   }
 
-  hit(object: { type: ObjectTypeValue }): boolean {
-    if (object.type !== ObjectType.PROJECTILE) return false;
+  hit(object: { objectType: ObjectTypeValue }): boolean {
+    if (object.objectType !== ObjectType.PROJECTILE) return false;
 
     this.emit(event.object.DESTROYED, this);
     this.destroyed = true;

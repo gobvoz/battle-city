@@ -19,7 +19,7 @@ function makeProjectile(direction: ITankForProjectile['direction']): Projectile 
       direction,
       power: 1,
       projectileSpeed: 2,
-      type: TankType.PLAYER_1,
+      tankType: TankType.PLAYER_1,
       playerIndex: 0,
       hasProjectile: false,
     },

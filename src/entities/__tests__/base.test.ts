@@ -1,8 +1,8 @@
 import Base from '../base.js';
 import { ObjectType, BaseOption } from '../../config/constants.js';
 
-const projectileHit = { type: ObjectType.PROJECTILE } as never;
-const tankHit = { type: ObjectType.PLAYER_TANK } as never;
+const projectileHit = { objectType: ObjectType.PROJECTILE } as never;
+const tankHit = { objectType: ObjectType.PLAYER_TANK } as never;
 
 describe('Base', () => {
   it('positions at BaseOption coordinates', () => {
