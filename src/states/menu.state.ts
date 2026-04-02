@@ -47,7 +47,7 @@ export class MenuState {
   changeState(key: InputAction): void {
     if (key !== event.inputAction.PRESSED) return;
     this.game.playerCount = (this.selection + 1) as 1 | 2;
-    this.game.events.emit(event.CHANGE_STATE, event.state.PLAY);
+    this.game.events.emit(event.CHANGE_STATE, event.state.NEXT_LEVEL);
   }
 
   exit(): void {

@@ -27,7 +27,6 @@ export const event = {
     PRESSED: 'pressed',
     RELEASED: 'released',
   },
-  COMPLETE_INTRO: 'intro:complete',
   TOGGLE_PAUSE: 'pause:toggle',
   pauseAction: {
     ON: 'on',

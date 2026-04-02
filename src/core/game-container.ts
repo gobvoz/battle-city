@@ -4,6 +4,7 @@ import { Input } from './input-handler.js';
 import { Sprite } from './sprite.js';
 import { StatsManager } from './stats-manager.js';
 import type { IGameContext } from './game-context.type.js';
+import type { StageConfig } from '../config/constants.type.js';
 
 export class GameContainer implements IGameContext {
   readonly audio: AudioManager;
@@ -12,7 +13,8 @@ export class GameContainer implements IGameContext {
   readonly sprite: Sprite;
   readonly stats: StatsManager;
 
-  currentLevel = 1;
+  currentLevel = 0;
+  currentStage: StageConfig | null = null;
   playerCount: 1 | 2 = 1;
   player1Lives = 2;
   player2Lives = 2;

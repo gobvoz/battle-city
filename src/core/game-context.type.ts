@@ -3,6 +3,7 @@ import { EventEmitter } from './event-emitter.js';
 import { Input } from './input-handler.js';
 import { Sprite } from './sprite.js';
 import { StatsManager } from './stats-manager.js';
+import type { StageConfig } from '../config/constants.type.js';
 
 export interface IGameContext {
   audio: AudioManager;
@@ -11,6 +12,7 @@ export interface IGameContext {
   sprite: Sprite;
   stats: StatsManager;
   currentLevel: number;
+  currentStage: StageConfig | null;
   playerCount: 1 | 2;
   player1Lives: number;
   player2Lives: number;

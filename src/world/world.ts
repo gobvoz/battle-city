@@ -1,5 +1,4 @@
 import { event } from '../config/events.js';
-import stages from '../config/stages/index.js';
 
 import ShieldEffect from '../effects/shield-effect.js';
 
@@ -110,11 +109,13 @@ export class World implements IWorld {
   start(): void {
     __DEBUG__ && console.log(`Starting world for level ${this.game.currentLevel}`);
 
-    this.stage = generateTerrain(stages[this.game.currentLevel - 1].terrain, this._removeWall);
+    const stage = this.game.currentStage!;
 
-    this.enemyArray = [...stages[this.game.currentLevel - 1].enemies];
+    this.stage = generateTerrain(stage.terrain, this._removeWall);
+
+    this.enemyArray = [...stage.enemies];
     this.enemyTanksOnMap = 0;
-    this.tanksTotal = stages[this.game.currentLevel - 1].enemies.length;
+    this.tanksTotal = stage.enemies.length;
 
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;

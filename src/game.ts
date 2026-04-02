@@ -1,5 +1,6 @@
 import { GameContainer } from './core/game-container.js';
 import { SoundSystem } from './core/sound-system.js';
+import { loadStage } from './core/stage-loader.js';
 
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
@@ -9,8 +10,8 @@ import { MenuState } from './states/menu.state.js';
 import { PlayState } from './states/play.state.js';
 import { GameOverState } from './states/game-over.state.js';
 import { ResultsState } from './states/results.state.js';
-import { NextLevelState } from './states/next-level.state.js';
 import { RestartGameState } from './states/restart-game.state.js';
+import { LevelTransition } from './states/level-transition.js';
 
 import type { IGameContext } from './core/game-context.type.js';
 import type { DebugManager as DebugManagerType } from './core/debug-manager.js';
@@ -35,6 +36,7 @@ export class Game {
   private readonly container: GameContainer;
 
   private state: GameState;
+  private transition: LevelTransition | null = null;
   private lastTime = 0;
   private running = false;
   private fpsCounter = 0;
@@ -111,14 +113,23 @@ export class Game {
 
   update(deltaTime: number): void {
     this.state.update(deltaTime);
+    this.transition?.update(deltaTime);
   }
 
   render(): void {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.state.render(this.ctx);
+    this.transition?.render(this.ctx);
   }
 
   changeState(newStateName: string): void {
+    if (newStateName === event.state.NEXT_LEVEL) {
+      this.startLevelTransition();
+      return;
+    }
+
+    this.transition = null;
+
     this.container.events.off(event.CHANGE_STATE, this.changeState);
     this.state.exit();
 
@@ -135,9 +146,6 @@ export class Game {
       case event.state.RESULTS:
         this.state = new ResultsState(this.container);
         break;
-      case event.state.NEXT_LEVEL:
-        this.state = new NextLevelState(this.container);
-        break;
       case event.state.RESTART:
         this.state = new RestartGameState(this.container);
         break;
@@ -145,6 +153,48 @@ export class Game {
         console.warn(`Unknown state: ${newStateName}`);
     }
 
+    this.container.events.on(event.CHANGE_STATE, this.changeState);
+    this.state.start();
+  }
+
+  private startLevelTransition(): void {
+    this.container.currentLevel++;
+    this.container.stats.nextLevel();
+    this.container.events.emit(event.sound.INTRO);
+
+    const transition = new LevelTransition(this.container.currentLevel);
+    this.transition = transition;
+
+    let stageLoaded = false;
+
+    transition.onClosed = () => {
+      if (stageLoaded) {
+        this.switchToPlayState();
+        transition.markStateReady();
+      }
+    };
+
+    transition.onDone = () => {
+      this.transition = null;
+    };
+
+    loadStage(this.container.currentLevel).then(stage => {
+      this.container.currentStage = stage;
+      stageLoaded = true;
+
+      __DEBUG__ && console.log(`Stage ${this.container.currentLevel} loaded`);
+
+      if (transition.isFullyClosed) {
+        this.switchToPlayState();
+        transition.markStateReady();
+      }
+    });
+  }
+
+  private switchToPlayState(): void {
+    this.container.events.off(event.CHANGE_STATE, this.changeState);
+    this.state.exit();
+    this.state = new PlayState(this.container);
     this.container.events.on(event.CHANGE_STATE, this.changeState);
     this.state.start();
   }

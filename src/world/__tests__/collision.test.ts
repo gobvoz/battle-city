@@ -43,6 +43,7 @@ function createMockGameContext(): IGameContext {
     player1Lives: 3,
     player2Lives: 0,
     currentLevel: 1,
+    currentStage: { terrain: [], enemies: [] },
     fps: 0,
     busyTime: 0,
   } as unknown as IGameContext;

@@ -14,7 +14,8 @@ describe('GameContainer', () => {
   });
 
   it('has correct default mutable state', () => {
-    expect(container.currentLevel).toBe(1);
+    expect(container.currentLevel).toBe(0);
+    expect(container.currentStage).toBeNull();
     expect(container.player1Lives).toBe(2);
     expect(container.player2Lives).toBe(2);
     expect(container.fps).toBe(0);
