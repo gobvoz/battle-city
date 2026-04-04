@@ -12,8 +12,10 @@ export class RestartGameState {
     __DEBUG__ && console.log('Entering Restart Game State');
 
     this.game.currentLevel = 0;
-    this.game.player1Lives = 2;
-    this.game.player2Lives = 2;
+    this.game.player1.lives = 2;
+    this.game.player1.stars = 0;
+    this.game.player2.lives = 2;
+    this.game.player2.stars = 0;
 
     this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }

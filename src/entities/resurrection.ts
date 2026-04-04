@@ -9,6 +9,7 @@ type ResurrectionSprites = readonly (readonly [number, number])[];
 export default class Resurrection extends GameObject {
   tankType: TankTypeValue;
   tankOptions: TankOptions;
+  isFlashing: boolean;
   animationFrame: number;
   declare sprites: ResurrectionSprites;
 
@@ -21,12 +22,14 @@ export default class Resurrection extends GameObject {
     tankType,
     options: tankOptions,
     world,
+    isFlashing,
   }: {
     x: number;
     y: number;
     tankType: TankTypeValue;
     options: TankOptions;
     world?: unknown;
+    isFlashing?: boolean;
   }) {
     super({
       world,
@@ -39,6 +42,7 @@ export default class Resurrection extends GameObject {
 
     this.tankType = tankType;
     this.tankOptions = tankOptions;
+    this.isFlashing = isFlashing ?? false;
 
     this.animationFrame = 0;
 

@@ -54,5 +54,8 @@ export const event = {
     INTRO: 'sound:intro',
     SCORE_TICK: 'sound:score-tick',
     STOP_ALL: 'sound:stop-all',
+    BONUS_SPAWN: 'sound:bonus-spawn',
+    BONUS_PICK: 'sound:bonus-pick',
+    LIFE_UP: 'sound:life-up',
   },
 } as const;

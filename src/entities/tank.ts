@@ -33,8 +33,10 @@ export default class Tank extends GameObject {
   movementTile: number;
   tankType: TankTypeValue;
   objectType: ObjectTypeValue;
-  hasProjectile: boolean;
+  projectileCount: number;
+  maxProjectiles: number;
   invulnerable: boolean;
+  stars: number;
 
   constructor({
     type,
@@ -76,8 +78,22 @@ export default class Tank extends GameObject {
     this.tankType = type;
     this.objectType = type === TankType.ENEMY ? ObjectType.ENEMY_TANK : ObjectType.PLAYER_TANK;
 
-    this.hasProjectile = false;
+    this.projectileCount = 0;
+    this.maxProjectiles = 1;
     this.invulnerable = false;
+    this.stars = 0;
+  }
+
+  get hasProjectile(): boolean {
+    return this.projectileCount >= this.maxProjectiles;
+  }
+
+  set hasProjectile(value: boolean) {
+    if (value) {
+      this.projectileCount++;
+    } else {
+      this.projectileCount = Math.max(0, this.projectileCount - 1);
+    }
   }
 
   _changeAnimationFrame = (): void => {
@@ -194,7 +210,7 @@ export default class Tank extends GameObject {
   get sprite(): [number, number] {
     return [
       this.sprites[this.direction][this.animationFrame][0] * WorldOption.UNIT_SIZE,
-      this.sprites[this.direction][this.animationFrame][1] * WorldOption.UNIT_SIZE,
+      (this.sprites[this.direction][this.animationFrame][1] + this.stars) * WorldOption.UNIT_SIZE,
     ];
   }
 

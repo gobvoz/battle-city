@@ -16,8 +16,8 @@ describe('GameContainer', () => {
   it('has correct default mutable state', () => {
     expect(container.currentLevel).toBe(0);
     expect(container.currentStage).toBeNull();
-    expect(container.player1Lives).toBe(2);
-    expect(container.player2Lives).toBe(2);
+    expect(container.player1.lives).toBe(2);
+    expect(container.player2.lives).toBe(2);
     expect(container.fps).toBe(0);
     expect(container.busyTime).toBe(0);
   });
@@ -42,14 +42,14 @@ describe('GameContainer', () => {
 
   it('implements IGameContext — mutable fields are writable', () => {
     container.currentLevel = 3;
-    container.player1Lives = 0;
-    container.player2Lives = 1;
+    container.player1.lives = 0;
+    container.player2.lives = 1;
     container.fps = 60;
     container.busyTime = '0.016';
 
     expect(container.currentLevel).toBe(3);
-    expect(container.player1Lives).toBe(0);
-    expect(container.player2Lives).toBe(1);
+    expect(container.player1.lives).toBe(0);
+    expect(container.player2.lives).toBe(1);
     expect(container.fps).toBe(60);
     expect(container.busyTime).toBe('0.016');
   });

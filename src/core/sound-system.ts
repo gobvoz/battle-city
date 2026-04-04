@@ -34,6 +34,9 @@ export class SoundSystem {
         this.audio.playLoop(SoundName.ENGINE_IDLE);
       }),
       events.on(event.sound.STOP_ALL, () => this.audio.stopAll()),
+      events.on(event.sound.BONUS_SPAWN, () => this.audio.playSound(SoundName.BONUS_SPAWN)),
+      events.on(event.sound.BONUS_PICK, () => this.audio.playSound(SoundName.BONUS_PICK)),
+      events.on(event.sound.LIFE_UP, () => this.audio.playSound(SoundName.LIFE_UP)),
     ];
   }
 

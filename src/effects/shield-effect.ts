@@ -1,11 +1,17 @@
 import BaseEffect from './base-effect.js';
-import { WorldOption, ShieldEffectOptions } from '../config/constants.js';
+import { WorldOption } from '../config/constants.js';
 import { event } from '../config/events.js';
 
-type ShieldEffectOptions = typeof ShieldEffectOptions;
+interface IShieldEffectOptions {
+  WIDTH: number;
+  HEIGHT: number;
+  EFFECT_DURATION: number;
+  ANIMATION_INTERVAL: number;
+  SPRITES: readonly (readonly [number, number])[];
+}
 
 export default class ShieldEffect extends BaseEffect {
-  private sprites: ShieldEffectOptions['SPRITES'];
+  private sprites: IShieldEffectOptions['SPRITES'];
   private currentSprite: number;
   private timer: number;
   private effectDuration: number;
@@ -18,7 +24,7 @@ export default class ShieldEffect extends BaseEffect {
     effectOptions,
   }: {
     target: InstanceType<typeof BaseEffect>['target'];
-    effectOptions: ShieldEffectOptions;
+    effectOptions: IShieldEffectOptions;
   }) {
     super(target);
 

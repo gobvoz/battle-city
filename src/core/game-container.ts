@@ -3,7 +3,7 @@ import { EventEmitter } from './event-emitter.js';
 import { Input } from './input-handler.js';
 import { Sprite } from './sprite.js';
 import { StatsManager } from './stats-manager.js';
-import type { IGameContext } from './game-context.type.js';
+import type { IGameContext, PlayerState } from './game-context.type.js';
 import type { StageConfig } from '../config/constants.type.js';
 
 export class GameContainer implements IGameContext {
@@ -16,8 +16,8 @@ export class GameContainer implements IGameContext {
   currentLevel = 0;
   currentStage: StageConfig | null = null;
   playerCount: 1 | 2 = 1;
-  player1Lives = 2;
-  player2Lives = 2;
+  player1: PlayerState = { lives: 2, stars: 0 };
+  player2: PlayerState = { lives: 2, stars: 0 };
   fps = 0;
   busyTime: number | string = 0;
 

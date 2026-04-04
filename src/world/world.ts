@@ -8,8 +8,10 @@ import EnemyTank from '../entities/enemy-tank.js';
 import Base from '../entities/base.js';
 import Projectile from '../entities/projectile.js';
 import Explosive from '../entities/explosive.js';
+import PowerUp from '../entities/power-up.js';
 
 import BrickWall from '../map/brick-wall.js';
+import SteelWall from '../map/steel-wall.js';
 
 import {
   computeNextBounds,
@@ -27,12 +29,19 @@ import { ObjectPool } from '../core/object-pool.js';
 import {
   WorldOption,
   TankType,
+  PowerUpType,
   Player1TankOption,
   Player2TankOption,
   EnemyTankToOption,
   ShieldEffectOptions,
+  BONUS_TANK_INDICES,
+  PowerUpOption,
+  CLOCK_DURATION,
+  SHOVEL_DURATION,
+  HELMET_POWERUP_DURATION,
+  FORTRESS_TILES,
 } from '../config/constants.js';
-import type { EnemyTypeValue } from '../config/constants.type.js';
+import type { EnemyTypeValue, PowerUpTypeValue } from '../config/constants.type.js';
 import type { IHittable } from '../map/map.type.js';
 import type { IHitObject, PlayerIndex } from '../entities/entities.type.js';
 import type { IWorld, ICollidable, IWorldObject } from './world.type.js';
@@ -63,7 +72,12 @@ export class World implements IWorld {
   tanksTotal: number;
   enemyFriendlyFire: boolean;
   base!: Base;
+  activePowerUp: PowerUp | null;
+  frozenTimer: number;
 
+  private _spawnedEnemyCount = 0;
+  private _shovelTimer = 0;
+  private _grenadeActive = false;
   private readonly _projectilePool = new ObjectPool(() => new Projectile());
   private readonly _explosivePool = new ObjectPool(() => new Explosive());
 
@@ -91,6 +105,8 @@ export class World implements IWorld {
     this.enemyTanksOnMap = 0;
     this.tanksTotal = 0;
     this.enemyFriendlyFire = false;
+    this.activePowerUp = null;
+    this.frozenTimer = 0;
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -116,6 +132,10 @@ export class World implements IWorld {
     this.enemyArray = [...stage.enemies];
     this.enemyTanksOnMap = 0;
     this.tanksTotal = stage.enemies.length;
+    this._spawnedEnemyCount = 0;
+    this.activePowerUp = null;
+    this.frozenTimer = 0;
+    this._shovelTimer = 0;
 
     this.maxWorldX = this.stage.length * WorldOption.TILE_SIZE;
     this.maxWorldY = this.stage[0].length * WorldOption.TILE_SIZE;
@@ -146,10 +166,10 @@ export class World implements IWorld {
       this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
     }
 
-    if (this.player1Tank === null && this.game.player1Lives === 0) {
+    if (this.player1Tank === null && this.game.player1.lives === 0) {
       if (
         this.game.playerCount === 1 ||
-        (this.player2Tank === null && this.game.player2Lives === 0)
+        (this.player2Tank === null && this.game.player2.lives === 0)
       ) {
         __DEBUG__ && console.log('level complete - all players dead - game over');
         this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
@@ -158,20 +178,41 @@ export class World implements IWorld {
 
     if (this.enemyTanksOnMap < TANKS_ON_MAP && this.enemyArray.length) {
       const enemyType = this.enemyArray.shift()!;
+      const isFlashing = BONUS_TANK_INDICES.has(this._spawnedEnemyCount);
+      this._spawnedEnemyCount++;
+
       const enemyResurrection = new Resurrection({
         world: this,
         tankType: TankType.ENEMY,
         options: EnemyTankToOption[enemyType],
         x: Math.floor(Math.random() * 3) * 6 * WorldOption.UNIT_SIZE,
         y: 0,
+        isFlashing,
       });
       enemyResurrection.on(event.object.DESTROYED, this._removeResurrection);
       this.resurrections.push(enemyResurrection);
       this.enemyTanksOnMap++;
     }
 
+    if (this.frozenTimer > 0) {
+      this.frozenTimer -= deltaTime;
+    }
+
+    if (this._shovelTimer > 0) {
+      this._shovelTimer -= deltaTime;
+      if (this._shovelTimer <= 0) {
+        this._fortifyBase(false);
+      }
+    }
+
+    if (this.activePowerUp) {
+      this.activePowerUp.update(deltaTime);
+      this._checkPowerUpCollection();
+    }
+
     const activeKeys = this.game.input.activeKeys();
     this.objects.forEach(gameObject => {
+      if (this.frozenTimer > 0 && gameObject instanceof EnemyTank) return;
       gameObject?.update(deltaTime, activeKeys);
     });
   }
@@ -374,6 +415,17 @@ export class World implements IWorld {
         y: resurrection.y,
       });
 
+      const savedStars =
+        resurrection.tankType === TankType.PLAYER_1
+          ? this.game.player1.stars
+          : this.game.player2.stars;
+      if (savedStars > 0) {
+        tank.stars = savedStars;
+        if (tank.stars >= 1) tank.projectileSpeed = 1.5;
+        if (tank.stars >= 2) tank.maxProjectiles = 2;
+        if (tank.stars >= 3) tank.power = 2;
+      }
+
       const shield = new ShieldEffect({
         target: tank,
         effectOptions: ShieldEffectOptions,
@@ -389,6 +441,7 @@ export class World implements IWorld {
           resurrection.tankOptions as import('../entities/entities.type.js').IEnemyTankOptions,
         x: resurrection.x,
         y: resurrection.y,
+        isFlashing: resurrection.isFlashing,
       });
     }
 
@@ -426,6 +479,10 @@ export class World implements IWorld {
     if (tank.tankType === TankType.ENEMY) {
       this.enemyTanksOnMap--;
       this.tanksTotal--;
+
+      if (tank instanceof EnemyTank && tank.isFlashing && !this._grenadeActive) {
+        this._spawnPowerUp();
+      }
     }
   }
 
@@ -453,8 +510,9 @@ export class World implements IWorld {
     if (explosive.tank?.tankType === TankType.PLAYER_1) {
       this.game.events.emit(event.sound.PLAYER_DEATH);
       this.currentMoveState = 'standby';
-      if (this.game.player1Lives) {
-        this.game.player1Lives -= 1;
+      this.game.player1.stars = 0;
+      if (this.game.player1.lives) {
+        this.game.player1.lives -= 1;
         this._resurrectPlayer1();
       } else {
         this.player1Tank = null;
@@ -463,8 +521,9 @@ export class World implements IWorld {
     if (explosive.tank?.tankType === TankType.PLAYER_2) {
       this.game.events.emit(event.sound.PLAYER_DEATH);
       this.currentMoveState2 = 'standby';
-      if (this.game.player2Lives) {
-        this.game.player2Lives -= 1;
+      this.game.player2.stars = 0;
+      if (this.game.player2.lives) {
+        this.game.player2.lives -= 1;
         this._resurrectPlayer2();
       } else {
         this.player2Tank = null;
@@ -486,6 +545,159 @@ export class World implements IWorld {
     explosive.init({ world: this, base: destroyedBase });
     explosive.on(event.object.DESTROYED, this._removeExplosive);
     this.explosives.push(explosive);
+  }
+
+  // ── Power-up system ──────────────────────────────────────
+
+  private _checkPowerUpCollection(): void {
+    if (!this.activePowerUp) return;
+
+    const pu = this.activePowerUp;
+    const players = [this.player1Tank, this.player2Tank];
+
+    for (const tank of players) {
+      if (!tank) continue;
+      if (
+        tank.x < pu.x + pu.width &&
+        tank.x + tank.width > pu.x &&
+        tank.y < pu.y + pu.height &&
+        tank.y + tank.height > pu.y
+      ) {
+        this._collectPowerUp(tank, pu.powerUpType);
+        this.activePowerUp = null;
+        return;
+      }
+    }
+  }
+
+  private _spawnPowerUp(): void {
+    const type = (Math.floor(Math.random() * PowerUpOption.TOTAL_TYPES)) as PowerUpTypeValue;
+    const half = WorldOption.UNIT_SIZE >> 1;
+    const maxCell = WorldOption.STAGE_SIZE - 1;
+    const cellX = Math.min(Math.floor(Math.random() * WorldOption.STAGE_SIZE), maxCell);
+    const cellY = Math.min(Math.floor(Math.random() * WorldOption.STAGE_SIZE), maxCell);
+    const x = cellX * WorldOption.UNIT_SIZE + half;
+    const y = cellY * WorldOption.UNIT_SIZE + half;
+
+    this.activePowerUp = new PowerUp({ x, y, type });
+    this.game.events.emit(event.sound.BONUS_SPAWN);
+  }
+
+  private _collectPowerUp(tank: Tank, type: PowerUpTypeValue): void {
+    this.game.events.emit(event.sound.BONUS_PICK);
+
+    switch (type) {
+      case PowerUpType.STAR:
+        this._applyStarEffect(tank);
+        break;
+      case PowerUpType.HELMET:
+        this._applyHelmetEffect(tank);
+        break;
+      case PowerUpType.CLOCK:
+        this._applyClockEffect();
+        break;
+      case PowerUpType.GRENADE:
+        this._applyGrenadeEffect();
+        break;
+      case PowerUpType.SHOVEL:
+        this._applyShovelEffect();
+        break;
+      case PowerUpType.TANK:
+        this._applyTankEffect(tank);
+        break;
+      case PowerUpType.PISTOL:
+        this._applyPistolEffect(tank);
+        break;
+    }
+  }
+
+  private _applyStarEffect(tank: Tank): void {
+    tank.stars = Math.min(tank.stars + 1, 3);
+    if (tank.stars >= 1) tank.projectileSpeed = 1.5;
+    if (tank.stars >= 2) tank.maxProjectiles = 2;
+    if (tank.stars >= 3) tank.power = 2;
+    this._savePlayerStars(tank);
+  }
+
+  private _applyHelmetEffect(tank: Tank): void {
+    this.effects = this.effects.filter(e => {
+      if (e.target === (tank as unknown as import('../effects/base-effect.js').IEffectTarget)) {
+        e.end();
+        return false;
+      }
+      return true;
+    });
+
+    const shield = new ShieldEffect({
+      target: tank,
+      effectOptions: {
+        ...ShieldEffectOptions,
+        EFFECT_DURATION: HELMET_POWERUP_DURATION,
+      },
+    });
+    shield.start();
+    shield.on(event.object.DESTROYED, this._removeEffect);
+    this.effects.push(shield);
+  }
+
+  private _applyClockEffect(): void {
+    this.frozenTimer = CLOCK_DURATION;
+  }
+
+  private _applyGrenadeEffect(): void {
+    this._grenadeActive = true;
+    const enemies = this.enemyTanks.filter(t => t.tankType === TankType.ENEMY);
+    for (const enemy of enemies) {
+      enemy.state = 'dead';
+      enemy.emit(event.object.DESTROYED, enemy);
+    }
+    this._grenadeActive = false;
+  }
+
+  private _applyShovelEffect(): void {
+    this._shovelTimer = SHOVEL_DURATION;
+    this._fortifyBase(true);
+  }
+
+  private _applyTankEffect(tank: Tank): void {
+    if (tank.tankType === TankType.PLAYER_1) {
+      this.game.player1.lives = Math.min(this.game.player1.lives + 1, 9);
+    } else if (tank.tankType === TankType.PLAYER_2) {
+      this.game.player2.lives = Math.min(this.game.player2.lives + 1, 9);
+    }
+    this.game.events.emit(event.sound.LIFE_UP);
+  }
+
+  private _applyPistolEffect(tank: Tank): void {
+    tank.stars = 3;
+    tank.projectileSpeed = 1.5;
+    tank.maxProjectiles = 2;
+    tank.power = 2;
+    this._savePlayerStars(tank);
+  }
+
+  private _savePlayerStars(tank: Tank): void {
+    if (tank.tankType === TankType.PLAYER_1) {
+      this.game.player1.stars = tank.stars;
+    } else if (tank.tankType === TankType.PLAYER_2) {
+      this.game.player2.stars = tank.stars;
+    }
+  }
+
+  private _fortifyBase(steel: boolean): void {
+    for (const [y, x] of FORTRESS_TILES) {
+      if (y >= this.stage.length || x >= this.stage[0].length) continue;
+
+      if (steel) {
+        const wall = new SteelWall({ x: x * WorldOption.TILE_SIZE, y: y * WorldOption.TILE_SIZE });
+        wall.on(event.object.DESTROYED, this._removeWall);
+        this.stage[y][x] = wall;
+      } else {
+        const wall = new BrickWall({ x: x * WorldOption.TILE_SIZE, y: y * WorldOption.TILE_SIZE });
+        wall.on(event.object.DESTROYED, this._removeWall);
+        this.stage[y][x] = wall;
+      }
+    }
   }
 
   hasCollision(object: ICollidable): boolean {

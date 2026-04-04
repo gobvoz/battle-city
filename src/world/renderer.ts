@@ -46,6 +46,10 @@ export class Renderer {
       this._renderTile(ctx, tile);
     });
 
+    if (this.world.activePowerUp?.visible) {
+      this._renderObject(ctx, this.world.activePowerUp);
+    }
+
     this._renderSidePanel(ctx);
 
     __DEBUG__ && this._renderCollisionTile(ctx);
@@ -229,7 +233,7 @@ export class Renderer {
         player1logo.WIDTH * RenderOption.MULTIPLEXER,
         player1logo.HEIGHT * RenderOption.MULTIPLEXER
       );
-      const player1Lives = SidePanelOption.NUMBER[this.game.player1Lives];
+      const player1Lives = SidePanelOption.NUMBER[this.game.player1.lives];
       ctx.drawImage(
         this.game.sprite.image,
         ...player1Lives.SPRITES,
@@ -254,7 +258,7 @@ export class Renderer {
         player2logo.WIDTH * RenderOption.MULTIPLEXER,
         player2logo.HEIGHT * RenderOption.MULTIPLEXER
       );
-      const player2Lives = SidePanelOption.NUMBER[this.game.player2Lives];
+      const player2Lives = SidePanelOption.NUMBER[this.game.player2.lives];
       ctx.drawImage(
         this.game.sprite.image,
         ...player2Lives.SPRITES,

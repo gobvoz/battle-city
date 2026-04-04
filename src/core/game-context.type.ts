@@ -5,6 +5,11 @@ import { Sprite } from './sprite.js';
 import { StatsManager } from './stats-manager.js';
 import type { StageConfig } from '../config/constants.type.js';
 
+export interface PlayerState {
+  lives: number;
+  stars: number;
+}
+
 export interface IGameContext {
   audio: AudioManager;
   events: EventEmitter;
@@ -14,8 +19,8 @@ export interface IGameContext {
   currentLevel: number;
   currentStage: StageConfig | null;
   playerCount: 1 | 2;
-  player1Lives: number;
-  player2Lives: number;
+  player1: PlayerState;
+  player2: PlayerState;
   fps: number;
   busyTime: number | string;
 }

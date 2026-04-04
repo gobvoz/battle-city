@@ -73,6 +73,16 @@ export const EnemyType = {
   ARMOR: 4,
 } as const;
 
+export const PowerUpType = {
+  HELMET: 0,
+  CLOCK: 1,
+  SHOVEL: 2,
+  STAR: 3,
+  GRENADE: 4,
+  TANK: 5,
+  PISTOL: 6,
+} as const;
+
 export const PointPerEnemyType = {
   [EnemyType.COMMON]: 100,
   [EnemyType.FAST]: 200,
@@ -300,6 +310,38 @@ export const EnemyTankToOption = {
   [3]: Enemy3TankOption,
   [4]: Enemy4TankOption,
 } as const;
+
+export const BONUS_TANK_INDICES = new Set([3, 10, 17]);
+
+export const PowerUpOption = {
+  WIDTH: WorldOption.UNIT_SIZE,
+  HEIGHT: WorldOption.UNIT_SIZE,
+  BLINK_INTERVAL: 0.15,
+  TOTAL_TYPES: 7,
+  SPRITES: {
+    [PowerUpType.HELMET]: [16, 7] as const,
+    [PowerUpType.CLOCK]: [17, 7] as const,
+    [PowerUpType.SHOVEL]: [18, 7] as const,
+    [PowerUpType.STAR]: [19, 7] as const,
+    [PowerUpType.GRENADE]: [20, 7] as const,
+    [PowerUpType.TANK]: [21, 7] as const,
+    [PowerUpType.PISTOL]: [22, 7] as const,
+  },
+} as const;
+
+export const CLOCK_DURATION = 10;
+export const SHOVEL_DURATION = 20;
+export const HELMET_POWERUP_DURATION = 10;
+
+export const FORTRESS_TILES: readonly (readonly [number, number])[] = [
+  [22, 10], [22, 11], [22, 12], [22, 13], [22, 14], [22, 15],
+  [23, 10], [23, 11],
+  [24, 10], [24, 11],
+  [25, 10], [25, 11],
+  [23, 14], [23, 15],
+  [24, 14], [24, 15],
+  [25, 14], [25, 15],
+] as const;
 
 export const ProjectileOption = {
   WIDTH: WorldOption.UNIT_SIZE / 4,
