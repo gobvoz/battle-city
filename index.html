@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,8 +7,19 @@
     <link rel="stylesheet" href="src/styles/font.css" />
     <title>Battle city</title>
   </head>
-  <body style="display: flex; justify-content: center; background-color: black">
+  <body style="display: flex; flex-direction: column; align-items: center; background-color: black">
     <canvas id="game" width="256" height="224"></canvas>
+    <a
+      href="/editor.html"
+      style="
+        color: #666;
+        font-size: 14px;
+        margin-top: 8px;
+        font-family: sans-serif;
+        text-decoration: none;
+      "
+      >Level Editor</a
+    >
     <script src="main.js" type="module"></script>
   </body>
 </html>

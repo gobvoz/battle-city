@@ -1,0 +1,210 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #111;
+  color: #ccc;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ---- Left: Canvas ---- */
+.editor-canvas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 16px;
+}
+
+.editor-canvas-wrap canvas {
+  image-rendering: pixelated;
+  cursor: crosshair;
+  border: 2px solid #444;
+}
+
+/* ---- Right: Sidebar ---- */
+.sidebar {
+  width: 260px;
+  background: #1a1a1a;
+  border-left: 2px solid #333;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: #e63200;
+  text-transform: uppercase;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+/* Terrain palette */
+.palette {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.palette-item {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.palette-item.selected {
+  border-color: #e63200;
+}
+
+.palette-item canvas {
+  border: none;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.palette-item .label {
+  position: absolute;
+  bottom: -14px;
+  font-size: 9px;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* Enemy wave */
+.enemy-wave {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.enemy-slot {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.enemy-slot[data-type='1'] {
+  background: #555;
+  color: #ccc;
+}
+
+.enemy-slot[data-type='2'] {
+  background: #446;
+  color: #8af;
+}
+
+.enemy-slot[data-type='3'] {
+  background: #464;
+  color: #8f8;
+}
+
+.enemy-slot[data-type='4'] {
+  background: #644;
+  color: #f88;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 6px 12px;
+  background: #333;
+  color: #ccc;
+  border: 1px solid #555;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn:hover {
+  background: #444;
+}
+
+.btn.primary {
+  background: #e63200;
+  color: #fff;
+  border-color: #e63200;
+}
+
+.btn.primary:hover {
+  background: #ff4411;
+}
+
+/* Stage selector */
+.stage-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-select input {
+  width: 50px;
+  padding: 4px;
+  background: #222;
+  color: #ccc;
+  border: 1px solid #555;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Keyboard hints */
+.hints {
+  font-size: 10px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.hints kbd {
+  background: #333;
+  padding: 1px 4px;
+  border-radius: 2px;
+  border: 1px solid #555;
+}
+
+/* Back link */
+.back-link {
+  margin-top: auto;
+  text-align: center;
+}
+
+.back-link .btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Storage list */
+.storage-list {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.6;
+}
+
+.storage-list .empty {
+  font-style: italic;
+  color: #555;
+}

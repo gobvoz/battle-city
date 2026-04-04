@@ -1,6 +1,6 @@
 import { GameContainer } from './core/game-container.js';
 import { SoundSystem } from './core/sound-system.js';
-import { loadStage } from './core/stage-loader.js';
+import { loadStage, loadCustomStage } from './core/stage-loader.js';
 
 import { keyCode } from './config/key-codes.js';
 import { event } from './config/events.js';
@@ -161,6 +161,16 @@ export class Game {
     this.container.currentLevel++;
     this.container.stats.nextLevel();
 
+    // Custom campaign: check if we've played all custom stages
+    if (this.container.campaignMode === 'custom') {
+      const levels = this.container.customStageLevels;
+      if (this.container.currentLevel > levels.length) {
+        // All custom stages completed — go to restart/menu
+        this.changeState(event.state.RESTART);
+        return;
+      }
+    }
+
     const transition = new LevelTransition(this.container.currentLevel);
     this.transition = transition;
 
@@ -177,17 +187,35 @@ export class Game {
       this.transition = null;
     };
 
-    loadStage(this.container.currentLevel).then(stage => {
-      this.container.currentStage = stage;
-      stageLoaded = true;
-
-      __DEBUG__ && console.log(`Stage ${this.container.currentLevel} loaded`);
-
-      if (transition.isFullyClosed) {
-        this.switchToPlayState();
-        transition.markStateReady();
+    if (this.container.campaignMode === 'custom') {
+      // Load custom stage synchronously from localStorage
+      const levels = this.container.customStageLevels;
+      const stageNum = levels[this.container.currentLevel - 1];
+      try {
+        this.container.currentStage = loadCustomStage(stageNum);
+        stageLoaded = true;
+        __DEBUG__ && console.log(`Custom stage ${stageNum} loaded (level ${this.container.currentLevel})`);
+        if (transition.isFullyClosed) {
+          this.switchToPlayState();
+          transition.markStateReady();
+        }
+      } catch {
+        // Stage missing from storage — end campaign
+        this.changeState(event.state.RESTART);
       }
-    });
+    } else {
+      loadStage(this.container.currentLevel).then(stage => {
+        this.container.currentStage = stage;
+        stageLoaded = true;
+
+        __DEBUG__ && console.log(`Stage ${this.container.currentLevel} loaded`);
+
+        if (transition.isFullyClosed) {
+          this.switchToPlayState();
+          transition.markStateReady();
+        }
+      });
+    }
   }
 
   private switchToPlayState(): void {

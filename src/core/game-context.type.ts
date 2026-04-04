@@ -10,6 +10,8 @@ export interface PlayerState {
   stars: number;
 }
 
+export type CampaignMode = 'standard' | 'custom';
+
 export interface IGameContext {
   audio: AudioManager;
   events: EventEmitter;
@@ -19,6 +21,8 @@ export interface IGameContext {
   currentLevel: number;
   currentStage: StageConfig | null;
   playerCount: 1 | 2;
+  campaignMode: CampaignMode;
+  customStageLevels: number[];
   player1: PlayerState;
   player2: PlayerState;
   fps: number;

@@ -16,6 +16,8 @@ export class RestartGameState {
     this.game.player1.stars = 0;
     this.game.player2.lives = 2;
     this.game.player2.stars = 0;
+    this.game.campaignMode = 'standard';
+    this.game.customStageLevels = [];
 
     this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }

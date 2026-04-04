@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="src/styles/editor.css" />
+    <title>Battle City — Level Editor</title>
+  </head>
+  <body>
+    <div class="editor-canvas-wrap">
+      <canvas id="editor"></canvas>
+    </div>
+
+    <div class="sidebar">
+      <h2>Terrain</h2>
+      <div class="palette" id="palette"></div>
+
+      <h2>Enemies (20)</h2>
+      <div class="enemy-wave" id="enemy-wave"></div>
+      <div class="btn-row">
+        <button class="btn" id="btn-fill-enemies">Fill rest</button>
+        <button class="btn" id="btn-clear-enemies">Clear</button>
+      </div>
+
+      <h2>Stage</h2>
+      <div class="stage-select">
+        <span>Stage:</span>
+        <input type="number" id="stage-num" value="1" min="1" max="99" />
+        <button class="btn" id="btn-load">Load</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="btn-clear">Clear Map</button>
+        <button class="btn primary" id="btn-save">Save JSON</button>
+        <button class="btn" id="btn-import">Import</button>
+      </div>
+
+      <h2>Local Storage</h2>
+      <div class="btn-row">
+        <button class="btn primary" id="btn-save-storage">Save to Storage</button>
+        <button class="btn" id="btn-load-storage">Load from Storage</button>
+        <button class="btn" id="btn-delete-storage">Delete from Storage</button>
+      </div>
+      <div class="storage-list" id="storage-list"></div>
+
+      <h2>Hotkeys</h2>
+      <div class="hints">
+        <kbd>0</kbd>–<kbd>5</kbd> select terrain<br />
+        <kbd>E</kbd> eraser (empty)<br />
+        <kbd>Ctrl+S</kbd> save JSON<br />
+        <kbd>LMB</kbd> paint · <kbd>RMB</kbd> erase<br />
+        <kbd>Ctrl+Z</kbd> undo · <kbd>Ctrl+Y</kbd> redo
+      </div>
+
+      <div class="back-link">
+        <a href="/" class="btn">← Back to Game</a>
+      </div>
+    </div>
+
+    <input type="file" id="file-import" accept=".json" style="display: none" />
+    <script src="editor.ts" type="module"></script>
+  </body>
+</html>
