@@ -36,6 +36,7 @@ import {
   ShieldEffectOptions,
   BONUS_TANK_INDICES,
   PowerUpOption,
+  ROUND_END_DELAY,
   CLOCK_DURATION,
   SHOVEL_DURATION,
   HELMET_POWERUP_DURATION,
@@ -78,6 +79,8 @@ export class World implements IWorld {
   private _spawnedEnemyCount = 0;
   private _shovelTimer = 0;
   private _grenadeActive = false;
+  private _endTimer = 0;
+  private _endTargetState: string | null = null;
   private readonly _projectilePool = new ObjectPool(() => new Projectile());
   private readonly _explosivePool = new ObjectPool(() => new Explosive());
 
@@ -156,23 +159,29 @@ export class World implements IWorld {
   }
 
   update(deltaTime: number): void {
-    if (this.enemyTanksOnMap <= 0 && this.enemyArray.length === 0) {
-      __DEBUG__ && console.log('level complete - victory');
-      this.game.events.emit(event.CHANGE_STATE, event.state.RESULTS);
+    if (this._endTargetState) {
+      this._endTimer -= deltaTime;
+      if (this._endTimer <= 0) {
+        this.game.events.emit(event.CHANGE_STATE, this._endTargetState);
+        return;
+      }
     }
 
-    if (this.base.destroyed) {
-      __DEBUG__ && console.log('level complete - base destroyed - game over');
-      this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
-    }
-
-    if (this.player1Tank === null && this.game.player1.lives === 0) {
-      if (
-        this.game.playerCount === 1 ||
-        (this.player2Tank === null && this.game.player2.lives === 0)
-      ) {
-        __DEBUG__ && console.log('level complete - all players dead - game over');
-        this.game.events.emit(event.CHANGE_STATE, event.state.GAME_OVER);
+    if (!this._endTargetState) {
+      if (this.enemyTanksOnMap <= 0 && this.enemyArray.length === 0) {
+        __DEBUG__ && console.log('level complete - victory');
+        this._scheduleEnd(event.state.RESULTS);
+      } else if (this.base.destroyed) {
+        __DEBUG__ && console.log('level complete - base destroyed - game over');
+        this._scheduleEnd(event.state.GAME_OVER);
+      } else if (this.player1Tank === null && this.game.player1.lives === 0) {
+        if (
+          this.game.playerCount === 1 ||
+          (this.player2Tank === null && this.game.player2.lives === 0)
+        ) {
+          __DEBUG__ && console.log('level complete - all players dead - game over');
+          this._scheduleEnd(event.state.GAME_OVER);
+        }
       }
     }
 
@@ -278,6 +287,22 @@ export class World implements IWorld {
     if (moving2 && this.currentMoveState2 !== 'move' && this.player2Tank?.state === 'active') {
       this.currentMoveState2 = 'move';
       this.game.events.emit(event.sound.MOVE_START);
+    }
+
+    if (__DEBUG__ && this.player1Tank) {
+      const debugKeys: Record<string, PowerUpTypeValue> = {
+        Digit1: PowerUpType.HELMET as PowerUpTypeValue,
+        Digit2: PowerUpType.CLOCK as PowerUpTypeValue,
+        Digit3: PowerUpType.SHOVEL as PowerUpTypeValue,
+        Digit4: PowerUpType.STAR as PowerUpTypeValue,
+        Digit5: PowerUpType.GRENADE as PowerUpTypeValue,
+        Digit6: PowerUpType.TANK as PowerUpTypeValue,
+        Digit7: PowerUpType.PISTOL as PowerUpTypeValue,
+      };
+      const powerUp = debugKeys[evt.code];
+      if (powerUp !== undefined) {
+        this._collectPowerUp(this.player1Tank, powerUp);
+      }
     }
   }
 
@@ -571,7 +596,7 @@ export class World implements IWorld {
   }
 
   private _spawnPowerUp(): void {
-    const type = (Math.floor(Math.random() * PowerUpOption.TOTAL_TYPES)) as PowerUpTypeValue;
+    const type = Math.floor(Math.random() * PowerUpOption.TOTAL_TYPES) as PowerUpTypeValue;
     const half = WorldOption.UNIT_SIZE >> 1;
     const maxCell = WorldOption.STAGE_SIZE - 1;
     const cellX = Math.min(Math.floor(Math.random() * WorldOption.STAGE_SIZE), maxCell);
@@ -684,16 +709,21 @@ export class World implements IWorld {
     }
   }
 
+  private _scheduleEnd(targetState: string): void {
+    this._endTargetState = targetState;
+    this._endTimer = ROUND_END_DELAY;
+  }
+
   private _fortifyBase(steel: boolean): void {
     for (const [y, x] of FORTRESS_TILES) {
       if (y >= this.stage.length || x >= this.stage[0].length) continue;
 
       if (steel) {
-        const wall = new SteelWall({ x: x * WorldOption.TILE_SIZE, y: y * WorldOption.TILE_SIZE });
+        const wall = new SteelWall({ x, y });
         wall.on(event.object.DESTROYED, this._removeWall);
         this.stage[y][x] = wall;
       } else {
-        const wall = new BrickWall({ x: x * WorldOption.TILE_SIZE, y: y * WorldOption.TILE_SIZE });
+        const wall = new BrickWall({ x, y });
         wall.on(event.object.DESTROYED, this._removeWall);
         this.stage[y][x] = wall;
       }

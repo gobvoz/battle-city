@@ -26,7 +26,7 @@ export class ResultsState {
     this.game = game;
 
     this.enemyType = 1;
-    this.interval = 0.3;
+    this.interval = 0.15;
     this.elapsed = 0;
     this.finished = false;
 

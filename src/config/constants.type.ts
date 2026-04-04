@@ -1,4 +1,11 @@
-import { Direction, TerrainType, ObjectType, TankType, EnemyType, PowerUpType } from './constants.js';
+import {
+  Direction,
+  TerrainType,
+  ObjectType,
+  TankType,
+  EnemyType,
+  PowerUpType,
+} from './constants.js';
 
 export type DirectionType = (typeof Direction)[keyof typeof Direction];
 export type TerrainTypeValue = (typeof TerrainType)[keyof typeof TerrainType];

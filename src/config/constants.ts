@@ -115,7 +115,7 @@ export const Player1TankOption = {
   START_DIRECTION: Direction.UP,
   HEALTH: 1,
   MOVEMENT_SPEED: 3 / 4,
-  PROJECTILE_SPEED: 1,
+  PROJECTILE_SPEED: 2.5,
   DEFAULT_POWER: 1,
   SPRITES: {
     [Direction.UP]: [
@@ -329,18 +329,20 @@ export const PowerUpOption = {
   },
 } as const;
 
+export const ROUND_END_DELAY = 4;
 export const CLOCK_DURATION = 10;
 export const SHOVEL_DURATION = 20;
 export const HELMET_POWERUP_DURATION = 10;
 
 export const FORTRESS_TILES: readonly (readonly [number, number])[] = [
-  [22, 10], [22, 11], [22, 12], [22, 13], [22, 14], [22, 15],
-  [23, 10], [23, 11],
-  [24, 10], [24, 11],
-  [25, 10], [25, 11],
-  [23, 14], [23, 15],
-  [24, 14], [24, 15],
-  [25, 14], [25, 15],
+  [23, 11],
+  [23, 12],
+  [23, 13],
+  [23, 14],
+  [24, 11],
+  [24, 14],
+  [25, 11],
+  [25, 14],
 ] as const;
 
 export const ProjectileOption = {

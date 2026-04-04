@@ -160,7 +160,6 @@ export class Game {
   private startLevelTransition(): void {
     this.container.currentLevel++;
     this.container.stats.nextLevel();
-    this.container.events.emit(event.sound.INTRO);
 
     const transition = new LevelTransition(this.container.currentLevel);
     this.transition = transition;
@@ -194,6 +193,7 @@ export class Game {
   private switchToPlayState(): void {
     this.container.events.off(event.CHANGE_STATE, this.changeState);
     this.state.exit();
+    this.container.events.emit(event.sound.INTRO);
     this.state = new PlayState(this.container);
     this.container.events.on(event.CHANGE_STATE, this.changeState);
     this.state.start();
