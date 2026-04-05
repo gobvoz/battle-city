@@ -446,7 +446,7 @@ export class World implements IWorld {
           : this.game.player2.stars;
       if (savedStars > 0) {
         tank.stars = savedStars;
-        if (tank.stars >= 1) tank.projectileSpeed = 1.5;
+        if (tank.stars >= 1) tank.projectileSpeed = 2;
         if (tank.stars >= 2) tank.maxProjectiles = 2;
         if (tank.stars >= 3) tank.power = 2;
       }
@@ -638,7 +638,7 @@ export class World implements IWorld {
 
   private _applyStarEffect(tank: Tank): void {
     tank.stars = Math.min(tank.stars + 1, 3);
-    if (tank.stars >= 1) tank.projectileSpeed = 1.5;
+    if (tank.stars >= 1) tank.projectileSpeed = 2;
     if (tank.stars >= 2) tank.maxProjectiles = 2;
     if (tank.stars >= 3) tank.power = 2;
     this._savePlayerStars(tank);
@@ -695,7 +695,7 @@ export class World implements IWorld {
 
   private _applyPistolEffect(tank: Tank): void {
     tank.stars = 3;
-    tank.projectileSpeed = 1.5;
+    tank.projectileSpeed = 2;
     tank.maxProjectiles = 2;
     tank.power = 2;
     this._savePlayerStars(tank);

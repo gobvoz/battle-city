@@ -48,9 +48,14 @@ export class MenuState {
     ctx.fillStyle = this.selection === 1 ? 'yellow' : 'white';
     ctx.fillText('2 PLAYERS', x, ctx.canvas.height / 2 + 60);
 
-    ctx.fillStyle = this.selection === 2
-      ? (this.customCount > 0 ? 'yellow' : '#886600')
-      : (this.customCount > 0 ? 'white' : '#555');
+    ctx.fillStyle =
+      this.selection === 2
+        ? this.customCount > 0
+          ? 'yellow'
+          : '#886600'
+        : this.customCount > 0
+          ? 'white'
+          : '#555';
     ctx.fillText(`CUSTOM (${this.customCount})`, x, ctx.canvas.height / 2 + 90);
 
     ctx.textAlign = 'center';

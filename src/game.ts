@@ -194,7 +194,8 @@ export class Game {
       try {
         this.container.currentStage = loadCustomStage(stageNum);
         stageLoaded = true;
-        __DEBUG__ && console.log(`Custom stage ${stageNum} loaded (level ${this.container.currentLevel})`);
+        __DEBUG__ &&
+          console.log(`Custom stage ${stageNum} loaded (level ${this.container.currentLevel})`);
         if (transition.isFullyClosed) {
           this.switchToPlayState();
           transition.markStateReady();

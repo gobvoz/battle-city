@@ -1,6 +1,6 @@
 import Tank from './tank.js';
 import { event } from '../config/events.js';
-import { Direction, WorldOption } from '../config/constants.js';
+import { Direction, EnemyType, WorldOption } from '../config/constants.js';
 import type { TankTypeValue } from '../config/constants.type.js';
 import type { IEnemyTankOptions } from './entities.type.js';
 import type { IWorld } from '../world/world.type.js';
@@ -42,9 +42,27 @@ export default class EnemyTank extends Tank {
   }
 
   override get sprite(): [number, number] {
-    const yOffset = this.isFlashing && this._flashFrame ? 8 : 0;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    if (this.isFlashing && this._flashFrame) {
+      // Red flash (X=8-15, Y+8) — same for all enemy types
+      yOffset = 8;
+    } else if (this.tankOptions.ENEMY_TYPE === EnemyType.ARMOR) {
+      // Armor damage colors (base is gray: X=8-15, Y=7)
+      if (this.health >= 3) {
+        // Green: X=0-7, Y=15
+        xOffset = -8;
+        yOffset = 8;
+      } else if (this.health === 2) {
+        // Yellow: X=0-7, Y=7
+        xOffset = -8;
+      }
+      // 1 HP: Gray (base) — no offset
+    }
+
     return [
-      this.sprites[this.direction][this.animationFrame][0] * WorldOption.UNIT_SIZE,
+      (this.sprites[this.direction][this.animationFrame][0] + xOffset) * WorldOption.UNIT_SIZE,
       (this.sprites[this.direction][this.animationFrame][1] + yOffset) * WorldOption.UNIT_SIZE,
     ];
   }

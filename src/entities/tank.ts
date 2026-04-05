@@ -37,6 +37,7 @@ export default class Tank extends GameObject {
   maxProjectiles: number;
   invulnerable: boolean;
   stars: number;
+  health: number;
 
   constructor({
     type,
@@ -82,6 +83,7 @@ export default class Tank extends GameObject {
     this.maxProjectiles = 1;
     this.invulnerable = false;
     this.stars = 0;
+    this.health = tankOptions.HEALTH;
   }
 
   get hasProjectile(): boolean {
@@ -174,6 +176,9 @@ export default class Tank extends GameObject {
       this.tankType !== TankType.ENEMY
     )
       return false;
+
+    this.health--;
+    if (this.health > 0) return true;
 
     if (this.tankType === TankType.ENEMY) {
       this.emit(

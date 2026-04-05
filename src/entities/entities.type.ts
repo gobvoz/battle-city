@@ -18,6 +18,7 @@ export interface IPlayerTankOptions {
   WIDTH: number;
   HEIGHT: number;
   START_DIRECTION: DirectionType;
+  HEALTH: number;
   MOVEMENT_SPEED: number;
   PROJECTILE_SPEED: number;
   DEFAULT_POWER: number;
@@ -29,6 +30,7 @@ export interface IEnemyTankOptions {
   WIDTH: number;
   HEIGHT: number;
   START_DIRECTION: DirectionType;
+  HEALTH: number;
   MOVEMENT_SPEED: number;
   PROJECTILE_SPEED: number;
   DEFAULT_POWER?: number;
