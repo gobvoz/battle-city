@@ -161,16 +161,6 @@ export class Game {
     this.container.currentLevel++;
     this.container.stats.nextLevel();
 
-    // Custom campaign: check if we've played all custom stages
-    if (this.container.campaignMode === 'custom') {
-      const levels = this.container.customStageLevels;
-      if (this.container.currentLevel > levels.length) {
-        // All custom stages completed — go to restart/menu
-        this.changeState(event.state.RESTART);
-        return;
-      }
-    }
-
     const transition = new LevelTransition(this.container.currentLevel);
     this.transition = transition;
 
@@ -188,9 +178,9 @@ export class Game {
     };
 
     if (this.container.campaignMode === 'custom') {
-      // Load custom stage synchronously from localStorage
       const levels = this.container.customStageLevels;
-      const stageNum = levels[this.container.currentLevel - 1];
+      const mapIndex = (this.container.currentLevel - 1) % levels.length;
+      const stageNum = levels[mapIndex];
       try {
         this.container.currentStage = loadCustomStage(stageNum);
         stageLoaded = true;
@@ -201,7 +191,6 @@ export class Game {
           transition.markStateReady();
         }
       } catch {
-        // Stage missing from storage — end campaign
         this.changeState(event.state.RESTART);
       }
     } else {

@@ -1,4 +1,5 @@
 import { event } from '../config/events.js';
+import { resetStageLoader } from '../core/stage-loader.js';
 import type { IGameContext } from '../core/game-context.type.js';
 
 export class RestartGameState {
@@ -18,6 +19,7 @@ export class RestartGameState {
     this.game.player2.stars = 0;
     this.game.campaignMode = 'standard';
     this.game.customStageLevels = [];
+    resetStageLoader();
 
     this.game.events.emit(event.CHANGE_STATE, event.state.MENU);
   }
